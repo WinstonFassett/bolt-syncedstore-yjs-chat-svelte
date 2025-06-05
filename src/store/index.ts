@@ -40,22 +40,22 @@ type User = {
   avatar?: string
 }
 
-type ChatStore = {
+type Store = {
   users: { [key: string]: User }
   channels: { [key: string]: Channel }
 }
 
 // Create store with empty collections
-const chatStore = syncedStore<ChatStore>({
+const _store = syncedStore<Store>({
   users: {},
   channels: {}
 })
 
 // Export the Svelte-wrapped store
-export const store = svelteSyncedStore(chatStore)
+export const store = svelteSyncedStore(_store)
 
 // Get YJS doc
-export const doc = getYjsValue(chatStore) as Doc
+export const doc = getYjsValue(_store) as Doc
 
 // Set up persistence with IndexedDB
 export const persistenceProvider = new IndexeddbPersistence('yjs-chat-app', doc)
@@ -143,7 +143,7 @@ export const currentUser = derived(
 
 // Store operations
 export function initializeStore() {
-  if (Object.keys(chatStore.channels).length > 0) return
+  if (Object.keys(_store.channels).length > 0) return
 
   const generalId = crypto.randomUUID()
   const randomId = crypto.randomUUID()
@@ -151,7 +151,7 @@ export function initializeStore() {
   const now = Date.now()
 
   // Create default channels
-  chatStore.channels[generalId] = {
+  _store.channels[generalId] = {
     meta: boxed({
       id: generalId,
       createdAt: now
@@ -161,7 +161,7 @@ export function initializeStore() {
     messages: {}
   }
 
-  chatStore.channels[randomId] = {
+  _store.channels[randomId] = {
     meta: boxed({
       id: randomId,
       createdAt: now
@@ -171,7 +171,7 @@ export function initializeStore() {
     messages: {}
   }
 
-  chatStore.channels[helpId] = {
+  _store.channels[helpId] = {
     meta: boxed({
       id: helpId,
       createdAt: now
@@ -185,7 +185,7 @@ export function initializeStore() {
 }
 
 export function findUserByUsername(username: string): string | null {
-  const userEntry = Object.entries(chatStore.users).find(([, user]) => user?.username === username);
+  const userEntry = Object.entries(_store.users).find(([, user]) => user?.username === username);
   return userEntry ? userEntry[0] : null;
 }
 
@@ -193,7 +193,7 @@ export function createUser(data: { username: string; fullName?: string; avatar?:
   const id = crypto.randomUUID();
   const now = Date.now();
 
-  chatStore.users[id] = {
+  _store.users[id] = {
     meta: boxed({
       id,
       createdAt: now
@@ -206,14 +206,14 @@ export function createUser(data: { username: string; fullName?: string; avatar?:
 }
 
 export function updateUserProfile(userId: string, data: { username?: string; fullName?: string; avatar?: string }) {
-  const existingUser = chatStore.users[userId];
+  const existingUser = _store.users[userId];
   if (!existingUser) {
     console.error(`User with ID ${userId} not found for update.`);
     return;
   }
 
   // To update non-boxed top-level properties, we replace the object.
-  chatStore.users[userId] = {
+  _store.users[userId] = {
     ...existingUser, // Spread existing properties first
     meta: existingUser.meta, // Keep the original boxed meta object reference
     username: data.username !== undefined ? data.username : existingUser.username,
@@ -225,7 +225,7 @@ export function updateUserProfile(userId: string, data: { username?: string; ful
 }
 
 export function addMessage(channelId: string, userId: string, text: string, parentId?: string) {
-  const channel = chatStore.channels[channelId]
+  const channel = _store.channels[channelId]
   if (!channel) return null
 
   const messageId = crypto.randomUUID()
@@ -246,7 +246,7 @@ export function addMessage(channelId: string, userId: string, text: string, pare
 }
 
 export function updateMessage(channelId: string, messageId: string, text: string) {
-  const channel = chatStore.channels[channelId]
+  const channel = _store.channels[channelId]
   if (!channel) return false
 
   const message = channel.messages[messageId]
@@ -259,7 +259,7 @@ export function updateMessage(channelId: string, messageId: string, text: string
 }
 
 export function deleteMessage(channelId: string, messageId: string) {
-  const channel = chatStore.channels[channelId]
+  const channel = _store.channels[channelId]
   if (!channel) return false
 
   const message = channel.messages[messageId]
@@ -272,7 +272,7 @@ export function deleteMessage(channelId: string, messageId: string) {
 }
 
 export function addReaction(channelId: string, messageId: string, userId: string, emoji: string) {
-  const channel = chatStore.channels[channelId]
+  const channel = _store.channels[channelId]
   if (!channel) return false
 
   const message = channel.messages[messageId]
@@ -294,7 +294,7 @@ export function addReaction(channelId: string, messageId: string, userId: string
 }
 
 export function removeReaction(channelId: string, messageId: string, userId: string, emoji: string) {
-  const channel = chatStore.channels[channelId]
+  const channel = _store.channels[channelId]
   if (!channel) return false
 
   const message = channel.messages[messageId]
@@ -310,7 +310,7 @@ export function removeReaction(channelId: string, messageId: string, userId: str
 }
 
 export function updateChannel(channelId: string, name: string, description: string) {
-  const channel = chatStore.channels[channelId]
+  const channel = _store.channels[channelId]
   if (!channel) return false
 
   channel.name = name
@@ -320,7 +320,7 @@ export function updateChannel(channelId: string, name: string, description: stri
 }
 
 export function clearChannelMessages(channelId: string) {
-  const channel = chatStore.channels[channelId]
+  const channel = _store.channels[channelId]
   if (!channel) return false
 
   channel.messages = {}
@@ -328,7 +328,7 @@ export function clearChannelMessages(channelId: string) {
 }
 
 export function deleteChannel(channelId: string) {
-  delete chatStore.channels[channelId]
+  delete _store.channels[channelId]
   
   const currentId = get(currentChannelIdStore)
   if (currentId === channelId) {
@@ -339,7 +339,7 @@ export function deleteChannel(channelId: string) {
 }
 
 export function toggleChannelLock(channelId: string) {
-  const channel = chatStore.channels[channelId]
+  const channel = _store.channels[channelId]
   if (!channel) return false
 
   channel.locked = !channel.locked
@@ -347,7 +347,7 @@ export function toggleChannelLock(channelId: string) {
 }
 
 export function getThreadReplies(channelId: string, messageId: string): Message[] {
-  const channel = chatStore.channels[channelId]
+  const channel = _store.channels[channelId]
   if (!channel) return []
 
   return Object.values(channel.messages)
@@ -400,7 +400,7 @@ export const onlineUsers = readable<Set<string>>(new Set(), (set) => {
 export function setAwarenessUser(userId: string) {
   if (!userId) return
   
-  const user = chatStore.users[userId]
+  const user = _store.users[userId]
   if (!user) return
   
   rtcProvider.awareness.setLocalState({
@@ -416,5 +416,3 @@ export function setAwarenessUser(userId: string) {
 export function clearAwarenessUser() {
   rtcProvider.awareness.setLocalState(null)
 }
-
-export { chatStore }

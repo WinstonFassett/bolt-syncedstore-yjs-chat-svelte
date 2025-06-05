@@ -63,7 +63,7 @@
                 </label>
                 <input 
                   type="text" 
-                  value={currentUser.meta.value.username}
+                  value={currentUser.username}
                   class="w-full max-w-md rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-dark-200 dark:border-dark-400 dark:text-white"
                   disabled
                 />

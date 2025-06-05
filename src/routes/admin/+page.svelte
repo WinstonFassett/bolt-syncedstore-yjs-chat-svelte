@@ -92,10 +92,10 @@
                       <div class="flex items-center">
                         <div class="h-10 w-10 rounded-full bg-gray-200 dark:bg-dark-300 overflow-hidden">
                           {#if user.meta.value.avatarUrl}
-                            <img src={user.meta.value.avatarUrl} alt={user.meta.value.username} class="h-full w-full object-cover" />
+                            <img src={user.meta.value.avatarUrl} alt={user.username} class="h-full w-full object-cover" />
                           {:else}
                             <div class="h-full w-full flex items-center justify-center text-gray-500 dark:text-gray-400">
-                              {user.meta.value.username.charAt(0).toUpperCase()}
+                              {user.username.charAt(0).toUpperCase()}
                             </div>
                           {/if}
                         </div>
@@ -107,7 +107,7 @@
                       </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="text-sm text-gray-900 dark:text-gray-100">{user.meta.value.username}</div>
+                      <div class="text-sm text-gray-900 dark:text-gray-100">{user.username}</div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                       <div class="text-sm text-gray-500 dark:text-gray-400">{user.meta.value.id}</div>
