@@ -21,16 +21,26 @@
     showSettings = false
   }
   
+  // Track previous channel ID to detect changes
+  let previousChannelId: string | null = null;
+  
   // Focus message input when channel changes
-  $: if ($currentChannel && messageInputComponent) {
-    // Only focus if thread panel is not open
-    if (!$isThreadPanelOpen) {
-      // Wait for the DOM to update after channel switch, then focus
-      tick().then(() => {
-        if (messageInputComponent) { // Double check in case component became null
-          messageInputComponent.focusInput();
-        }
-      });
+  $: if ($currentChannel) {
+    const currentChannelId = $currentChannel.meta.value.id;
+    
+    // Check if channel has changed
+    if (currentChannelId !== previousChannelId) {
+      previousChannelId = currentChannelId;
+      
+      // Only focus if thread panel is not open
+      if (!$isThreadPanelOpen && messageInputComponent) {
+        // Wait for the DOM to update after channel switch, then focus
+        tick().then(() => {
+          if (messageInputComponent) { // Double check in case component became null
+            messageInputComponent.focusInput();
+          }
+        });
+      }
     }
   }
   

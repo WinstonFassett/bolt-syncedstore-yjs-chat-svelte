@@ -22,7 +22,7 @@
 
 # Bugs
 
-n/a
+- [ ] UserInfoPopup behaves differently than the other dialogs that use createDialog, mainly in that there is no fade transition like the others have on entry/exit. I assume this is built in and that we are not using what those are using.
 
 # Console Bugs
 
@@ -48,6 +48,10 @@ c/[channelId]/m/[messageId] activates thread view
 /settings for user and client and device settings
 /admin  maybe. for advanced dangerous things like admin'ing user info and channels, clearing all channels, "everything". 
 ```
+
+I read that SvelteKit has built in support for SPAs and client routing because when I tried to opt out of sveltekit it made those points and I said ok. But I don't know how to get it working. And now I'm skeptical of those promises.
+
+
 
 ### Command Menu (cmdk) with channel nav and search
 

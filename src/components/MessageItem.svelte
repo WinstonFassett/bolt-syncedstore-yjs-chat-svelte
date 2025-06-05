@@ -301,12 +301,11 @@
           aria-label={`View ${threadSummary.replyCount} ${threadSummary.replyCount === 1 ? 'reply' : 'replies'}`}
         >
           <div class="flex -space-x-2 overflow-hidden">
-            {#each threadSummary.participants as participant (participant.id)}
+            {#each threadSummary.participants as participant, i (participant?.id || `participant-${i}`)}
               <Avatar 
-                username={participant.username} 
-                customImage={participant.avatar} 
+                username={participant?.username || 'Unknown'} 
+                customImage={participant?.avatar} 
                 size="xs" 
-                title={participant.username} 
               />
             {/each}
           </div>
