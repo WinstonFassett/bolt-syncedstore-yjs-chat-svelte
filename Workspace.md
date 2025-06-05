@@ -47,12 +47,6 @@ c/[channelId]/m/[messageId] activates thread view
 
 No invites or security, but could still have the concept of people who have joined
 
-### Delete confirmation on Messages
-
-Always confirm message Delete
-
-Track deleted messages in memory and allow undelete for those 
-
 #### Rich-text editing and formatting 
 
 Using tiptap or something like it. bold, italics, links, 
@@ -62,6 +56,7 @@ user and channel mentions would be nice
 ### Command Menu (cmdk) with channel nav and search
 
 Full text ish search using fuzzy matching and traversal of full store or selected channel(s)
+
 
 
 ## Icons 
@@ -95,6 +90,77 @@ How could we implement this??
 ### Instructions for Journal Entries
 
 Most recent entries come first. Append new entries below these instructions, above the older entries.
+
+## Round 4: UX Enhancements - Input Focus, Reactions, Delete Flow, Thread Summaries
+
+**Date:** 2025-06-05
+
+### Goals:
+- Improve user experience with several UI enhancements focusing on message interactions and navigation.
+- Implement automatic input focusing, an additional emoji reaction button, a robust delete/undelete flow, and visual summaries for threaded messages.
+
+### Work & Key Changes (Tasks & Success Grade):
+
+1.  **Auto-focus Message Input (10/10):**
+    *   Modified `MessageInput.svelte` to expose a `focusInput()` method.
+    *   Updated `MainView.svelte` and `ThreadView.svelte` to call `focusInput()` (or `focusReplyInput()`) reactively when `$currentChannelIdStore` or `$currentThreadIdStore` changes, using `await tick()` to ensure DOM updates.
+    *   *Outcome:* Successfully implemented automatic focus on message inputs upon channel or thread selection.
+
+2.  **Additional Emoji Button (10/10):**
+    *   Added a `SmilePlus` icon button next to existing reaction pills in `MessageItem.svelte`.
+    *   Clicking this button sets `isAddingReaction = true`, triggering the existing emoji picker.
+    *   *Outcome:* Seamlessly integrated an additional way to add reactions.
+
+3.  **Delete Confirmation Modal & Undelete (9/10):**
+    *   Created `ConfirmDeleteModal.svelte` using `svelte-headlessui` for an accessible alert dialog.
+    *   Integrated this modal into `MessageItem.svelte`: clicking delete now shows the modal.
+    *   Implemented soft delete (`message.deleted = true`) and an "Undelete" button (with `RotateCcw` icon) for messages deleted by the current user, which reverts the soft delete.
+    *   *User Corrections:* User fixed a runtime error (`dialog.setOpen` not a function) in `ConfirmDeleteModal.svelte` by changing to `dialog.expanded = isOpen` and `{#if $dialog.expanded}`. User also corrected `message.parentId` to `message.meta.value.parentId` in `MessageItem.svelte`'s thread reply filter.
+    *   *Outcome:* Messages now have a confirmation step before deletion and can be undeleted by the owner. Some minor linting issues with the modal backdrop were deferred.
+
+4.  **Thread Summary Display (9/10):**
+    *   Added an `xs` size to `Avatar.svelte` for mini avatars.
+    *   In `MessageItem.svelte`, implemented reactive logic (`threadReplies`, `threadSummary`) to:
+        *   Calculate reply count for a message.
+        *   Determine the time of the last reply.
+        *   Identify unique participants in the thread.
+    *   Displayed a summary below parent messages (if not in thread view and not deleted) showing up to 3 mini participant avatars, reply count, and last reply time.
+    *   This summary area is clickable to open the thread.
+    *   *User Corrections:* User adjusted CSS for last reply time and fixed `m.parentId` to `m.meta.value.parentId` in `threadReplies` filter.
+    *   *Outcome:* Provides a clear visual indicator and quick access for messages with replies.
+
+### Lessons Learned & Component Usage:
+
+*   **`svelte-headlessui` Dialogs:** When controlling dialog visibility with a parent prop (`isOpen`), ensure the dialog's internal state (`$dialog.expanded`) is correctly synced. The user's correction to use `dialog.expanded = isOpen` and `{#if $dialog.expanded}` in `ConfirmDeleteModal.svelte` was crucial.
+*   **SyncedStore Data Access:** Consistently remember to access nested properties within SyncedStore objects via `.value` (e.g., `message.meta.value.id`, `m.meta.value.parentId`). This was a point of correction by the user during thread summary implementation.
+*   **Svelte Reactivity & DOM Updates:** `await tick()` is essential before attempting DOM manipulations (like focusing an input) after reactive state changes that affect the DOM.
+
+### Files Modified:
+```
+.
+└── src
+    └── components
+        ├── Avatar.svelte
+        ├── ConfirmDeleteModal.svelte
+        ├── MainView.svelte
+        ├── MessageInput.svelte
+        ├── MessageItem.svelte
+        └── ThreadView.svelte
+```
+
+### Reflection & Outcomes:
+This round significantly enhanced the chat application's user experience by streamlining common actions and providing richer visual feedback for message interactions. The features were implemented successfully, with important corrections from the user guiding the final state, particularly regarding SyncedStore access patterns and `svelte-headlessui` dialog management.
+
+### Retrospective:
+-   **What went well:**
+    *   Successfully implemented multiple distinct UI/UX features across several components.
+    *   Leveraged existing Svelte patterns (reactive statements, `tick`) and component libraries (`svelte-headlessui`, `lucide-svelte`).
+    *   User corrections were instrumental in refining implementations and fixing bugs.
+-   **What could be improved:**
+    *   More careful attention to SyncedStore's `.value` requirement to avoid initial errors.
+    *   Thorough testing of `svelte-headlessui` dialog prop interactions to catch issues like the `setOpen` vs `expanded` discrepancy earlier.
+
+
 
 **Goal:**
 - Clearly outline goals for the codebase edit.
