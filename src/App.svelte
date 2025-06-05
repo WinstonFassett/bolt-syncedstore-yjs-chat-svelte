@@ -6,7 +6,7 @@
     currentUserIdStore, 
     isStoreInitialized, 
     initializeStore, 
-    // persistenceProvider
+    persistenceProvider
   } from './store'
   
   import Sidebar from './components/Sidebar.svelte'
@@ -14,14 +14,14 @@
   import ProfileSetup from './components/ProfileSetup.svelte'
   
   // Loading state
-  let isLoading = true
+  let isLoading = false
   
   onMount(async () => {
     // Wait for IndexedDB to load
-    // persistenceProvider.whenSynced.then(() => {
-    //   // Done loading
+    persistenceProvider.whenSynced.then(() => {
+      // Done loading
       isLoading = false
-    // })
+    })
     
   })
 </script>

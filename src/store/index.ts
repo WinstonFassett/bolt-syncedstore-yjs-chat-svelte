@@ -58,7 +58,7 @@ export const store = svelteSyncedStore(chatStore)
 export const doc = getYjsValue(chatStore) as Doc
 
 // Set up persistence with IndexedDB
-// export const persistenceProvider = new IndexeddbPersistence('yjs-chat-app', doc)
+export const persistenceProvider = new IndexeddbPersistence('yjs-chat-app', doc)
 
 // Set up WebRTC provider
 export const rtcProvider = new WebrtcProvider('yjs-chat-app', doc, {
