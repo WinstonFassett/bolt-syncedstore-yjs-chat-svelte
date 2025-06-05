@@ -126,6 +126,7 @@
             </div>
 
             <!-- Avatar Preview - Moved and Centered -->
+            <form on:submit|preventDefault={updateProfile}>
             <div class="mb-4 flex flex-col items-center">
               <span class="mb-1 block text-xs font-medium text-gray-700 dark:text-gray-300">Avatar Preview:</span>
               <Avatar username={editingUsername} customImage={currentUser?.avatar} size="xl" />
@@ -178,12 +179,13 @@
               </button>
               <button 
                 type="button"
-                class="btn btn-secondary mt-2 w-full sm:mt-0 sm:w-auto"
+                class="btn btn-ghost mt-2 w-full sm:mt-0 sm:w-auto"
                 on:click={dialog.close}
               >
                 Cancel
               </button>
             </div>
+            </form>
           </div>
         </div>
       </div>

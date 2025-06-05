@@ -28,9 +28,9 @@ none
 # Features Wanted
 
 - when message has comments have line below with mini avatars of participants and count of replies and time of last reply
-- When opening/clicking a channel or thread link, focus the appropriate message input. 
+- [x] When opening/clicking a channel or thread link, focus the appropriate message input. 
 - Also, enter key should submit forms including profile edit, channel create.
-- [ ] Use nicer form style from Join screen in Profile dialog *(In progress: Modal width, avatar preview, helper text added. Button styling and further alignment pending)* Cannot confirm because dialog no longer opens.
+- [x] Use nicer form style from Join screen in Profile dialog *(In progress: Modal width, avatar preview, helper text added. Button styling and further alignment pending)* Cannot confirm because dialog no longer opens.
 
 #### Routes
 

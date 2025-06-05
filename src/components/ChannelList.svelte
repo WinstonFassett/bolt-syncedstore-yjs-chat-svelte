@@ -81,6 +81,7 @@
         use:dialog.modal
         transition:scale={{ duration: 200, start: 0.95 }}
       >
+        <form on:submit|preventDefault={handleCreateChannel}>
         <div class="mb-4 flex items-center justify-between">
           <h3 class="text-lg font-medium">Create Channel</h3>
           <button
@@ -92,12 +93,13 @@
         </div>
 
         <div class="mb-4">
-          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label for="new-channel-name" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
             Channel Name <span class="text-red-500">*</span>
           </label>
           <div class="flex items-center">
             <span class="mr-1 text-gray-500 dark:text-gray-400">#</span>
             <input
+              id="new-channel-name"
               type="text"
               class="input w-full"
               placeholder="e.g. general"
@@ -107,10 +109,11 @@
         </div>
 
         <div class="mb-6">
-          <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label for="new-channel-description" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
             Description (optional)
           </label>
           <input
+            id="new-channel-description"
             type="text"
             class="input w-full"
             placeholder="What's this channel about?"
@@ -130,6 +133,7 @@
             Create Channel
           </button>
         </div>
+        </form>
       </div>
     </div>
   </div>

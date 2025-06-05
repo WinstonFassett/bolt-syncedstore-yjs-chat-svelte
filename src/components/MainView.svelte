@@ -1,5 +1,6 @@
 <script lang="ts">
   import { currentChannel, currentUserIdStore, isThreadPanelOpen, currentThreadIdStore } from '../store'
+  import { tick } from 'svelte'
   import ChannelHeader from './ChannelHeader.svelte'
   import MessageList from './MessageList.svelte'
   import MessageInput from './MessageInput.svelte'
@@ -8,6 +9,8 @@
   
   // Local state
   let showSettings = false
+  let messageInputComponent: MessageInput // Reference to the MessageInput component
+  let threadViewInstance: ThreadView // Reference to the ThreadView component
   
   function openChannelSettings() {
     showSettings = true
@@ -17,11 +20,27 @@
     showSettings = false
   }
   
-  function handleReplyInThread(event: CustomEvent<{ messageId: string }>) {
+  // Focus message input when channel changes
+  $: if ($currentChannel && messageInputComponent) {
+    // Wait for the DOM to update after channel switch, then focus
+    tick().then(() => {
+      if (messageInputComponent) { // Double check in case component became null
+        messageInputComponent.focusInput();
+      }
+    });
+  }
+
+  async function handleReplyInThread(event: CustomEvent<{ messageId: string }>) {
     const messageId = event.detail.messageId
     
     currentThreadIdStore.set(messageId)
     isThreadPanelOpen.set(true)
+
+    // Ensure ThreadView is rendered and then focus its input
+    await tick();
+    if (threadViewInstance) {
+      threadViewInstance.focusReplyInput();
+    }
   }
 </script>
 
@@ -40,6 +59,7 @@
         </div>
         <div class="border-t border-gray-200 dark:border-dark-400">
           <MessageInput 
+            bind:this={messageInputComponent}
             channelId={$currentChannel.meta.value.id} 
             disabled={$currentChannel.locked} 
           />
@@ -66,7 +86,7 @@
   
   <!-- Thread panel (conditionally rendered) -->
   <div class="w-0 md:w-2/5 xl:w-1/3 {$isThreadPanelOpen ? 'block' : 'hidden'}">
-    <ThreadView />
+    <ThreadView bind:this={threadViewInstance} />
   </div>
 
   <!-- Channel Settings Modal -->

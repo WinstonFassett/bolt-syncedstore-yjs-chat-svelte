@@ -1,15 +1,27 @@
 <script lang="ts">
   import { store, currentChannelIdStore, currentThreadIdStore, isThreadPanelOpen } from '../store'
+  import { tick } from 'svelte'
   import MessageItem from './MessageItem.svelte'
   import MessageList from './MessageList.svelte'
   import MessageInput from './MessageInput.svelte'
   import { X } from 'lucide-svelte'
   
+  let threadMessageInput: MessageInput // Reference to the MessageInput component for thread replies
+
   // Get the parent message
   $: parentMessage = $currentChannelIdStore && $currentThreadIdStore 
     ? $store.channels[$currentChannelIdStore]?.messages[$currentThreadIdStore]
     : null
   
+  // Close the thread panel
+  // Function to focus the reply input, callable from parent
+  export async function focusReplyInput() {
+    await tick(); // Ensure MessageInput is rendered
+    if (threadMessageInput) {
+      threadMessageInput.focusInput();
+    }
+  }
+
   // Close the thread panel
   function closeThread() {
     isThreadPanelOpen.set(false)
@@ -48,6 +60,7 @@
     <!-- Thread input -->
     <div class="border-t border-gray-200 dark:border-dark-400">
       <MessageInput 
+        bind:this={threadMessageInput}
         channelId={$currentChannelIdStore} 
         parentId={$currentThreadIdStore}
         isThreadReply={true}

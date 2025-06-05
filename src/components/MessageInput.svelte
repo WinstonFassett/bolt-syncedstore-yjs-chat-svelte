@@ -88,6 +88,13 @@
   }
   
   // Handle key events (e.g., Shift+Enter for new line, Enter to send)
+  export function focusInput() {
+    if (textareaEl) {
+      textareaEl.focus();
+    }
+  }
+
+  // Handle key events (e.g., Shift+Enter for new line, Enter to send)
   function handleKeyDown(event: KeyboardEvent) {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault()
