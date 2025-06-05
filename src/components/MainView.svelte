@@ -52,6 +52,16 @@
       }
     });
   }
+  
+  // Handle thread panel closed event
+  function handleThreadClosed() {
+    // Focus the channel input when thread panel is closed
+    tick().then(() => {
+      if (messageInputComponent) {
+        messageInputComponent.focusInput();
+      }
+    });
+  }
 
   async function handleReplyInThread(event: CustomEvent<{ messageId: string }>) {
     const messageId = event.detail.messageId
@@ -124,7 +134,7 @@
   
   <!-- Thread panel (conditionally rendered) -->
   <div class="w-0 md:w-2/5 xl:w-1/3 {$isThreadPanelOpen ? 'block' : 'hidden'}">
-    <ThreadView bind:this={threadViewInstance} />
+    <ThreadView bind:this={threadViewInstance} on:threadClosed={handleThreadClosed} />
   </div>
 
   <!-- Channel Settings Modal -->

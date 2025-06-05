@@ -26,9 +26,16 @@
     }
   }
 
+  // Create a dispatch function for events
+  import { createEventDispatcher } from 'svelte'
+  const dispatch = createEventDispatcher()
+
   // Close the thread panel
   function closeThread() {
     isThreadPanelOpen.set(false)
+    
+    // Dispatch an event to focus the channel input
+    dispatch('threadClosed')
     currentThreadIdStore.set(null)
   }
 </script>
