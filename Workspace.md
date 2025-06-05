@@ -4,7 +4,7 @@
 # Priorities
 
 - Fix Bugs
-- Do not worry about TS errors, only real errors
+- Do not worry about TS errors, only real errors. do not waste cycles on TS yet.
 - Add desired features
 - Ensure consistency (of the right things) and get rid of the junk
 - Nice UI, thoughtful touches, nice transitions and animations, careful use of icons, color and layout. Don't generate SVG icons, just use existing lucide etc already imported

@@ -18,11 +18,6 @@
   onMount(async () => {
     // Wait for IndexedDB to load
     persistenceProvider.whenSynced.then(() => {
-      // Initialize store if needed
-      if (!$isStoreInitialized) {
-        initializeStore()
-      }
-      
       // Done loading
       isLoading = false
     })
@@ -41,6 +36,27 @@
         <p class="mt-2 text-gray-600 dark:text-gray-400">
           Connecting to the network...
         </p>
+      </div>
+    </div>
+  {:else if !$isStoreInitialized}
+    <!-- Bootstrap store prompt -->
+    <div class="flex h-full w-full flex-col items-center justify-center">
+      <div class="flex flex-col items-center">
+        <!-- Using a generic 'cloud' or 'database' icon for bootstrap -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary-600 dark:text-primary-500">
+          <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/>
+          <path d="M12 12v9"/>
+          <path d="m16 21-4-4-4 4"/>
+        </svg>
+        <h1 class="mt-4 text-xl font-medium">Initialize Chat Store</h1>
+        <p class="mt-2 text-gray-600 dark:text-gray-400 mb-4">
+          The chat application needs to set up its initial data store.
+        </p>
+        <button 
+          class="rounded-md bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:bg-primary-500 dark:hover:bg-primary-600 dark:focus:ring-offset-dark-100"
+          on:click={() => initializeStore()}>
+          Bootstrap Store
+        </button>
       </div>
     </div>
   {:else if !$currentUserIdStore}

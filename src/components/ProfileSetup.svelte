@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import { getUserByUsername, currentUserIdStore, setAwarenessUser, chatStore } from '../store'
+  import { getUserByUsername, currentUserIdStore, setAwarenessUser, store } from '../store'
   import { getGravatarUrl } from '../utils/avatar'
   
   const dispatch = createEventDispatcher<{
@@ -33,7 +33,7 @@
       
       // If fullName is provided, update it
       if (fullName.trim()) {
-        const user = $chatStore.users[id]
+        const user = $store.users[id]
         if (user) {
           user.fullName = fullName.trim()
         }
@@ -75,10 +75,11 @@
       </div>
       
       <div class="mb-4">
-        <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label for="username" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
           Username <span class="text-red-500">*</span>
         </label>
         <input
+          id="username"
           type="text"
           class="input w-full"
           bind:value={username}
@@ -92,10 +93,11 @@
       </div>
       
       <div class="mb-6">
-        <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label for="fullName" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
           Full Name (optional)
         </label>
         <input
+          id="fullName"
           type="text"
           class="input w-full"
           bind:value={fullName}
