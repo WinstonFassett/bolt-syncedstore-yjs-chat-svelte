@@ -4,6 +4,8 @@ import { IndexeddbPersistence } from 'y-indexeddb'
 import { Doc } from 'yjs'
 import { readable, writable, derived, get } from 'svelte/store'
 import { svelteSyncedStore } from "@syncedstore/svelte"
+import * as awarenessProtocol from 'y-protocols/awareness.js'
+
 
 // Define the store types
 type Message = {
@@ -46,7 +48,7 @@ type Store = {
 }
 
 // Create store with empty collections
-const _store = syncedStore<Store>({
+export const _store = syncedStore<Store>({
   users: {},
   channels: {}
 })
@@ -57,12 +59,15 @@ export const store = svelteSyncedStore(_store)
 // Get YJS doc
 export const doc = getYjsValue(_store) as Doc
 
+export const awareness = new awarenessProtocol.Awareness(doc)
+
 // Set up persistence with IndexedDB
 export const persistenceProvider = new IndexeddbPersistence('yjs-chat-app', doc)
 
 // Set up WebRTC provider
 export const rtcProvider = new WebrtcProvider('yjs-chat-app', doc, {
-  signaling: ['ws://localhost:4444']
+  signaling: ['ws://localhost:4444'],
+  awareness
 })
 
 // User state

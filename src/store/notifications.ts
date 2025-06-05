@@ -1,6 +1,7 @@
-import { writable, derived, get } from 'svelte/store'
-import { onlineUsers, store, currentUserIdStore, currentChannelIdStore } from './index'
+import { writable, get } from 'svelte/store'
+import { store, _store, currentUserIdStore, currentChannelIdStore, doc, awareness } from './index'
 import { addToast } from './toasts'
+import { syncedStore, getYjsValue, observeDeep } from '@syncedstore/core'
 
 // Define store types
 type User = {
@@ -55,32 +56,55 @@ export function initializeChannelMemberships() {
   channelMemberships.set(currentMemberships)
 }
 
+// Create a presence store to track online users
+export const onlineUsers = writable<Set<string>>(new Set<string>())
+
+// Track previously seen user IDs
+let previousUserIds = new Set<string>()
+
 // Track previous online users to detect changes
 let previousOnlineUsers = new Set<string>()
-
-// Track previous users to detect new users added to the system
-let previousUserIds = new Set<string>()
 
 // Subscribe to online users changes to create toast notifications
 export function setupUserPresenceNotifications(initOnly: boolean = false) {
   console.log('Setting up user presence notifications')
   
-  // Initialize previous online users with current state
-  const currentOnlineUsers = get(onlineUsers)
-  previousOnlineUsers = new Set(currentOnlineUsers)
-  
   // If this is just initialization, don't set up the subscription
   if (initOnly) return;
   
-  return onlineUsers.subscribe($onlineUsers => {
+  // Initial state
+  const currentAwarenessUsers = new Set<string>()
+  awareness.getStates().forEach((state: any) => {
+    if (state.user && state.user.id) {
+      currentAwarenessUsers.add(state.user.id)
+    }
+  })
+  
+  // Set initial online users
+  previousOnlineUsers = new Set<string>(currentAwarenessUsers)
+  onlineUsers.set(currentAwarenessUsers)
+  
+  // Handle awareness changes
+  const handleAwarenessChange = () => {
     const currentUserId = get(currentUserIdStore)
     if (!currentUserId) return
     
+    // Get current online users from awareness
+    const newOnlineSet = new Set<string>()
+    awareness.getStates().forEach((state: any) => {
+      if (state.user && state.user.id) {
+        newOnlineSet.add(state.user.id)
+      }
+    })
+    
+    // Update the store
+    onlineUsers.set(newOnlineSet)
+    
     // Get new users who just came online
-    const newUsers = [...$onlineUsers].filter(id => !previousOnlineUsers.has(id))
+    const newUsers = [...newOnlineSet].filter(id => !previousOnlineUsers.has(id))
     
     // Get users who just went offline
-    const leftUsers = [...previousOnlineUsers].filter(id => !$onlineUsers.has(id))
+    const leftUsers = [...previousOnlineUsers].filter(id => !newOnlineSet.has(id))
     
     // Create toast notifications for users who entered (excluding current user)
     newUsers.forEach(userId => {
@@ -107,8 +131,18 @@ export function setupUserPresenceNotifications(initOnly: boolean = false) {
     })
     
     // Update previous online users for next comparison
-    previousOnlineUsers = new Set($onlineUsers)
-  })
+    previousOnlineUsers = new Set(newOnlineSet)
+  }
+  
+  // Set up awareness change handler
+  awareness.on('change', handleAwarenessChange)
+  
+  // Return cleanup function
+  return () => {
+    if (awareness) {
+      awareness.off('change', handleAwarenessChange)
+    }
+  }
 }
 
 
@@ -117,83 +151,124 @@ export function setupUserPresenceNotifications(initOnly: boolean = false) {
 export function setupMessageNotifications(initOnly: boolean = false) {
   console.log('Setting up message notifications')
   
-  // Track last seen message IDs per channel
-  const lastSeenMessageIds = new Map<string, Set<string>>()
-  
-  // Initialize with current messages
+  // Get current state for initialization
   const storeData = get(store) as Store
-  if (storeData && storeData.channels) {
-    Object.keys(storeData.channels).forEach(channelId => {
-      const messages = storeData.channels[channelId].messages || {}
-      lastSeenMessageIds.set(channelId, new Set(Object.keys(messages)))
-    })
-  }
   
   // Initialize previous user IDs with current state
   previousUserIds = new Set(Object.keys(storeData.users || {}))
   
   // If this is just initialization, don't set up the subscription
-  if (initOnly) return;
+  if (initOnly) {
+    console.log('Message notifications initialized with current state')
+    return;
+  }
   
-  // Subscribe to store changes to detect new messages
-  return store.subscribe(($store: Store) => {
+  console.log('Setting up message notification subscription')
+  
+  // Function to handle message changes
+  const handleMessageChanges = (events: any[], transaction: any): void => {
     const currentUserId = get(currentUserIdStore)
     const currentChannelId = get(currentChannelIdStore)
+    
     if (!currentUserId) return
     
-    // Check each channel for new messages
-    Object.keys($store.channels).forEach(channelId => {
-      const channel = $store.channels[channelId]
-      const messages = channel.messages || {}
-      const currentMessageIds = new Set(Object.keys(messages))
-      const previousMessageIds = lastSeenMessageIds.get(channelId) || new Set()
-      
-      // Find new message IDs (in current but not in previous)
-      const newMessageIds = [...currentMessageIds].filter(id => !previousMessageIds.has(id))
-      
-      // If there are new messages and we're not in this channel
-      if (newMessageIds.length > 0 && channelId !== currentChannelId) {
-        // Create notifications for each new message (excluding current user's messages)
-        newMessageIds.forEach(messageId => {
-          const message = messages[messageId]
-          if (message && message.meta && message.meta.userId !== currentUserId) {
-            const sender = $store.users[message.meta.userId]
-            if (sender) {
-              // Use fullName if available, otherwise username
-              const displayName = sender.fullName || sender.username || 'Someone'
-              const channelName = channel.name || 'a channel'
-              const messagePreview = message.text.length > 30 
-                ? message.text.substring(0, 30) + '...' 
-                : message.text
+    // Get the current state to access user data
+    const storeData = get(store) as Store
+    
+    // Process each event
+    events.forEach(event => {
+      // Check if this is a message being added to a channel
+      if (event.path && 
+          event.path.length >= 3 && 
+          event.path[0] === 'channels' && 
+          event.path[2] === 'messages') {
+        
+        // Get the channel ID from the path
+        const channelId = event.path[1]
+        
+        // Skip notifications for the current channel
+        if (channelId === currentChannelId) return
+        
+        const channel = storeData.channels[channelId]
+        if (!channel) return
+        
+        // Process added messages
+        if (event.changes && event.changes.added) {
+          // For each added message
+          event.changes.added.forEach((value: any, messageId: string) => {
+            // Get the message
+            const message = channel.messages[messageId]
+            
+            // Skip if not a valid message or it's from the current user
+            if (!message || !message.meta || message.meta.userId === currentUserId) return
+            
+            // Check if the message is recent (within last 10 seconds)
+            const now = Date.now()
+            const messageTime = message.meta.createdAt
+            const isRecent = now - messageTime < 10000 // 10 seconds threshold
+            
+            if (isRecent) {
+              const sender = storeData.users[message.meta.userId]
               
-              addToast(`${displayName} in #${channelName}: ${messagePreview}`, 'info', 8000)
+              if (sender) {
+                // Use fullName if available, otherwise username
+                const displayName = sender.fullName || sender.username || 'Someone'
+                const channelName = channel.name || 'a channel'
+                const messagePreview = message.text.length > 30 
+                  ? message.text.substring(0, 30) + '...' 
+                  : message.text
+                
+                console.log(`New message from ${displayName} in ${channelName}: ${messagePreview}`)
+                addToast(`${displayName} in #${channelName}: ${messagePreview}`, 'info', 8000)
+              }
             }
-          }
-        })
-      }
-      
-      // Update the seen message IDs for this channel
-      lastSeenMessageIds.set(channelId, currentMessageIds)
-    })
-    
-    // Check for new users added to the system
-    const currentUserIds = new Set(Object.keys($store.users))
-    const newUserIds = [...currentUserIds].filter(id => !previousUserIds.has(id))
-    
-    // Create notifications for new users added to the system
-    newUserIds.forEach(userId => {
-      if (userId !== currentUserId) {
-        const user = $store.users[userId]
-        if (user) {
-          const displayName = user.fullName || user.username || 'Someone'
-          addToast(`${displayName} joined the chat`, 'info', 5000)
+          })
         }
       }
     })
+  }
+  
+  // Function to handle user changes
+  const handleUserChanges = (events: any[], transaction: any): void => {
+    const currentUserId = get(currentUserIdStore)
+    if (!currentUserId) return
     
-    // Update previous user IDs
-    previousUserIds = currentUserIds
-  })
+    // Get the current state
+    const storeData = get(store) as Store
+    
+    // Process each event
+    events.forEach(event => {
+      // Check for new users
+      if (event.path && event.path.length === 1 && event.path[0] === 'users') {
+        if (event.changes && event.changes.added) {
+          // For each added user
+          event.changes.added.forEach((value: any, userId: string) => {
+            // Skip if we've already seen this user or it's the current user
+            if (previousUserIds.has(userId) || userId === currentUserId) return
+            
+            const user = storeData.users[userId]
+            if (user) {
+              const displayName = user.fullName || user.username || 'Someone'
+              addToast(`${displayName} joined the chat`, 'info', 5000)
+              
+              // Add to previous users
+              previousUserIds.add(userId)
+            }
+          })
+        }
+      }
+    })
+  }
+  
+  // Set up observers
+  const unobserveMessages = observeDeep(_store, handleMessageChanges)
+  const unobserveUsers = observeDeep(_store, handleUserChanges)
+  
+  // Return cleanup function
+  return () => {
+    unobserveMessages()
+    unobserveUsers()
+  }
 }
 
 // Function to join a channel
