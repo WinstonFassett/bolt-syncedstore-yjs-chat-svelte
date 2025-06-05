@@ -5,10 +5,26 @@
   import ThemeToggle from './ThemeToggle.svelte'
   import { Settings } from 'lucide-svelte'
   import { connectionStatus } from '../store'
+  import { onMount } from 'svelte'
+  import { setupUserPresenceNotifications, initializeChannelMemberships } from '../store/notifications'
   
   function goToSettings() {
     window.location.href = '/settings'
   }
+  
+  // Initialize notifications system when component mounts
+  onMount(() => {
+    // Initialize channel memberships
+    initializeChannelMemberships()
+    
+    // Setup user presence notifications
+    const unsubscribe = setupUserPresenceNotifications()
+    
+    return () => {
+      // Clean up subscriptions when component unmounts
+      if (unsubscribe) unsubscribe()
+    }
+  })
 </script>
 
 <aside class="flex h-full flex-col bg-gray-50 dark:bg-dark-200">

@@ -32,6 +32,7 @@
 
 - [ ] UserInfoPopup behaves differently than the other dialogs that use createDialog, mainly in that there is no fade transition like the others have on entry/exit. I assume this is built in and that we are not using what those are using.
 
+- [ ] Mini avatars for message with replies should exclude primary author avatar because it is already present in the large on the message just above them.
 
 # Console Bugs
 
@@ -65,6 +66,10 @@ I read that SvelteKit has built in support for SPAs and client routing because w
 When people join/leave the users list (syncedstore)
 
 When people join/leave the y webrtc (yjs presence)
+
+### New Message Notifications
+
+We don't have the concept of joining or leaving channels yet, but we can assume that when a client is on a channel-related route that it is at least for that time, subbing to its notifiactions. So when looking at a channel or channel thread, always show notifications about new messages when the userId does not match current user. 
 
 #### Join and Leave Channels
 

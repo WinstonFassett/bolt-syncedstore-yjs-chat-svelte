@@ -14,6 +14,7 @@
   
   import ProfileSetup from '../components/ProfileSetup.svelte';
   import CommandMenu from '../components/CommandMenu.svelte';
+  import ToastContainer from '../components/ToastContainer.svelte';
   
   // Loading state
   let isLoading = false;
@@ -41,6 +42,7 @@
   });
 </script>
 
+<ToastContainer position="bottom-right" />
 
 {#if isLoading}
   <!-- Loading state -->
