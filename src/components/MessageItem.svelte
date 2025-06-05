@@ -361,7 +361,12 @@
           {#if showThreadButton && !isInThread}
             <button
               class="rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-dark-300 dark:hover:text-gray-300"
-              on:click={() => dispatch('reply', { messageId: message.meta.value.id })}
+              on:click={() => {
+                // Use the same direct navigation approach as thread summary
+                const channelId = $currentChannelIdStore;
+                const messageId = message.meta.value.id;
+                window.location.href = `/c/${channelId}/m/${messageId}`;
+              }}
               aria-label="Reply in thread"
             >
               <MessageSquare size={16} />

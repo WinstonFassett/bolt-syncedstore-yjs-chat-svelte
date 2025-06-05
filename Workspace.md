@@ -73,6 +73,13 @@ Using tiptap or something like it. bold, italics, links,
 
 user and channel mentions would be nice
 
+For SyncedStore need to use SyncedXml
+
+##### Live-editing Rich Text messages
+
+Checkbox user setting shown when editing a message. 
+If checked, connects TipTap directly to the YJS type
+
 
 # Defer
 
