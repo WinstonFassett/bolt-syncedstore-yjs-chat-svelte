@@ -20,6 +20,19 @@
 - Ensure consistency (of the right things) and get rid of the junk
 - Nice UI, thoughtful touches, nice transitions and animations, careful use of icons, color and layout. Don't generate SVG icons, just use existing lucide etc already imported
 
+# Inbox
+
+The work offline setting does not appear to work, is still live. 
+Same with New messages settings. Clear Data button doesn't do anything. These seem mocked. I guess that's ok until we get to the settings. User Settings is a poor clone of user profile and signup screens
+I would like for the work offline setting to work.
+The notification settings we need to think about where those persist.
+Probably in device storage somewhere
+Until we figure it out we can hide / remove them
+
+
+# Bugs
+
+When user sets up profile, it should look and see if there is an existing profile with a matching username and if it does it should show that user the info and ask if it is them or if they want to create a new profile.
 
 ## Fixed Bugs
 
@@ -69,7 +82,7 @@ When people join/leave the y webrtc (yjs presence)
 
 ### New Message Notifications
 
-We don't have the concept of joining or leaving channels yet, but we can assume that when a client is on a channel-related route that it is at least for that time, subbing to its notifiactions. So when looking at a channel or channel thread, always show notifications about new messages when the userId does not match current user. 
+We don't have the concept of joining or leaving channels yet, but we can assume that when a client is on a channel-related route that it is at least for that time, subbing to its notifiactions. So when looking at a channel or channel thread, always show notifications about new messages when the userId does not match current user.
 
 #### Join and Leave Channels
 
