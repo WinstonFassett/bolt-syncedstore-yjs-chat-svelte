@@ -4,6 +4,7 @@
 # Priorities
 
 - Fix Bugs, but do not foolishly consider them fixed until user has verified. Accessibility does not matter yet. Focus on core functionality described here.
+- Focus on UI needs and ask permission before changing the store index.
 - Do not worry about TS errors, only real errors. do not waste cycles on TS yet.
 - Add desired features
 - Ensure consistency (of the right things) and get rid of the junk
@@ -11,42 +12,20 @@
 
 # Bugs
 
-
-initializeStore() should not be called automatically. 
-until initialized, all users should see option to bootstrap the store by creating the initial channel(s). when user clicks to bootstrap, then initializeStore() 
-
-
-`<div>` with a mouseenter or mouseleave handler must have an ARIA role
-https://svelte.dev/e/a11y_no_static_element_interactionssvelte(a11y_no_static_element_interactions)
-
+- Update profile does not seem to work. See also form features / consistency needed below.
+- 
 
 
 # Console Bugs
 
-```
-hook.js:608 property not found on root doc subscribe
-overrideMethod @ hook.js:608
-getYjsByTypeDescription @ doc.ts:48
-get @ doc.ts:101
-validate_store @ validate.js:34
-$chatStore @ ProfileSetup.svelte:4
-handleSubmit @ ProfileSetup.svelte:36
-(anonymous) @ event-modifiers.js:97
-(anonymous) @ events.js:61
-without_reactive_context @ shared.js:44
-target_handler @ events.js:60Understand this warning
-hook.js:608 Svelte error: store_invalid_shape
-`chatStore` is not a store with a `subscribe` method
-```
-
+none
 
 # Features Needed
 
-- Use first-class dialogs everywhere - replace inline 2nd class dialog popups on user profile dialog and channel settings dialog. 
 - when message has comments have line below with mini avatars of participants and count of replies and time of last reply
 - UI should feature Full Name instead of username, unless unavailable. and if showing both and they are the same, only show once
-- Use nicer form style from Join screen in Profile dialog 
 - improve usability of forms
+- Use nicer form style from Join screen in Profile dialog 
 
 # Features Wanted
 
@@ -88,13 +67,22 @@ Full text ish search using fuzzy matching and traversal of full store or selecte
 ### Click User name/avatar to View Info Popup
 
 hover user display name to see username
+click username or avatar to view info popup. 
 
 ## Icons 
 
 Uses lucide icons. don't generate SVGs or SVG paths.
 
+# Autofocus when appropriate
+
+When opening/clicking a channel or thread link, focus the appropriate message input. 
 
 
+Also, enter key should submit forms like profile edit.
+
+# Profile edit should be as usable as / similar to the join form
+
+i.e. with gravatar preview, etc. be consistent.  
 
 #### Enter/Exit Notifications 
 
