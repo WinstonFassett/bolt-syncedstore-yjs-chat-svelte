@@ -23,16 +23,31 @@
   
   // Focus message input when channel changes
   $: if ($currentChannel && messageInputComponent) {
-    // Wait for the DOM to update after channel switch, then focus
+    // Only focus if thread panel is not open
+    if (!$isThreadPanelOpen) {
+      // Wait for the DOM to update after channel switch, then focus
+      tick().then(() => {
+        if (messageInputComponent) { // Double check in case component became null
+          messageInputComponent.focusInput();
+        }
+      });
+    }
+  }
+  
+  // Focus thread input when thread ID changes
+  $: if ($currentThreadIdStore && threadViewInstance && $isThreadPanelOpen) {
     tick().then(() => {
-      if (messageInputComponent) { // Double check in case component became null
-        messageInputComponent.focusInput();
+      if (threadViewInstance) {
+        threadViewInstance.focusReplyInput();
       }
     });
   }
 
   async function handleReplyInThread(event: CustomEvent<{ messageId: string }>) {
     const messageId = event.detail.messageId
+    
+    // Check if we're already viewing this thread
+    const alreadyViewingThisThread = $currentThreadIdStore === messageId && $isThreadPanelOpen
     
     // Set thread ID in store
     currentThreadIdStore.set(messageId)
@@ -41,9 +56,14 @@
     // Navigate to thread route if not already there
     if ($currentChannel) {
       const channelId = $currentChannel.meta.value.id
-      goto(`/c/${channelId}/m/${messageId}`)
+      
+      // Only navigate if we're not already on this thread route
+      if (!alreadyViewingThisThread) {
+        goto(`/c/${channelId}/m/${messageId}`)
+      }
 
       // Ensure ThreadView is rendered and then focus its input
+      // We do this regardless of navigation to ensure focus works when switching threads
       await tick();
       if (threadViewInstance) {
         threadViewInstance.focusReplyInput();

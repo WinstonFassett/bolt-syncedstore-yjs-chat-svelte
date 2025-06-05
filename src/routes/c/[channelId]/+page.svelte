@@ -9,9 +9,13 @@
   $: {
     if ($page.params.channelId) {
       currentChannelIdStore.set($page.params.channelId);
-      // When viewing a channel directly, close any open thread panel
-      isThreadPanelOpen.set(false);
-      currentThreadIdStore.set(null);
+      
+      // Only close thread panel if we're not in a thread route
+      // This preserves thread view when navigating directly to channel
+      if (!window.location.pathname.includes('/m/')) {
+        isThreadPanelOpen.set(false);
+        currentThreadIdStore.set(null);
+      }
     }
   }
   

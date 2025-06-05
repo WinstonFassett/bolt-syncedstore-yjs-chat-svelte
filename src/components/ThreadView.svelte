@@ -12,8 +12,12 @@
   $: parentMessage = $currentChannelIdStore && $currentThreadIdStore 
     ? $store.channels[$currentChannelIdStore]?.messages[$currentThreadIdStore]
     : null
+    
+  // Watch for thread ID changes to focus input
+  $: if ($currentThreadIdStore && $isThreadPanelOpen && threadMessageInput) {
+    focusReplyInput();
+  }
   
-  // Close the thread panel
   // Function to focus the reply input, callable from parent
   export async function focusReplyInput() {
     await tick(); // Ensure MessageInput is rendered

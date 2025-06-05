@@ -7,7 +7,11 @@
   $: isActive = $currentChannelIdStore === channel.meta.value.id
 
   function selectChannel() {
+    // Update the current channel ID in the store
     currentChannelIdStore.set(channel.meta.value.id)
+    
+    // Navigate to the channel route
+    // Note: We don't close thread panel here to maintain thread view when switching channels
     goto(`/c/${channel.meta.value.id}`)
   }
 </script>
