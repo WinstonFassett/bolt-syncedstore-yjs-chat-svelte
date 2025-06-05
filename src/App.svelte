@@ -38,6 +38,15 @@
         </p>
       </div>
     </div>
+  {:else if !$currentUserIdStore}
+    <!-- Profile setup screen -->
+    <ProfileSetup />
+    
+    <!-- Background layout -->
+    <div class="flex h-full w-full overflow-hidden">
+      <div class="w-64 shrink-0 bg-gray-50 dark:bg-dark-200"></div>
+      <div class="flex-1 bg-white dark:bg-dark-100"></div>
+    </div>
   {:else if !$isStoreInitialized}
     <!-- Bootstrap store prompt -->
     <div class="flex h-full w-full flex-col items-center justify-center">
@@ -58,15 +67,6 @@
           Bootstrap Store
         </button>
       </div>
-    </div>
-  {:else if !$currentUserIdStore}
-    <!-- Profile setup screen -->
-    <ProfileSetup />
-    
-    <!-- Background layout -->
-    <div class="flex h-full w-full overflow-hidden">
-      <div class="w-64 shrink-0 bg-gray-50 dark:bg-dark-200"></div>
-      <div class="flex-1 bg-white dark:bg-dark-100"></div>
     </div>
   {:else}
     <!-- Main app layout -->

@@ -70,7 +70,5 @@
   </div>
 
   <!-- Channel Settings Modal -->
-  {#if showSettings}
-    <ChannelSettings channel={$currentChannel} on:close={closeChannelSettings} />
-  {/if}
+  <ChannelSettings channel={$currentChannel} openModal={showSettings} on:close={closeChannelSettings} />
 </main>

@@ -22,7 +22,7 @@
   $: isCurrentUser = $currentUserIdStore === message.meta.value.userId
   
   // State for message actions
-  let showActions = false
+  let showActions = false;
   let isAddingReaction = false
   let emojiInput = ''
   let isEditing = false
@@ -106,6 +106,7 @@
 
 <!-- Message container -->
 <div 
+  role="group"
   class="group relative px-4 py-2 hover:bg-gray-50 dark:hover:bg-dark-300"
   on:mouseenter={() => showActions = true}
   on:mouseleave={() => showActions = false}

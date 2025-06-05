@@ -1,12 +1,15 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte'
+  import { createEventDispatcher, onMount, onDestroy } from 'svelte'
+  import { createDialog } from 'svelte-headlessui'
+  import { X } from 'lucide-svelte'
+  import { fade, scale } from 'svelte/transition'
   import { store, updateChannel, clearChannelMessages, toggleChannelLock, deleteChannel } from '../store'
   
   export let channel: any | null = null
+  export let openModal = false // Controlled by parent
   
-  const dispatch = createEventDispatcher<{
-    close: void
-  }>()
+  const dispatch = createEventDispatcher<{ close: void }>()
+  const dialog = createDialog({ label: 'Channel Settings' })
   
   // Local state for editing
   let editingName = ''
@@ -30,7 +33,7 @@
       editingDescription.trim()
     )
     
-    dispatch('close')
+    internalCloseTrigger()
   }
   
   // Toggle channel lock
@@ -54,40 +57,79 @@
     
     const success = deleteChannel(channel.meta.value.id)
     if (success) {
-      dispatch('close')
+      internalCloseTrigger()
     }
   }
   
   // Close the settings
-  function close() {
-    dispatch('close')
+  // Synchronize dialog state with openModal prop
+  $: if (openModal && !$dialog.expanded) {
+    dialog.open()
+  } else if (!openModal && $dialog.expanded) {
+    dialog.close() // This might be redundant if parent always sets openModal=false on 'close' event
+  }
+
+  // Inform parent when dialog is closed internally
+  let unsubscribeExpanded: (() => void) | undefined;
+  onMount(() => {
+    unsubscribeExpanded = dialog.expanded.subscribe(isExpanded => {
+      if (!isExpanded && openModal) {
+        dispatch('close')
+      }
+    });
+  });
+
+  onDestroy(() => {
+    if (unsubscribeExpanded) {
+      unsubscribeExpanded();
+    }
+  });
+
+  function internalCloseTrigger() {
+    // Called by X button, backdrop, Save, Cancel etc.
+    // svelte-headlessui will set $dialog.expanded to false
+    // The subscription above will then dispatch 'close' to parent if needed.
+    dialog.close();
   }
 </script>
 
-<div class="fixed inset-0 z-10 flex items-center justify-center bg-black bg-opacity-50 p-4">
-  <div class="w-full max-w-md rounded-lg bg-white dark:bg-dark-200">
-    <div class="flex items-center justify-between border-b border-gray-200 p-4 dark:border-dark-400">
-      <h3 class="text-lg font-medium">Channel Settings</h3>
-      <button
-        class="rounded p-1 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-dark-300 dark:hover:text-gray-200"
-        on:click={close}
-        aria-label="Close"
+{#if $dialog.expanded}
+<div class="relative z-50" transition:fade={{ duration: 150 }}>
+  <div 
+    class="fixed inset-0 bg-black/30 dark:bg-black/50"
+    aria-hidden="true"
+    on:click={internalCloseTrigger}
+    transition:fade={{ duration: 150 }}
+  ></div>
+
+  <div class="fixed inset-0 overflow-y-auto">
+    <div class="flex min-h-full items-center justify-center p-4 text-center">
+      <div
+        class="w-full max-w-md transform overflow-hidden rounded-lg bg-white p-0 text-left align-middle shadow-xl transition-all dark:bg-dark-200"
+        use:dialog.modal
+        transition:scale={{ duration: 150, start: 0.95, opacity:0 }}
       >
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="18" y1="6" x2="6" y2="18"></line>
-          <line x1="6" y1="6" x2="18" y2="18"></line>
-        </svg>
+    <div class="flex items-center justify-between border-b border-gray-200 p-4 dark:border-dark-400">
+      <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100" id="modal-title">Channel Settings</h3>
+      <button
+        type="button"
+        class="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-gray-500 dark:hover:bg-dark-300 dark:hover:text-gray-400"
+        on:click={internalCloseTrigger}
+      >
+        <X size={20} aria-hidden="true" />
+        <span class="sr-only">Close</span>
       </button>
     </div>
     
     <div class="p-4">
       <div class="mb-4">
-        <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label for="channel-name-input" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
           Channel Name
         </label>
         <div class="flex items-center">
           <span class="mr-1 text-gray-500 dark:text-gray-400">#</span>
           <input
+            id="channel-name-input"
             type="text"
             class="input w-full"
             bind:value={editingName}
@@ -96,10 +138,11 @@
       </div>
       
       <div class="mb-6">
-        <label class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+        <label for="channel-description-input" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
           Description
         </label>
         <textarea
+          id="channel-description-input"
           class="input w-full"
           rows="3"
           bind:value={editingDescription}
@@ -167,7 +210,7 @@
     </div>
     
     <div class="flex justify-end border-t border-gray-200 p-4 dark:border-dark-400">
-      <button class="btn btn-ghost mr-2" on:click={close}>
+      <button class="btn btn-ghost mr-2" on:click={internalCloseTrigger}>
         Cancel
       </button>
       <button 
@@ -178,5 +221,8 @@
         Save Changes
       </button>
     </div>
+      </div>
+    </div>
   </div>
 </div>
+{/if}
