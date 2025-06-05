@@ -15,14 +15,22 @@
   import ProfileSetup from '../components/ProfileSetup.svelte';
   import CommandMenu from '../components/CommandMenu.svelte';
   import ToastContainer from '../components/ToastContainer.svelte';
+	import { setupMessageNotifications, setupUserPresenceNotifications } from '../store/notifications';
   
   // Loading state
   let isLoading = false;
   let showCommandMenu = false;
   
-  onMount(async () => {
+  onMount(() => {
+    let unsubscribePresence: (() => void) | undefined;
+    let unsubscribeMessages: (() => void) | undefined;
     // Wait for IndexedDB to load
     persistenceProvider.whenSynced.then(() => {
+      // Setup user presence notifications
+      unsubscribePresence = setupUserPresenceNotifications()
+      
+      // Setup message notifications
+      unsubscribeMessages = setupMessageNotifications()
       // Done loading
       isLoading = false;
     });
@@ -39,6 +47,11 @@
         showCommandMenu = false;
       }
     });
+
+    return () => {
+      if (unsubscribePresence) unsubscribePresence()
+      if (unsubscribeMessages) unsubscribeMessages()
+    }
   });
 </script>
 

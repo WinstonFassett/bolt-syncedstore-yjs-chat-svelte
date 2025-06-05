@@ -15,7 +15,7 @@
 </script>
 
 <!-- Fixed container for toasts -->
-<div class="fixed-container {position}" id="toast-container">
+<div class="fixed-container {position}" id="toast-container" style="flex-direction: column-reverse;">
   
   <!-- Toast list -->
   {#each $toasts as toast (toast.id)}

@@ -24,15 +24,16 @@
     persistenceProvider.whenSynced.then(() => {
       console.log('Persistence loaded, initializing notifications')
       
+      // NO!!! NONE OF THIS YOU ASSHOLE. NOT IN THE FUCKING SIDEBAR
       // Initialize tracking with current state
-      setupUserPresenceNotifications(true)
-      setupMessageNotifications(true)
+      // setupUserPresenceNotifications(true)
+      // setupMessageNotifications(true)
       
-      // Setup user presence notifications
-      unsubscribePresence = setupUserPresenceNotifications()
+      // // Setup user presence notifications
+      // unsubscribePresence = setupUserPresenceNotifications()
       
       // Setup message notifications
-      unsubscribeMessages = setupMessageNotifications()
+      // unsubscribeMessages = setupMessageNotifications()
     })
     
     return () => {

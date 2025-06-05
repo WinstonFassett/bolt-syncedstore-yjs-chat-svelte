@@ -148,126 +148,116 @@ export function setupUserPresenceNotifications(initOnly: boolean = false) {
 
 
 // Setup message notifications
+import type { Transaction } from 'yjs';
+
+// Simplified type for Yjs map changes
+interface YMapChange<T = unknown> {
+  action: 'add' | 'update' | 'delete';
+  oldValue?: T;
+  newValue?: T;
+}
+
 export function setupMessageNotifications(initOnly: boolean = false) {
-  console.log('Setting up message notifications')
+  console.log('📣 Setting up message notifications')
   
-  // Get current state for initialization
-  const storeData = get(store) as Store
+  // Get the channels map directly from Yjs
+  const yChannelsMap = doc.getMap('channels')
+  console.log('🗺️ Got channels map from Yjs doc')
   
-  // Initialize previous user IDs with current state
-  previousUserIds = new Set(Object.keys(storeData.users || {}))
-  
-  // If this is just initialization, don't set up the subscription
-  if (initOnly) {
-    console.log('Message notifications initialized with current state')
-    return;
-  }
-  
-  console.log('Setting up message notification subscription')
-  
-  // Function to handle message changes
-  const handleMessageChanges = (events: any[], transaction: any): void => {
-    const currentUserId = get(currentUserIdStore)
-    const currentChannelId = get(currentChannelIdStore)
-    
-    if (!currentUserId) return
-    
-    // Get the current state to access user data
-    const storeData = get(store) as Store
-    
-    // Process each event
-    events.forEach(event => {
-      // Check if this is a message being added to a channel
-      if (event.path && 
-          event.path.length >= 3 && 
-          event.path[0] === 'channels' && 
-          event.path[2] === 'messages') {
-        
-        // Get the channel ID from the path
-        const channelId = event.path[1]
-        
-        // Skip notifications for the current channel
-        if (channelId === currentChannelId) return
-        
-        const channel = storeData.channels[channelId]
-        if (!channel) return
-        
-        // Process added messages
-        if (event.changes && event.changes.added) {
-          // For each added message
-          event.changes.added.forEach((value: any, messageId: string) => {
-            // Get the message
-            const message = channel.messages[messageId]
+  // Handle channel changes
+  const handleChannelChanges = (events: any[], transaction: Transaction) => {
+    for (const event of events) {
+      // Only process map events with changes
+      if (!event.target || !event.changes?.keys) continue
+      
+      // Process each changed key
+      event.changes.keys.forEach((change: YMapChange, key: string) => {
+        if (change.action === 'add') {
+          const messageData = event.target.get(key)
+          if (!messageData) return
+          
+          // Convert Y.Map to plain object if needed
+          const message = typeof messageData.toJSON === 'function' 
+            ? messageData.toJSON() 
+            : messageData
+          
+          console.log('📨 New message detected:', { key, messageData })
+          
+          // Skip if it's from the current user
+          const currentUserId = get(currentUserIdStore)
+          const messageMeta = message.meta || {}
+          const messageUserId = typeof messageMeta === 'object' && 'userId' in messageMeta 
+            ? messageMeta.userId 
+            : undefined
             
-            // Skip if not a valid message or it's from the current user
-            if (!message || !message.meta || message.meta.userId === currentUserId) return
-            
-            // Check if the message is recent (within last 10 seconds)
-            const now = Date.now()
-            const messageTime = message.meta.createdAt
-            const isRecent = now - messageTime < 10000 // 10 seconds threshold
-            
-            if (isRecent) {
-              const sender = storeData.users[message.meta.userId]
-              
-              if (sender) {
-                // Use fullName if available, otherwise username
-                const displayName = sender.fullName || sender.username || 'Someone'
-                const channelName = channel.name || 'a channel'
-                const messagePreview = message.text.length > 30 
-                  ? message.text.substring(0, 30) + '...' 
-                  : message.text
-                
-                console.log(`New message from ${displayName} in ${channelName}: ${messagePreview}`)
-                addToast(`${displayName} in #${channelName}: ${messagePreview}`, 'info', 8000)
-              }
+          if (messageUserId === currentUserId) {
+            console.log('⏭️ Skipping own message')
+            return
+          }
+          
+          // Get channel ID from parent structure
+          let channelId: string | undefined;
+          try {
+            // Navigate up: message -> channel -> meta -> id
+            const channelMap = event.target.parent;
+            if (channelMap) {
+              const channelMeta = channelMap.get?.('meta');
+              channelId = typeof channelMeta?.toJSON === 'function' 
+                ? channelMeta.toJSON()?.id 
+                : channelMeta?.id;
             }
-          })
+          } catch (e) {
+            console.error('Error getting channel ID:', e);
+          }
+          
+          if (!channelId || !messageUserId) {
+            console.log('⚠️ Missing channel or user ID in message', { channelId, userId: messageUserId })
+            return
+          }
+          
+          // Get store data
+          const storeData = get(store) as unknown as Store
+          const userId = messageUserId
+          
+          // Get channel and user info
+          const channel = storeData.channels[channelId]
+          const user = storeData.users[userId]
+          
+          if (!channel || !user) {
+            console.log('⚠️ Channel or user not found', { channelId, userId })
+            return
+          }
+          
+          // Format the notification
+          const displayName = (user.fullName || user.username || 'Someone') as string
+          const channelName = (channel.name || 'a channel') as string
+          const messageText = (message.text || '') as string
+          const messagePreview = messageText.length > 30 
+            ? messageText.substring(0, 30) + '...' 
+            : messageText
+          
+          console.log(`🔔 Showing toast: ${displayName} in #${channelName}: ${messagePreview}`)
+          addToast(
+            `${displayName} in #${channelName}: ${messagePreview}`,
+            'info',
+            8000
+          )
         }
-      }
-    })
+      })
+    }
   }
   
-  // Function to handle user changes
-  const handleUserChanges = (events: any[], transaction: any): void => {
-    const currentUserId = get(currentUserIdStore)
-    if (!currentUserId) return
-    
-    // Get the current state
-    const storeData = get(store) as Store
-    
-    // Process each event
-    events.forEach(event => {
-      // Check for new users
-      if (event.path && event.path.length === 1 && event.path[0] === 'users') {
-        if (event.changes && event.changes.added) {
-          // For each added user
-          event.changes.added.forEach((value: any, userId: string) => {
-            // Skip if we've already seen this user or it's the current user
-            if (previousUserIds.has(userId) || userId === currentUserId) return
-            
-            const user = storeData.users[userId]
-            if (user) {
-              const displayName = user.fullName || user.username || 'Someone'
-              addToast(`${displayName} joined the chat`, 'info', 5000)
-              
-              // Add to previous users
-              previousUserIds.add(userId)
-            }
-          })
-        }
-      }
-    })
-  }
-  
-  // Set up observers
-  const unobserveMessages = observeDeep(_store, handleMessageChanges)
-  const unobserveUsers = observeDeep(_store, handleUserChanges)
+  // Set up the observer
+  console.log('👀 Setting up Yjs observer for channels map')
+  // @ts-ignore - Yjs types are a bit wonky with observeDeep
+  yChannelsMap.observeDeep(handleChannelChanges)
   
   // Return cleanup function
   return () => {
-    unobserveMessages()
-    unobserveUsers()
+    console.log('🧹 Cleaning up Yjs observer')
+    if (yChannelsMap) {
+      yChannelsMap.unobserveDeep(handleChannelChanges)
+    }
   }
 }
 
