@@ -1,16 +1,46 @@
 <script lang="ts">
   import { page } from '$app/stores';
+  import { onMount, onDestroy } from 'svelte';
+  import { currentChannelIdStore, isThreadPanelOpen, currentThreadIdStore } from '../../../store';
   import Sidebar from '../../../components/Sidebar.svelte';
   import MainView from '../../../components/MainView.svelte';
-  import { currentChannelIdStore } from '../../../store';
-  import { onMount } from 'svelte';
+
+  // Set current channel ID from route parameter
+  $: {
+    if ($page.params.channelId) {
+      currentChannelIdStore.set($page.params.channelId);
+      // When viewing a channel directly, close any open thread panel
+      isThreadPanelOpen.set(false);
+      currentThreadIdStore.set(null);
+    }
+  }
   
-  // Get the channel ID from the route params
-  const channelId = $page.params.channelId;
+  // Handle back button navigation
+  function handlePopState() {
+    const pathParts = window.location.pathname.split('/');
+    if (pathParts.length >= 3 && pathParts[1] === 'c') {
+      const channelId = pathParts[2];
+      currentChannelIdStore.set(channelId);
+      
+      // Check if we're in a thread view
+      if (pathParts.length >= 5 && pathParts[3] === 'm') {
+        const messageId = pathParts[4];
+        currentThreadIdStore.set(messageId);
+        isThreadPanelOpen.set(true);
+      } else {
+        // Regular channel view
+        isThreadPanelOpen.set(false);
+        currentThreadIdStore.set(null);
+      }
+    }
+  }
   
   onMount(() => {
-    // Set the current channel ID in the store
-    $currentChannelIdStore = channelId;
+    window.addEventListener('popstate', handlePopState);
+  });
+  
+  onDestroy(() => {
+    window.removeEventListener('popstate', handlePopState);
   });
 </script>
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { goto } from '$app/navigation'
   import { currentChannel, currentUserIdStore, isThreadPanelOpen, currentThreadIdStore } from '../store'
   import { tick } from 'svelte'
   import ChannelHeader from './ChannelHeader.svelte'
@@ -33,13 +34,20 @@
   async function handleReplyInThread(event: CustomEvent<{ messageId: string }>) {
     const messageId = event.detail.messageId
     
+    // Set thread ID in store
     currentThreadIdStore.set(messageId)
     isThreadPanelOpen.set(true)
 
-    // Ensure ThreadView is rendered and then focus its input
-    await tick();
-    if (threadViewInstance) {
-      threadViewInstance.focusReplyInput();
+    // Navigate to thread route if not already there
+    if ($currentChannel) {
+      const channelId = $currentChannel.meta.value.id
+      goto(`/c/${channelId}/m/${messageId}`)
+
+      // Ensure ThreadView is rendered and then focus its input
+      await tick();
+      if (threadViewInstance) {
+        threadViewInstance.focusReplyInput();
+      }
     }
   }
 </script>

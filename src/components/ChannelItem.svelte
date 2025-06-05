@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import { currentChannelIdStore } from '../store'
   
   export let channel: any
@@ -7,6 +8,7 @@
 
   function selectChannel() {
     currentChannelIdStore.set(channel.meta.value.id)
+    goto(`/c/${channel.meta.value.id}`)
   }
 </script>
 

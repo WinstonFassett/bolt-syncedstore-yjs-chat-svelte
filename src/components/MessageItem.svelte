@@ -283,10 +283,21 @@
       {#if !isDeleted && !isInThread && threadSummary && threadSummary.replyCount > 0}
         <div 
           class="mt-2 flex cursor-pointer items-center gap-2 rounded-md p-1.5 hover:bg-gray-100 dark:hover:bg-dark-400/50"
-          on:click={() => dispatch('reply', { messageId: message.meta.value.id })}
+          on:click={() => {
+            // Navigate to thread view
+            const channelId = $currentChannelIdStore;
+            const messageId = message.meta.value.id;
+            window.location.href = `/c/${channelId}/m/${messageId}`;
+          }}
           role="button"
           tabindex="0"
-          on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') dispatch('reply', { messageId: message.meta.value.id }); }}
+          on:keydown={(e) => { 
+            if (e.key === 'Enter' || e.key === ' ') {
+              const channelId = $currentChannelIdStore;
+              const messageId = message.meta.value.id;
+              window.location.href = `/c/${channelId}/m/${messageId}`;
+            } 
+          }}
           aria-label={`View ${threadSummary.replyCount} ${threadSummary.replyCount === 1 ? 'reply' : 'replies'}`}
         >
           <div class="flex -space-x-2 overflow-hidden">
