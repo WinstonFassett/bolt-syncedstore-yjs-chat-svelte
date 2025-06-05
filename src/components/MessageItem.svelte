@@ -4,7 +4,8 @@
   import { formatChatDate } from '../utils/date'
   import Avatar from './Avatar.svelte';
   import UserInfoPopup from './UserInfoPopup.svelte';
-  import { MessageSquare, Pencil, Trash2, Smile, Check, X } from 'lucide-svelte'
+  import ConfirmDeleteModal from './ConfirmDeleteModal.svelte';
+  import { MessageSquare, Pencil, Trash2, Smile, Check, X, SmilePlus, RotateCcw } from 'lucide-svelte'
   import { fade, slide } from 'svelte/transition'
   
   export let message: any
@@ -28,6 +29,7 @@
   let emojiInput = ''
   let isEditing = false
   let editText = message.text;
+  let showConfirmDeleteModal = false;
 
   // State for UserInfoPopup
   let showUserInfoPopup = false;
@@ -102,10 +104,30 @@
     isEditing = false
   }
 
-  // Delete message
-  function deleteMessage() {
-    message.deleted = true
-    message.updatedAt = Date.now()
+  // Show delete confirmation modal
+  function requestDeleteMessage() {
+    showConfirmDeleteModal = true;
+    showActions = false; // Hide actions menu when modal opens
+  }
+
+  // Actually delete message after confirmation
+  function handleConfirmDelete() {
+    message.deleted = true;
+    message.updatedAt = Date.now();
+    showConfirmDeleteModal = false;
+  }
+
+  // Cancel deletion from modal
+  function handleCancelDelete() {
+    showConfirmDeleteModal = false;
+  }
+
+  // Undelete message
+  function undeleteMessage() {
+    if (message.deleted) {
+      delete message.deleted; // Or set to false, depending on desired YJS behavior for removal
+    }
+    message.updatedAt = Date.now();
   }
 
   // Handle keyboard events for editing
@@ -121,6 +143,14 @@
 
 {#if showUserInfoPopup && selectedUserIdForPopup}
   <UserInfoPopup userId={selectedUserIdForPopup} closePopup={closeUserInfoPopup} />
+{/if}
+
+{#if showConfirmDeleteModal}
+  <ConfirmDeleteModal 
+    isOpen={showConfirmDeleteModal} 
+    on:confirm={handleConfirmDelete} 
+    on:cancel={handleCancelDelete} 
+  />
 {/if}
 
 <!-- Message container -->
@@ -170,7 +200,20 @@
       
       <!-- Message text -->
       {#if isDeleted}
-        <p class="italic text-gray-400 dark:text-gray-500">This message was deleted</p>
+        <div class="flex items-center justify-between rounded border border-dashed border-gray-300 bg-gray-50 p-2 text-sm dark:border-dark-400 dark:bg-dark-300">
+          <p class="italic text-gray-500 dark:text-gray-400">This message was deleted</p>
+          {#if isCurrentUser}
+            <button 
+              class="ml-2 inline-flex items-center gap-1.5 rounded px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:text-blue-400 dark:hover:bg-blue-900/20 dark:focus:ring-offset-dark-300"
+              on:click={undeleteMessage}
+              aria-label="Undelete message"
+              title="Undelete message"
+            >
+              <RotateCcw size={14} />
+              Undelete
+            </button>
+          {/if}
+        </div>
       {:else if isEditing}
         <div class="flex flex-col gap-2">
           <textarea
@@ -215,6 +258,15 @@
               <span class="ml-1">{reaction.count}</span>
             </button>
           {/each}
+          <!-- Button to add more reactions -->
+          <button
+            class="inline-flex items-center justify-center rounded-full border border-gray-300 bg-gray-50 p-1 text-xs text-gray-700 transition-colors hover:bg-gray-100 dark:border-dark-400 dark:bg-dark-300 dark:text-gray-300 dark:hover:bg-dark-400"
+            on:click={() => isAddingReaction = true}
+            aria-label="Add another reaction"
+            title="Add another reaction"
+          >
+            <SmilePlus size={14} />
+          </button>
         </div>
       {/if}
       
@@ -256,7 +308,7 @@
             
             <button
               class="rounded p-1.5 text-red-500 transition-colors hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20"
-              on:click={deleteMessage}
+              on:click={requestDeleteMessage}
               aria-label="Delete message"
             >
               <Trash2 size={16} />

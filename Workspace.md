@@ -67,19 +67,10 @@ user and channel mentions would be nice
 
 Full text ish search using fuzzy matching and traversal of full store or selected channel(s)
 
-### Click User name/avatar to View Info Popup
-
-hover user display name to see username
-click username or avatar to view info popup. 
 
 ## Icons 
 
-Uses lucide icons. don't generate SVGs or SVG paths.
-
-
-# Profile edit should be as usable as / similar to the join form
-
-i.e. with gravatar preview, etc. be consistent.  
+Uses lucide icons. don't generate SVGs or SVG paths. Eventually factor out existing SVGs to Lucide or other icon lib. 
 
 #### Enter/Exit Notifications 
 
