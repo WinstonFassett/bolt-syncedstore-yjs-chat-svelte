@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import { findUserByUsername, currentUserIdStore, setAwarenessUser, store } from '../store'
+  import { findUserByUsername, createUser, currentUserIdStore, setAwarenessUser, chatStore, store } from '../store'
   import { getGravatarUrl } from '../utils/avatar'
   
   const dispatch = createEventDispatcher<{
@@ -19,36 +19,44 @@
   
   // Submit the form
   async function handleSubmit() {
-    if (!isValid) return
-    
-    isSubmitting = true
-    errorMessage = ''
-    
+    if (!isValid) return;
+
+    isSubmitting = true;
+    errorMessage = '';
+
     try {
-      // Get or create user
-      const { id } = findUserByUsername(username.trim())
-      
-      // Set current user
-      currentUserIdStore.set(id)
-      
-      // If fullName is provided, update it
-      if (fullName.trim()) {
-        const user = $store.users[id]
-        if (user) {
-          user.fullName = fullName.trim()
+      const trimmedUsername = username.trim();
+      const trimmedFullName = fullName.trim();
+      let userId: string | null = findUserByUsername(trimmedUsername);
+
+      if (!userId) {
+        // User does not exist, create them
+        userId = createUser({
+          username: trimmedUsername,
+          fullName: trimmedFullName || undefined, // createUser handles undefined fullName
+          // Avatar is not collected in this form, handled by getGravatarUrl reactively
+        });
+      } else {
+        // User exists. Update fullName if provided in the form and it's different.
+        if (trimmedFullName) {
+          // Use chatStore for direct mutation as per SyncedStore's pattern for nested objects
+          const userToUpdate = chatStore.users[userId]; 
+          if (userToUpdate && userToUpdate.fullName !== trimmedFullName) {
+            userToUpdate.fullName = trimmedFullName;
+          }
         }
       }
+
+      // By this point, userId is guaranteed to be a string (either found or newly created)
+      currentUserIdStore.set(userId as string);
+      setAwarenessUser(userId as string);
       
-      // Set awareness
-      setAwarenessUser(id)
-      
-      // Complete setup
-      dispatch('complete')
+      dispatch('complete');
     } catch (error) {
-      errorMessage = 'An error occurred. Please try again.'
-      console.error(error)
+      errorMessage = 'An error occurred during profile setup. Please try again.';
+      console.error('Error in ProfileSetup handleSubmit:', error);
     } finally {
-      isSubmitting = false
+      isSubmitting = false;
     }
   }
 </script>
