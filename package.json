@@ -1,37 +1,48 @@
 {
-  "name": "yjs-chat-app",
-  "private": true,
-  "version": "0.1.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json"
-  },
-  "devDependencies": {
-    "@sveltejs/vite-plugin-svelte": "^3.1.2",
-    "@tailwindcss/forms": "^0.5.7",
-    "@tsconfig/svelte": "^5.0.4",
-    "autoprefixer": "^10.4.16",
-    "postcss": "^8.4.32",
-    "svelte": "^5.0.0-next.68",
-    "svelte-check": "^3.8.6",
-    "tailwindcss": "^3.4.1",
-    "tslib": "^2.7.0",
-    "typescript": "^5.5.3",
-    "vite": "^5.4.2"
-  },
-  "dependencies": {
-    "@syncedstore/core": "^0.6.0",
-    "@syncedstore/svelte": "^0.6.0",
-    "date-fns": "^3.3.1",
-    "lucide-svelte": "^0.363.0",
-    "md5": "^2.3.0",
-    "svelte-headlessui": "^0.0.33",
-    "uuid": "^9.0.1",
-    "y-indexeddb": "^9.0.12",
-    "y-webrtc": "^10.3.0",
-    "yjs": "^13.6.12"
-  }
+	"name": "yjs-chat-app",
+	"private": true,
+	"version": "0.1.0",
+	"type": "module",
+	"devDependencies": {
+		"@sveltejs/kit": "^2.21.2",
+		"@sveltejs/vite-plugin-svelte": "^3.1.2",
+		"@tailwindcss/forms": "^0.5.7",
+		"@tsconfig/svelte": "^5.0.4",
+		"autoprefixer": "^10.4.16",
+		"postcss": "^8.4.32",
+		"svelte": "^5.0.0-next.68",
+		"svelte-check": "^3.8.6",
+		"tailwindcss": "^3.4.1",
+		"tslib": "^2.7.0",
+		"typescript": "^5.5.3",
+		"vite": "^5.4.2"
+	},
+	"scripts": {
+		"dev": "vite dev",
+		"build": "vite build",
+		"preview": "vite preview",
+		"prepare": "svelte-kit sync || echo ''",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"format": "prettier --write .",
+		"lint": "prettier --check ."
+	},
+	"dependencies": {
+		"@sveltejs/adapter-auto": "^6.0.1",
+		"@syncedstore/core": "^0.6.0",
+		"@syncedstore/svelte": "^0.6.0",
+		"date-fns": "^3.3.1",
+		"lucide-svelte": "^0.363.0",
+		"md5": "^2.3.0",
+		"svelte-headlessui": "^0.0.33",
+		"uuid": "^9.0.1",
+		"y-indexeddb": "^9.0.12",
+		"y-webrtc": "^10.3.0",
+		"yjs": "^13.6.12"
+	},
+	"pnpm": {
+		"onlyBuiltDependencies": [
+			"esbuild"
+		]
+	}
 }
