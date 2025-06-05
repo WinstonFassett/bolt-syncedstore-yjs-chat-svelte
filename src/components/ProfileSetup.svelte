@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import { getUserByUsername, currentUserIdStore, setAwarenessUser, store } from '../store'
+  import { findUserByUsername, currentUserIdStore, setAwarenessUser, store } from '../store'
   import { getGravatarUrl } from '../utils/avatar'
   
   const dispatch = createEventDispatcher<{
@@ -26,7 +26,7 @@
     
     try {
       // Get or create user
-      const { id } = getUserByUsername(username.trim())
+      const { id } = findUserByUsername(username.trim())
       
       // Set current user
       currentUserIdStore.set(id)

@@ -33,9 +33,9 @@ type Channel = {
 type User = {
   meta: Box<{
     id: string
-    username: string
     createdAt: number
   }>
+  username: string
   fullName?: string
   avatar?: string
 }
@@ -55,10 +55,10 @@ const chatStore = syncedStore<ChatStore>({
 export const store = svelteSyncedStore(chatStore)
 
 // Get YJS doc
-const doc = getYjsValue(chatStore) as Doc
+export const doc = getYjsValue(chatStore) as Doc
 
 // Set up persistence with IndexedDB
-export const persistenceProvider = new IndexeddbPersistence('yjs-chat-app', doc)
+// export const persistenceProvider = new IndexeddbPersistence('yjs-chat-app', doc)
 
 // Set up WebRTC provider
 export const rtcProvider = new WebrtcProvider('yjs-chat-app', doc, {
@@ -184,29 +184,44 @@ export function initializeStore() {
   currentChannelIdStore.set(generalId)
 }
 
-export function getUserByUsername(username: string): { id: string; isNew: boolean } {
-  // Check if username exists
-  const existingUser = Object.values(chatStore.users).find(
-    user => user.meta.value.username === username
-  )
-  
-  if (existingUser) {
-    return { id: existingUser.meta.value.id, isNew: false }
-  }
+export function findUserByUsername(username: string): string | null {
+  const userEntry = Object.entries(chatStore.users).find(([, user]) => user?.username === username);
+  return userEntry ? userEntry[0] : null;
+}
 
-  // Create new user
-  const id = crypto.randomUUID()
-  const now = Date.now()
+export function createUser(data: { username: string; fullName?: string; avatar?: string }): string {
+  const id = crypto.randomUUID();
+  const now = Date.now();
 
   chatStore.users[id] = {
     meta: boxed({
       id,
-      username,
       createdAt: now
-    })
+    }),
+    username: data.username,
+    fullName: data.fullName,
+    avatar: data.avatar
+  };
+  return id;
+}
+
+export function updateUserProfile(userId: string, data: { username?: string; fullName?: string; avatar?: string }) {
+  const existingUser = chatStore.users[userId];
+  if (!existingUser) {
+    console.error(`User with ID ${userId} not found for update.`);
+    return;
   }
 
-  return { id, isNew: true }
+  // To update non-boxed top-level properties, we replace the object.
+  chatStore.users[userId] = {
+    ...existingUser, // Spread existing properties first
+    meta: existingUser.meta, // Keep the original boxed meta object reference
+    username: data.username !== undefined ? data.username : existingUser.username,
+    fullName: data.fullName !== undefined ? data.fullName : existingUser.fullName,
+    avatar: data.avatar !== undefined ? data.avatar : existingUser.avatar,
+  };
+  // Ensure awareness is updated after profile change
+  setAwarenessUser(userId);
 }
 
 export function addMessage(channelId: string, userId: string, text: string, parentId?: string) {
@@ -391,7 +406,7 @@ export function setAwarenessUser(userId: string) {
   rtcProvider.awareness.setLocalState({
     user: {
       id: userId,
-      username: user.meta.value.username,
+      username: user.username,
       fullName: user.fullName,
       avatar: user.avatar
     }

@@ -112,24 +112,43 @@
   on:mouseleave={() => showActions = false}
 >
   <div class="flex gap-3">
-    <!-- Avatar -->
-    <div class="flex-shrink-0">
-      <Avatar username={user?.meta.value.username || 'Unknown'} customImage={user?.avatar} />
+    <!-- Avatar and User Info Click Area -->
+    <div class="flex-shrink-0" on:click={() => console.log('User info clicked in MessageItem:', user?.username)} role="button" tabindex="0" on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') console.log('User info activated in MessageItem:', user?.username); }}>
+      <Avatar username={user?.username || 'Unknown'} customImage={user?.avatar} />
     </div>
     
     <!-- Message content -->
     <div class="min-w-0 flex-1">
       <!-- Username and time -->
-      <div class="mb-1 flex items-baseline">
-        <span class="mr-2 font-medium">{user?.meta.value.username || 'Unknown'}</span>
-        {#if user?.fullName}
-          <span class="mr-2 text-xs text-gray-500 dark:text-gray-400 hidden sm:inline">{user.fullName}</span>
-        {/if}
-        <span class="text-xs text-gray-500 dark:text-gray-400">{formattedTime}</span>
-        {#if isEdited}
-          <span class="ml-1 text-xs text-gray-500 dark:text-gray-400">(edited)</span>
-        {/if}
-      </div>
+      {#if user}
+        {@const hasFullName = user.fullName && user.fullName.trim() !== ''}
+        {@const currentUsername = user.username || 'Unknown'}
+        {@const currentFullName = hasFullName ? user.fullName : ''}
+        {@const showFullNameAsPrimary = hasFullName && currentFullName !== currentUsername}
+        {@const showUsernameAsPrimary = !hasFullName || currentFullName === currentUsername}
+        <div class="mb-1 flex items-baseline">
+          <div on:click={() => console.log('User info clicked in MessageItem:', user.username)} role="button" tabindex="0" on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') console.log('User info activated in MessageItem:', user.username); }}>
+            {#if showFullNameAsPrimary}
+              <span class="mr-2 font-medium" title={`Username: ${currentUsername}`}>{currentFullName}</span>
+              <span class="mr-2 text-xs text-gray-500 dark:text-gray-400 hidden sm:inline">({currentUsername})</span>
+            {:else if showUsernameAsPrimary}
+              <span class="mr-2 font-medium" title={hasFullName && currentFullName !== currentUsername ? `Full Name: ${currentFullName}` : (hasFullName ? `Full Name: ${currentFullName}` : '')}>{currentUsername}</span>
+            {/if}
+          </div>
+          <span class="text-xs text-gray-500 dark:text-gray-400 ml-2">{formattedTime}</span> <!-- Added ml-2 for spacing -->
+          {#if isEdited}
+            <span class="ml-1 text-xs text-gray-500 dark:text-gray-400">(edited)</span>
+          {/if}
+        </div>
+      {:else}
+        <div class="mb-1 flex items-baseline">
+          <span class="mr-2 font-medium">Unknown User</span>
+          <span class="text-xs text-gray-500 dark:text-gray-400">{formattedTime}</span>
+          {#if isEdited}
+            <span class="ml-1 text-xs text-gray-500 dark:text-gray-400">(edited)</span>
+          {/if}
+        </div>
+      {/if}
       
       <!-- Message text -->
       {#if isDeleted}

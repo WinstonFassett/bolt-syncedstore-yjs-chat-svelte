@@ -9,6 +9,7 @@
   const dialog = createDialog({ label: 'User Settings' });
   let editingUsername = ''
   let editingFullName = ''
+  let editingAvatar = ''
   
   onMount(() => {
     // Set awareness when component is mounted
@@ -22,8 +23,9 @@
   
   // Update local editing state when currentUser changes
   $: if (currentUser) {
-    editingUsername = currentUser.meta.value.username
+    editingUsername = currentUser.username
     editingFullName = currentUser.fullName || ''
+    editingAvatar = currentUser.avatar || ''
   }
   
   
@@ -31,17 +33,25 @@
   function updateProfile() {
     if (!currentUser || !editingUsername.trim()) return
     
-    // Create a new object for meta.value instead of modifying properties directly
-    currentUser.meta.value = { 
-      ...currentUser.meta.value,
-      username: editingUsername.trim()
-    }
+    currentUser.username = editingUsername.trim()
     currentUser.fullName = editingFullName.trim() || undefined
+    currentUser.avatar = editingAvatar.trim() || undefined
     
     // Update awareness
     setAwarenessUser($currentUserIdStore)
     
     dialog.close()
+  }
+
+  function handleImageError(event: Event) {
+    const imgElement = event.target as HTMLImageElement;
+    // Hide the broken image
+    imgElement.style.display = 'none';
+    // Attempt to show the next sibling if it's the error message span
+    const nextSibling = imgElement.nextElementSibling as HTMLElement;
+    if (nextSibling && nextSibling.tagName === 'SPAN' && nextSibling.classList.contains('text-red-500')) { // More specific check for the error span
+      nextSibling.style.display = 'block';
+    }
   }
   
   function disclaim() {
@@ -53,6 +63,12 @@
 </script>
 
 {#if currentUser}
+  {@const hasFullName = currentUser.fullName && currentUser.fullName.trim() !== ''}
+  {@const displayUsername = currentUser.username}
+  {@const displayFullName = hasFullName ? currentUser.fullName : ''}
+  {@const showFullNameAsPrimary = hasFullName && displayFullName !== displayUsername}
+  {@const showUsernameAsPrimary = !hasFullName || displayFullName === displayUsername}
+
   <div class="relative mt-auto px-3 py-4">
     <div 
       class="flex cursor-pointer items-center justify-between rounded-md bg-gray-100 p-2 dark:bg-dark-300"
@@ -61,15 +77,19 @@
       tabindex="0"
       on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') dialog.open() }}
     >
-      <div class="flex items-center gap-2">
-        <Avatar username={currentUser.meta.value.username} customImage={currentUser.avatar} size="sm" />
+      <div class="flex items-center gap-2" on:click={() => console.log('User info clicked in CurrentUser:', currentUser.username)} role="button" tabindex="0" on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') console.log('User info activated in CurrentUser:', currentUser.username); }}>
+        <Avatar username={currentUser.username} customImage={currentUser.avatar} size="sm" />
         <div class="truncate">
-          <div class="truncate font-medium">
-            {currentUser.meta.value.username}
-          </div>
-          {#if currentUser.fullName}
+          {#if showFullNameAsPrimary}
+            <div class="truncate font-medium" title={`Username: ${displayUsername}`}>
+              {displayFullName}
+            </div>
             <div class="truncate text-xs text-gray-500 dark:text-gray-400">
-              {currentUser.fullName}
+              {displayUsername}
+            </div>
+          {:else if showUsernameAsPrimary}
+            <div class="truncate font-medium" title={hasFullName && displayFullName !== displayUsername ? `Full Name: ${displayFullName}` : (hasFullName ? `Full Name: ${displayFullName}` : '')}>
+              {displayUsername}
             </div>
           {/if}
         </div>
@@ -96,7 +116,7 @@
       <div class="fixed inset-0 overflow-y-auto">
         <div class="flex min-h-full items-end justify-center p-4 sm:items-center">
           <div
-            class="w-full max-w-sm transform rounded-lg bg-white p-4 text-left align-middle shadow-xl transition-all dark:bg-dark-200 sm:p-6"
+            class="w-full max-w-md transform rounded-lg bg-white p-4 text-left align-middle shadow-xl transition-all dark:bg-dark-200 sm:p-6"
             use:dialog.modal
             transition:scale={{ duration: 150, start: 0.95, opacity:0 }}
           >
@@ -113,6 +133,21 @@
                 <span class="sr-only">Close</span>
               </button>
             </div>
+
+            <!-- Avatar Preview - Moved and Centered -->
+            {#if editingAvatar || (currentUser && currentUser.avatar)}
+              <div class="mb-4 flex flex-col items-center">
+                <span class="mb-1 block text-xs font-medium text-gray-700 dark:text-gray-300">Avatar Preview:</span>
+                <img 
+                  src={editingAvatar || (currentUser && currentUser.avatar) || ''} 
+                  alt="Avatar preview" 
+                  class="h-20 w-20 rounded-full object-cover border border-gray-300 dark:border-gray-600"
+                  on:error={handleImageError} 
+                />
+                <!-- Error message for avatar, initially hidden -->
+                <span style="display:none;" class="mt-1 text-xs text-red-500">Invalid URL or image not found.</span>
+              </div>
+            {/if}
 
             <div class="mb-3">
               <label for="username-input" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -135,6 +170,19 @@
                 type="text" 
                 class="input w-full"
                 bind:value={editingFullName} 
+              />
+            </div>
+
+            <div class="mb-4">
+              <label for="avatar-url-input" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+                Avatar URL (optional)
+              </label>
+              <input 
+                id="avatar-url-input"
+                type="url" 
+                class="input w-full"
+                bind:value={editingAvatar} 
+                placeholder="https://example.com/avatar.png"
               />
             </div>
             

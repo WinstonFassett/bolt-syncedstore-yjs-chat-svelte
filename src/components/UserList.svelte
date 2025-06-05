@@ -7,7 +7,7 @@
   
   // Get sorted users
   $: users = Object.values($store.users)
-    .sort((a, b) => a.meta.value.username.localeCompare(b.meta.value.username))
+    .sort((a, b) => a.username.localeCompare(b.username))
   
   // Filter users based on online status
   $: filteredUsers = showOnlineOnly

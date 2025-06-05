@@ -6,38 +6,38 @@
 - Avoid making many small changes in many discrete steps. Operate at the file level making full passes, whether incremental or complete. Recall the whole list of TODOs as you go so that if you are modifying a file, you can see the big picture and make sure you are not missing any important details, and you include related changes from other bullets when they fall into the same files. Whole cloth is a huge priority.  
 - Fix Bugs, but do not foolishly consider them fixed until user has verified. Accessibility does not matter yet. Focus on core functionality described here.
 - Focus on UI needs and ask permission before changing the store index.
-- Do not worry about TS errors, only real errors. do not waste cycles on TS yet.
+- Do not worry about TS errors, only real errors. do not waste cycles on TS yet. Do not get distracted by anything except what is being requested. Priorities matter.
 - Add desired features
 - Ensure consistency (of the right things) and get rid of the junk
 - Nice UI, thoughtful touches, nice transitions and animations, careful use of icons, color and layout. Don't generate SVG icons, just use existing lucide etc already imported
 
 # Bugs
 
-- Update profile does not seem to work. See also form features / consistency needed below.
-- Channel settings will not close. may be related to console error below
+- [ ] Errors on first user first load because findUserByUsername returns undefined but code does not expect it. NOT fixed in R2.
+- [] Update profile does not seem to work. See also form features / consistency needed below. *(LLM Assumed this was fixed with r2 and current logic, pending test confirmation)*
+- [ ] Channel settings will not close. may be related to console error below *(NOT Fixed in r2)*
 
 
 # Console Bugs
 
 ```
-runtime.js:254 Uncaught TypeError: Cannot read properties of undefined (reading 'subscribe')
-
-	in $effect
-	in ChannelSettings.svelte
-	in MainView.svelte
-	in App.svelte
-
+hook.js:608 TypeError: Cannot destructure property 'id' of 'findUserByUsername(...)' as it is null.
+    at HTMLFormElement.handleSubmit (ProfileSetup.svelte:29:15)
+    at HTMLFormElement.<anonymous> (event-modifiers.js:97:14)
+    at events.js:61:21
+    at without_reactive_context (shared.js:44:10)
+    at HTMLFormElement.target_handler (events.js:60:11)
 ```
 
 # Features Needed
 
 
 - when message has comments have line below with mini avatars of participants and count of replies and time of last reply
-- UI should feature Full Name instead of username, unless unavailable. and if showing both and they are the same, only show once
+- [x] UI should feature Full Name instead of username, unless unavailable. and if showing both and they are the same, only show once
 - improve usability of forms
 - When opening/clicking a channel or thread link, focus the appropriate message input. 
 - Also, enter key should submit forms including profile edit, channel create.
-- Use nicer form style from Join screen in Profile dialog 
+- [ ] Use nicer form style from Join screen in Profile dialog *(In progress: Modal width, avatar preview, helper text added. Button styling and further alignment pending)* 
 
 # Features Wanted
 
@@ -113,6 +113,38 @@ Avoid notifications about past things. Depends on tracking read state of message
 How could we implement this??
 
 # Journal
+
+## Round 2: Gravatar Preview, Profile Form Styling, and r2 Fixes
+
+**Date:** 2025-06-05
+
+### Goals:
+- Implement Gravatar preview in the User Settings modal (`CurrentUser.svelte`).
+- Begin aligning the User Settings modal style with `ProfileSetup.svelte` for consistency.
+- Document USER's "r2" fixes which resolved several bugs and inconsistencies.
+
+### Work Summary & Key Changes:
+
+**Cascade - Gravatar Preview & Profile Form Styling (`CurrentUser.svelte`):**
+*   Added an input field for `editingAvatar` URL in the User Settings modal.
+*   Implemented a live avatar preview *above* the username field. The preview updates as the URL is typed.
+*   Added an `on:error` handler (using a Svelte function `handleImageError`) to the preview `<img>` tag to hide the broken image and display a text error message if the URL is invalid or the image fails to load.
+*   Adjusted the User Settings modal width from `max-w-sm` to `max-w-md`.
+*   Relocated the avatar preview to be above the username input and centered it.
+*   Added helper text below the username input: "Your unique username (minimum 3 characters).".
+
+**USER Fixes ("r2") - Summary:**
+*   **Store Usage:** Updated `ProfileSetup.svelte` and `ChatTest.svelte` to correctly use `findUserByUsername` (the refactored read-only function) instead of the old `getUserByUsername`.
+*   **HTML Semantics:** Fixed `id` attributes for labels in `ProfileSetup.svelte` for proper accessibility and form control linkage.
+*   **Data Access:** Corrected `ChatTest.svelte` to access `user.username` directly, as user properties are no longer nested under `meta.value` in the store after recent refactoring.
+*   FAILED: ~~**Dialog Closing Bug:** Fixed the `ChannelSettings.svelte` dialog not closing and a related console error by changing `dialog.expanded.subscribe` to the correct `dialog.subscribe` (subscribing to the whole store of the dialog, not just its `expanded` state).~~
+
+### Next Steps & Testing Points:
+*   USER to test the User Settings modal: avatar preview functionality (valid/invalid URLs), persistence of changes, helper text visibility, and overall modal appearance.
+*   Continue styling `CurrentUser.svelte` modal: button styles (Save, Cancel, Sign Out), and any other remaining inconsistencies with `ProfileSetup.svelte`.
+*   Implement the actual User Info Popup/Dialog (currently placeholder `console.log`s).
+
+---
 
 ## Round 1: Dialog Refactoring (User Profile & Channel Settings)
 
@@ -241,7 +273,7 @@ Based on `ChannelList.svelte`, `CurrentUser.svelte`, and `ChannelSettings.svelte
     // Notify parent if dialog closes internally
     let unsubscribe;
     onMount(() => {
-      unsubscribe = dialog.expanded.subscribe(isExpanded => {
+      unsubscribe = dialog.subscribe(isExpanded => {
         if (!isExpanded && openModal) { // Check openModal to ensure it was an internal close
           dispatch('close');
         }

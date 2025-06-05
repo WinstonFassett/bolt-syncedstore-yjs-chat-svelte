@@ -1,12 +1,12 @@
 <script lang="ts">
-  import { store, currentUserIdStore, currentChannelIdStore, getUserByUsername, addMessage, initializeStore } from '../store'
+  import { store, currentUserIdStore, currentChannelIdStore, findUserByUsername, addMessage, initializeStore } from '../store'
   
   let username = $state('')
   let messageText = $state('')
   
   function handleSetupUser() {
     if (!username.trim()) return
-    const { id } = getUserByUsername(username)
+    const { id } = findUserByUsername(username)
     currentUserIdStore.set(id)
     initializeStore()
   }
@@ -57,7 +57,7 @@
           {#each Object.values($store.channels[$currentChannelIdStore]?.messages ?? {}) as message}
             <div class="p-2 bg-gray-100 rounded dark:bg-dark-200">
               <div class="text-sm text-gray-600 dark:text-gray-400">
-                {$store.users[message.meta.value.userId]?.meta.value.username}:
+                {$store.users[message.meta.value.userId]?.username}:
               </div>
               <div>{message.text}</div>
             </div>
