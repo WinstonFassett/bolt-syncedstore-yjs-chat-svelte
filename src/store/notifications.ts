@@ -1,34 +1,46 @@
-import { writable, get } from 'svelte/store'
-import { store, _store, currentUserIdStore, currentChannelIdStore, doc, awareness } from './index'
-import { addToast } from './toasts'
+import { writable, get } from 'svelte/store';
+import { 
+  store, 
+  currentUserIdStore,
+  currentChannelIdStore,
+  currentThreadIdStore,
+  doc, 
+  awareness 
+} from './index';
+import { addToast } from './toasts';
 import { syncedStore, getYjsValue, observeDeep } from '@syncedstore/core'
+import type { Box } from '@syncedstore/core';
 
 // Define store types
 type User = {
-  meta: {
+  meta: Box<{
     id: string
     createdAt: number
-  }
+  }>
   username: string
   fullName?: string
   avatar?: string
 }
 
 type Channel = {
-  meta: {
+  meta: Box<{
     id: string
     createdAt: number
-  }
+  }>
   name: string
   description: string
   locked?: boolean
-  messages: Record<string, any>
+  messages: { [key: string]: any }
+  members: string[]
 }
 
 type Store = {
   users: { [key: string]: User }
   channels: { [key: string]: Channel }
 }
+
+// Type for the SyncedStore wrapper
+type SyncedStore = ReturnType<typeof syncedStore<Store>>;
 
 // Types of notifications
 export enum NotificationType {
@@ -44,16 +56,20 @@ export const channelMemberships = writable<Record<string, Record<string, boolean
 
 // Initialize channel memberships
 export function initializeChannelMemberships() {
-  const currentMemberships: Record<string, Record<string, boolean>> = {}
+  console.log('Initializing channel memberships...')
   
-  // Initialize with empty membership objects for all channels
-  if (store && store.channels) {
-    Object.keys(store.channels).forEach(channelId => {
-      currentMemberships[channelId] = {}
-    })
-  }
+  // Get all channels
+  const storeData = get(store) as any
+  const channels = storeData.channels || {}
   
-  channelMemberships.set(currentMemberships)
+  // Initialize members for each channel if not exists
+  Object.keys(channels).forEach(channelId => {
+    if (!channels[channelId].members) {
+      channels[channelId].members = []
+    }
+  })
+  
+  console.log('Channel memberships initialized')
 }
 
 // Create a presence store to track online users
@@ -195,7 +211,7 @@ export function setupMessageNotifications(initOnly: boolean = false) {
             return
           }
           
-          // Get channel ID from parent structure
+          // Get channel ID from parent structure first
           let channelId: string | undefined;
           try {
             // Navigate up: message -> channel -> meta -> id
@@ -215,13 +231,32 @@ export function setupMessageNotifications(initOnly: boolean = false) {
             return
           }
           
-          // Get store data
-          const storeData = get(store) as unknown as Store
-          const userId = messageUserId
+          // Get current channel and thread from store
+          const currentChannelId = get(currentChannelIdStore)
+          const currentThreadId = get(currentThreadIdStore)
           
-          // Get channel and user info
-          const channel = storeData.channels[channelId]
-          const user = storeData.users[userId]
+          // Only show notification for current channel/thread
+          // In future will do an includes check for channels user has joined.
+          if (
+            channelId !== currentChannelId 
+            //  BAD LOGIC: && channelId !== currentThreadId
+          ) {
+            console.log(`⏭️ Skipping message not in current view (channel/thread: ${channelId}`)
+            return
+          }
+          
+          if (!channelId || !messageUserId) {
+            console.log('⚠️ Missing channel or user ID in message', { channelId, userId: messageUserId })
+            return
+          }
+          
+                  // Get store data with proper typing
+          const storeData = get(store) as any;
+          const userId = messageUserId;
+          
+          // Get channel and user info with null checks
+          const channel = storeData?.channels?.[channelId];
+          const user = storeData?.users?.[userId];
           
           if (!channel || !user) {
             console.log('⚠️ Channel or user not found', { channelId, userId })
@@ -326,9 +361,10 @@ export function isChannelMember(channelId: string, userId: string): boolean {
 
 // Get all members of a channel
 export function getChannelMembers(channelId: string): string[] {
-  const memberships = get(channelMemberships)
-  if (!memberships[channelId]) return []
-  return Object.keys(memberships[channelId])
+  // Get channel members with proper store access
+  const storeData = get(store) as any;
+  const channels = storeData?.channels as { [key: string]: any } | undefined;
+  const channel = channels?.[channelId];
+  if (!channel) return [];
+  return channel.members || [];
 }
-
-
