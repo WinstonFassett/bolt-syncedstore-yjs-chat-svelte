@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import { store, currentUserIdStore } from '../store'
+  import { store, currentUserIdStore, currentChannelIdStore } from '../store'
   import { formatChatDate } from '../utils/date'
   import Avatar from './Avatar.svelte';
   import UserInfoPopup from './UserInfoPopup.svelte';
@@ -10,7 +10,7 @@
   
   export let message: any
   export let showThreadButton = true
-  export let isInThread = false
+  export let isInThread = false // True if this message is being rendered inside the ThreadView itself
   
   const dispatch = createEventDispatcher<{
     reply: { messageId: string }
@@ -30,6 +30,37 @@
   let isEditing = false
   let editText = message.text;
   let showConfirmDeleteModal = false;
+
+  // Thread summary
+  $: threadReplies = Object.values($store.channels?.[$currentChannelIdStore]?.messages || {}).filter(
+    (m: any) => m.meta.value.parentId === message.meta.value.id && !m.deleted
+  );
+
+  $: threadSummary = (() => {
+    if (!threadReplies || threadReplies.length === 0) {
+      return null;
+    }
+
+    const replyCount = threadReplies.length;
+    
+    const lastReply = threadReplies.reduce((latest, r) => 
+      (r.meta.value.createdAt > latest.meta.value.createdAt ? r : latest), threadReplies[0]
+    );
+    const lastReplyAt = lastReply.updatedAt || lastReply.meta.value.createdAt;
+    
+    const participantUserIds = [
+      ...new Set(threadReplies.map((r: any) => r.meta.value.userId))
+    ].slice(0, 3); // Show max 3 avatars
+
+    // Get user objects for avatars
+    const participants = participantUserIds.map(id => $store.users[id]).filter(Boolean);
+    return {
+      replyCount,
+      lastReplyAt,
+      formattedLastReplyTime: formatChatDate(lastReplyAt, true), // true for compact format
+      participants
+    };
+  })();
 
   // State for UserInfoPopup
   let showUserInfoPopup = false;
@@ -245,7 +276,38 @@
       {:else}
         <p class="whitespace-pre-line break-words text-gray-800 dark:text-gray-200">{message.text}</p>
       {/if}
-      
+      <!-- <code>{JSON.stringify({
+        isDeleted, isInThread, threadSummary
+      }, null, 2)}</code> -->
+      <!-- Thread Summary -->
+      {#if !isDeleted && !isInThread && threadSummary && threadSummary.replyCount > 0}
+        <div 
+          class="mt-2 flex cursor-pointer items-center gap-2 rounded-md p-1.5 hover:bg-gray-100 dark:hover:bg-dark-400/50"
+          on:click={() => dispatch('reply', { messageId: message.meta.value.id })}
+          role="button"
+          tabindex="0"
+          on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') dispatch('reply', { messageId: message.meta.value.id }); }}
+          aria-label={`View ${threadSummary.replyCount} ${threadSummary.replyCount === 1 ? 'reply' : 'replies'}`}
+        >
+          <div class="flex -space-x-2 overflow-hidden">
+            {#each threadSummary.participants as participant (participant.id)}
+              <Avatar 
+                username={participant.username} 
+                customImage={participant.avatar} 
+                size="xs" 
+                title={participant.username} 
+              />
+            {/each}
+          </div>
+          <span class="text-xs font-medium text-primary-600 dark:text-primary-400">
+            {threadSummary.replyCount} {threadSummary.replyCount === 1 ? 'reply' : 'replies'}
+          </span>
+          <span class="text-xs text-gray-500 dark:text-gray-400">
+            Last reply {threadSummary.formattedLastReplyTime}
+          </span>
+        </div>
+      {/if}
+
       <!-- Reactions -->
       {#if reactions.length > 0}
         <div class="mt-2 flex flex-wrap gap-1" transition:slide|local>

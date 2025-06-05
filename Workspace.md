@@ -47,10 +47,6 @@ c/[channelId]/m/[messageId] activates thread view
 
 No invites or security, but could still have the concept of people who have joined
 
-#### Additional Emoji Button
-
-when message has emoji, include with them an emoji-sized button to add more emoji.
-
 ### Delete confirmation on Messages
 
 Always confirm message Delete
@@ -97,6 +93,8 @@ How could we implement this??
 # Journal
 
 ### Instructions for Journal Entries
+
+Most recent entries come first. Append new entries below these instructions, above the older entries.
 
 **Goal:**
 - Clearly outline goals for the codebase edit.

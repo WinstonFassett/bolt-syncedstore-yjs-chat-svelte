@@ -2,11 +2,16 @@
   import { getGravatarUrl, getInitials, stringToColor } from '../utils/avatar'
   
   export let username: string
-  export let size: 'sm' | 'md' | 'lg' = 'md'
+  export let size: 'xs' | 'sm' | 'md' | 'lg' | 'xl' = 'md'
   export let customImage: string | undefined = undefined
 
   // Size mapping
   const sizeMap = {
+    xs: {
+      container: 'w-5 h-5', // 20px
+      text: 'text-[10px]', // Tailwind arbitrary value for 10px font size
+      imageSize: 20
+    },
     sm: {
       container: 'w-8 h-8',
       text: 'text-xs',
