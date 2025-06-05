@@ -4,25 +4,41 @@
   import CurrentUser from './CurrentUser.svelte'
   import ThemeToggle from './ThemeToggle.svelte'
   import { Settings } from 'lucide-svelte'
-  import { connectionStatus } from '../store'
+  import { connectionStatus, persistenceProvider } from '../store'
   import { onMount } from 'svelte'
-  import { setupUserPresenceNotifications, initializeChannelMemberships } from '../store/notifications'
+  import { setupUserPresenceNotifications, initializeChannelMemberships, setupMessageNotifications } from '../store/notifications'
   
   function goToSettings() {
     window.location.href = '/settings'
   }
+  
+  let unsubscribePresence: (() => void) | undefined;
+  let unsubscribeMessages: (() => void) | undefined;
   
   // Initialize notifications system when component mounts
   onMount(() => {
     // Initialize channel memberships
     initializeChannelMemberships()
     
-    // Setup user presence notifications
-    const unsubscribe = setupUserPresenceNotifications()
+    // Wait for persistence to be loaded before setting up notifications
+    persistenceProvider.whenSynced.then(() => {
+      console.log('Persistence loaded, initializing notifications')
+      
+      // Initialize tracking with current state
+      setupUserPresenceNotifications(true)
+      setupMessageNotifications(true)
+      
+      // Setup user presence notifications
+      unsubscribePresence = setupUserPresenceNotifications()
+      
+      // Setup message notifications
+      unsubscribeMessages = setupMessageNotifications()
+    })
     
     return () => {
       // Clean up subscriptions when component unmounts
-      if (unsubscribe) unsubscribe()
+      if (unsubscribePresence) unsubscribePresence()
+      if (unsubscribeMessages) unsubscribeMessages()
     }
   })
 </script>

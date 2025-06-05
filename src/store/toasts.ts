@@ -14,14 +14,7 @@ export interface Toast {
 // Create a writable store for toasts
 export const toasts = writable<Toast[]>([])
 
-// Initialize with a test toast to verify the system is working
-if (typeof window !== 'undefined') {
-  // Only run in browser environment
-  setTimeout(() => {
-    console.log('Initializing toast store with test toast')
-    addToast('Toast system initialized', 'info', 5000)
-  }, 1000)
-}
+// No initialization needed - toasts will be added by the notification system
 
 // Add a toast
 export function addToast(message: string, type: ToastType = 'info', timeout: number = 5000) {

@@ -8,26 +8,14 @@
   // Position of toast container
   export let position = 'bottom-right';
   
-  // For debugging
+  // Log when component is mounted
   onMount(() => {
     console.log('ToastContainer mounted');
-    // Create a test toast immediately on mount
-    setTimeout(() => {
-      createTestToast();
-    }, 500);
   });
-  
-  // Function to manually create a test toast
-  function createTestToast() {
-    console.log('Creating test toast');
-    addToast('This is a test toast message from ToastContainer', 'success', 8000);
-  }
 </script>
 
 <!-- Fixed container for toasts -->
 <div class="fixed-container {position}" id="toast-container">
-  <!-- Debug button -->
-  <button class="test-button" on:click={createTestToast}>Test Toast</button>
   
   <!-- Toast list -->
   {#each $toasts as toast (toast.id)}
