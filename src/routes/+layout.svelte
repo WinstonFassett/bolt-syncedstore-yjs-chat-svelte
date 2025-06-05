@@ -1,4 +1,6 @@
 <script lang="ts">
+  import '../app.css';
+
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import {
@@ -38,6 +40,7 @@
     });
   });
 </script>
+
 
 {#if isLoading}
   <!-- Loading state -->

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { Cog, User, Monitor, ArrowLeft } from 'lucide-svelte';
-  import { currentUserIdStore, chatStore } from '../../store';
+  import { currentUserIdStore, store } from '../../store';
   
   // Tabs for different settings sections
   const tabs = [
@@ -15,7 +15,7 @@
   
   // Get current user
   $: currentUser = $currentUserIdStore ? 
-    Object.values($chatStore.users || {}).find(user => user.meta.value.id === $currentUserIdStore) : 
+    Object.values($store.users || {}).find(user => user.meta.value.id === $currentUserIdStore) : 
     null;
 </script>
 

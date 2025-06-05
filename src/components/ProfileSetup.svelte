@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import { findUserByUsername, createUser, currentUserIdStore, setAwarenessUser, chatStore, store } from '../store'
+  import { findUserByUsername, createUser, currentUserIdStore, setAwarenessUser, store, store } from '../store'
   import { getGravatarUrl } from '../utils/avatar'
   
   const dispatch = createEventDispatcher<{
@@ -39,8 +39,8 @@
       } else {
         // User exists. Update fullName if provided in the form and it's different.
         if (trimmedFullName) {
-          // Use chatStore for direct mutation as per SyncedStore's pattern for nested objects
-          const userToUpdate = chatStore.users[userId]; 
+          // Use store for direct mutation as per SyncedStore's pattern for nested objects
+          const userToUpdate = store.users[userId]; 
           if (userToUpdate && userToUpdate.fullName !== trimmedFullName) {
             userToUpdate.fullName = trimmedFullName;
           }

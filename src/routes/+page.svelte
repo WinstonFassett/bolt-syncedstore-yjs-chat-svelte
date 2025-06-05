@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  import { chatStore, currentChannelIdStore } from '../store';
+  import { store, currentChannelIdStore } from '../store';
   
   onMount(() => {
     // Check if there's a current channel
@@ -9,7 +9,7 @@
       goto(`/c/${$currentChannelIdStore}`);
     } else {
       // Check if there are any channels
-      const channels = Object.values($chatStore.channels || {});
+      const channels = Object.values($store.channels || {});
       if (channels.length > 0) {
         // Redirect to the first channel
         goto(`/c/${channels[0].meta.value.id}`);

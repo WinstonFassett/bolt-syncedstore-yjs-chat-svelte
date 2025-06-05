@@ -1,13 +1,13 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import { goto } from '$app/navigation';
-  import { chatStore } from '../store';
+  import { store } from '../store';
   import { Search, Hash, Plus, User, Settings, Shield } from 'lucide-svelte';
   
   const dispatch = createEventDispatcher();
   
   // Get channels from store
-  $: channels = Object.values($chatStore.channels || {});
+  $: channels = Object.values($store.channels || {});
   
   let searchQuery = '';
   let selectedIndex = 0;

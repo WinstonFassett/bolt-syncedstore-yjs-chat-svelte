@@ -1,12 +1,12 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { chatStore } from '../../store';
+  import { store } from '../../store';
   
   // This is a stub component for the join page
   // It will list available channels and allow users to join them
   
   // Get channels from store
-  $: channels = Object.values($chatStore.channels || {});
+  $: channels = Object.values($store.channels || {});
 </script>
 
 <div class="flex h-full w-full">

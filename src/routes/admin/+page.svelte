@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { ArrowLeft, Users, MessageSquare, Trash2, AlertTriangle } from 'lucide-svelte';
-  import { chatStore } from '../../store';
+  import { store } from '../../store';
   
   // Tabs for different admin sections
   const tabs = [
@@ -14,8 +14,8 @@
   let activeTab = 'users';
   
   // Get users and channels from store
-  $: users = Object.values($chatStore.users || {});
-  $: channels = Object.values($chatStore.channels || {});
+  $: users = Object.values($store.users || {});
+  $: channels = Object.values($store.channels || {});
 </script>
 
 <div class="flex h-full w-full">
