@@ -20,9 +20,6 @@
 - Ensure consistency (of the right things) and get rid of the junk
 - Nice UI, thoughtful touches, nice transitions and animations, careful use of icons, color and layout. Don't generate SVG icons, just use existing lucide etc already imported
 
-# Bugs
-
-- [ ] UserInfoPopup behaves differently than the other dialogs that use createDialog, mainly in that there is no fade transition like the others have on entry/exit. I assume this is built in and that we are not using what those are using.
 
 ## Fixed Bugs
 
@@ -30,7 +27,11 @@
 - [x] Message editing focus not working when clicking edit button
 - [x] Thread input not focusing when opening thread panel
 - [x] Channel input not focusing when closing thread panel
-- [x] Duplicate key error in MessageItem.svelte thread participants
+
+# UX Issues
+
+- [ ] UserInfoPopup behaves differently than the other dialogs that use createDialog, mainly in that there is no fade transition like the others have on entry/exit. I assume this is built in and that we are not using what those are using.
+
 
 # Console Bugs
 
@@ -46,7 +47,7 @@ n/a
 
 # Features Wanted
 
-#### Routes
+#### ✅ Routes 
 
 ```
 / -> redirects to either join or selected/most recent/default channel
@@ -59,21 +60,15 @@ c/[channelId]/m/[messageId] activates thread view
 
 I read that SvelteKit has built in support for SPAs and client routing because when I tried to opt out of sveltekit it made those points and I said ok. But I don't know how to get it working. And now I'm skeptical of those promises.
 
+#### Enter/Exit Notifications 
 
+When people join/leave the users list (syncedstore)
 
-### Command Menu (cmdk) with channel nav and search
-
-Full text ish search using fuzzy matching and traversal of full store or selected channel(s)
+When people join/leave the y webrtc (yjs presence)
 
 #### Join and Leave Channels
 
-No invites or security, but could still have the concept of people who have joined/left
-
-#### Enter/Exit Notifications 
-
-When people join/leave channels I am in (syncedstore)
-
-When people join/leave the y webrtc (yjs presence)
+No invites or security, but could still have the concept of people who have joined/left specific channels. Where being joined to a channel means you get notifications about that channel as long as they are not about you. 
 
 #### Rich-text editing and formatting 
 
@@ -87,6 +82,11 @@ For SyncedStore need to use SyncedXml
 
 Checkbox user setting shown when editing a message. 
 If checked, connects TipTap directly to the YJS type
+
+
+### Command Menu (cmdk) with channel nav and search
+
+Full text ish search using fuzzy matching and traversal of full store or selected channel(s)
 
 
 # Defer
