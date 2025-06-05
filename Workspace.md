@@ -3,6 +3,7 @@
 
 # Priorities
 
+- Avoid making many small changes in many discrete steps. Operate at the file level making full passes, whether incremental or complete. Recall the whole list of TODOs as you go so that if you are modifying a file, you can see the big picture and make sure you are not missing any important details, and you include related changes from other bullets when they fall into the same files. Whole cloth is a huge priority.  
 - Fix Bugs, but do not foolishly consider them fixed until user has verified. Accessibility does not matter yet. Focus on core functionality described here.
 - Focus on UI needs and ask permission before changing the store index.
 - Do not worry about TS errors, only real errors. do not waste cycles on TS yet.
@@ -13,18 +14,29 @@
 # Bugs
 
 - Update profile does not seem to work. See also form features / consistency needed below.
-- 
+- Channel settings will not close. may be related to console error below
 
 
 # Console Bugs
 
-none
+```
+runtime.js:254 Uncaught TypeError: Cannot read properties of undefined (reading 'subscribe')
+
+	in $effect
+	in ChannelSettings.svelte
+	in MainView.svelte
+	in App.svelte
+
+```
 
 # Features Needed
+
 
 - when message has comments have line below with mini avatars of participants and count of replies and time of last reply
 - UI should feature Full Name instead of username, unless unavailable. and if showing both and they are the same, only show once
 - improve usability of forms
+- When opening/clicking a channel or thread link, focus the appropriate message input. 
+- Also, enter key should submit forms including profile edit, channel create.
 - Use nicer form style from Join screen in Profile dialog 
 
 # Features Wanted
@@ -73,12 +85,6 @@ click username or avatar to view info popup.
 
 Uses lucide icons. don't generate SVGs or SVG paths.
 
-# Autofocus when appropriate
-
-When opening/clicking a channel or thread link, focus the appropriate message input. 
-
-
-Also, enter key should submit forms like profile edit.
 
 # Profile edit should be as usable as / similar to the join form
 
