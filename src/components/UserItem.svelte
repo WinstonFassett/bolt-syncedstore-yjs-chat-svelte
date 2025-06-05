@@ -11,6 +11,12 @@
   let showUserInfoPopup = false;
   let selectedUserIdForPopup: string | null = null;
 
+  // Computed properties for display
+  $: hasFullName = user.fullName && user.fullName.trim() !== '';
+  $: displayUsername = user.username || 'Unknown'; // Fallback for safety
+  $: displayFullName = hasFullName ? user.fullName.trim() : '';
+  $: showTwoLines = hasFullName && displayFullName !== displayUsername;
+
   function openUserInfoPopup(userIdToOpen: string) {
     selectedUserIdForPopup = userIdToOpen;
     showUserInfoPopup = true;
@@ -36,8 +42,12 @@
     {/if}
   </div>
   <div class="truncate">
-    <!-- This will be updated later to show full name / username as per requirements -->
-    {user.fullName || user.username}
+    {#if showTwoLines}
+      <div class="truncate font-medium" title={displayFullName}>{displayFullName}</div>
+      <div class="truncate text-xs text-gray-500 dark:text-gray-400" title={`@${displayUsername}`}>@{displayUsername}</div>
+    {:else}
+      <div class="truncate font-medium" title={displayFullName || displayUsername}>{displayFullName || displayUsername}</div>
+    {/if}
   </div>
 </div>
 

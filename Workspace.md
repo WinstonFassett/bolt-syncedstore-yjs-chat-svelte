@@ -115,6 +115,19 @@ How could we implement this??
 
 # Journal
 
+### Instructions for Journal Entries
+
+**Goal:**
+- Clearly outline goals for the codebase edit.
+- Break down the work into step-by-step tasks with a success grade from 0-10.
+- Document lessons learned and user corrections encountered during the steps.
+- Explain the correct usage of components or functions whose usage was unclear and caused issues.
+- List modified files as a file tree code block.
+- Summarize outcomes and include retro bullets.
+- Follow basic structure consistently
+
+
+
 ## Round 3: User Info Popup Implementation & Fixes
 
 **Date:** 2025-06-05
@@ -123,6 +136,8 @@ How could we implement this??
 - Successfully implement the `UserInfoPopup.svelte` component.
 - Integrate the popup into `MessageItem.svelte` and `UserItem.svelte`.
 - Resolve bugs preventing the popup from displaying correctly.
+- Enhance user name display consistency in `UserItem.svelte` and `MessageItem.svelte`.
+- Align profile edit UI (`CurrentUser.svelte`) with profile setup UI (`ProfileSetup.svelte`) regarding avatar handling.
 
 ### Work Summary & Key Changes:
 
@@ -143,6 +158,12 @@ How could we implement this??
 *   **Debugging & Verification:**
     *   Added console logs to trace `userId` propagation and dialog state changes.
     *   USER verified that popups are now working correctly after the `.value` access pattern was fixed.
+*   **User Name Display Consistency:**
+    *   **`UserItem.svelte` (Sidebar User List):** Updated to display full name prominently, with `@username` below if different. Otherwise, a single name is shown.
+    *   **`MessageItem.svelte` (Message View):** Updated to show full name primarily. `@username` now appears in a tooltip on hover, removing the explicit `(username)` text.
+*   **Profile Edit UI Consistency (`CurrentUser.svelte`):**
+    *   Aligned avatar handling with `ProfileSetup.svelte` by removing the direct "Avatar URL" input field.
+    *   Avatar preview now uses the `<Avatar>` component, reflecting Gravatar based on username or an existing custom avatar.
 
 ### Key Learnings & Corrections:
 *   **SyncedStore Boxed Values:** Reinforced the critical importance of accessing properties of boxed objects via `.value` (e.g., `meta.value.id`). This was a recurring oversight and a key blocker.
@@ -150,7 +171,8 @@ How could we implement this??
 *   **Iterative Debugging:** Console logs and step-by-step verification of state and prop flow were essential to diagnose why the dialog wasn't appearing.
 
 ### Next Steps & Testing Points:
-*   Proceed with outstanding UI/UX tasks: user name display consistency in sidebar/messages, and profile edit UI consistency.
+*   USER to test all implemented features: UserInfoPopup functionality, user name displays in sidebar and messages, and profile edit UI consistency (especially avatar handling).
+*   This concludes Round 3.
 
 ## Round 2: Gravatar Preview, Profile Form Styling, and r2 Fixes
 

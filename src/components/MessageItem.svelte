@@ -148,10 +148,9 @@
         <div class="mb-1 flex items-baseline">
           <div class="cursor-pointer" on:click={() => openUserInfoPopup(message.meta.value.userId)} role="button" tabindex="0" on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') openUserInfoPopup(message.meta.value.userId); }}>
             {#if showFullNameAsPrimary}
-              <span class="mr-2 font-medium" title={`${currentUsername}`}>{currentFullName}</span>
-              <span class="mr-2 text-xs text-gray-500 dark:text-gray-400 hidden sm:inline">({currentUsername})</span>
-            {:else if showUsernameAsPrimary}
-              <span class="mr-2 font-medium" title={hasFullName && currentFullName !== currentUsername ? `Full Name: ${currentFullName}` : (hasFullName ? `Full Name: ${currentFullName}` : '')}>{currentUsername}</span>
+              <span class="mr-2 font-medium" title={`@${currentUsername}`}>{currentFullName}</span>
+            {:else}
+              <span class="mr-2 font-medium" title={hasFullName && currentFullName !== currentUsername ? `Full Name: ${currentFullName}` : ''}>{currentUsername}</span>
             {/if}
           </div>
           <span class="text-xs text-gray-500 dark:text-gray-400 ml-2">{formattedTime}</span> <!-- Added ml-2 for spacing -->

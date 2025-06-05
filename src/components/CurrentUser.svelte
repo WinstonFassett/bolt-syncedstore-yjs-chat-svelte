@@ -9,7 +9,7 @@
   const dialog = createDialog({ label: 'User Settings' });
   let editingUsername = ''
   let editingFullName = ''
-  let editingAvatar = ''
+  // editingAvatar input removed for consistency with ProfileSetup
   
   onMount(() => {
     // Set awareness when component is mounted
@@ -25,7 +25,7 @@
   $: if (currentUser) {
     editingUsername = currentUser.username
     editingFullName = currentUser.fullName || ''
-    editingAvatar = currentUser.avatar || ''
+    // editingAvatar is no longer directly edited here
   }
   
   
@@ -35,7 +35,7 @@
     
     currentUser.username = editingUsername.trim()
     currentUser.fullName = editingFullName.trim() || undefined
-    currentUser.avatar = editingAvatar.trim() || undefined
+    // currentUser.avatar is no longer updated through this form
     
     // Update awareness
     setAwarenessUser($currentUserIdStore)
@@ -43,16 +43,7 @@
     dialog.close()
   }
 
-  function handleImageError(event: Event) {
-    const imgElement = event.target as HTMLImageElement;
-    // Hide the broken image
-    imgElement.style.display = 'none';
-    // Attempt to show the next sibling if it's the error message span
-    const nextSibling = imgElement.nextElementSibling as HTMLElement;
-    if (nextSibling && nextSibling.tagName === 'SPAN' && nextSibling.classList.contains('text-red-500')) { // More specific check for the error span
-      nextSibling.style.display = 'block';
-    }
-  }
+  
   
   function disclaim() {
     // Clear current user
@@ -135,19 +126,13 @@
             </div>
 
             <!-- Avatar Preview - Moved and Centered -->
-            {#if editingAvatar || (currentUser && currentUser.avatar)}
-              <div class="mb-4 flex flex-col items-center">
-                <span class="mb-1 block text-xs font-medium text-gray-700 dark:text-gray-300">Avatar Preview:</span>
-                <img 
-                  src={editingAvatar || (currentUser && currentUser.avatar) || ''} 
-                  alt="Avatar preview" 
-                  class="h-20 w-20 rounded-full object-cover border border-gray-300 dark:border-gray-600"
-                  on:error={handleImageError} 
-                />
-                <!-- Error message for avatar, initially hidden -->
-                <span style="display:none;" class="mt-1 text-xs text-red-500">Invalid URL or image not found.</span>
-              </div>
-            {/if}
+            <div class="mb-4 flex flex-col items-center">
+              <span class="mb-1 block text-xs font-medium text-gray-700 dark:text-gray-300">Avatar Preview:</span>
+              <Avatar username={editingUsername} customImage={currentUser?.avatar} size="xl" />
+              <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                Avatar is based on Gravatar (from username) or existing custom image.
+              </p>
+            </div>
 
             <div class="mb-3">
               <label for="username-input" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -173,18 +158,7 @@
               />
             </div>
 
-            <div class="mb-4">
-              <label for="avatar-url-input" class="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-                Avatar URL (optional)
-              </label>
-              <input 
-                id="avatar-url-input"
-                type="url" 
-                class="input w-full"
-                bind:value={editingAvatar} 
-                placeholder="https://example.com/avatar.png"
-              />
-            </div>
+            <!-- Avatar URL input removed for consistency with ProfileSetup -->
             
             <div class="mt-6 flex flex-col gap-3 sm:flex-row-reverse">
               <button 
