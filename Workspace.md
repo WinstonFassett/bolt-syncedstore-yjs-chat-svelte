@@ -1,5 +1,13 @@
 # Workspace
 
+# Important Context
+
+- This is a Sveltekit 5 bootstrapped app to be a SPA without SSR
+- Svelte 5 is different than past Svelte versions
+- Svelte transitions have been included since Svelte 3
+- Routing is build into Sveltekit
+- SyncedStore adapts YJS stores to be reactive plain objects and arrays for binding to Svelte
+- I added Context7 MCP server which should provide info about Svelte and SvelteKit and YJS, but not SyncedStore, so I added its docs to reference/SyncedStore.md. 
 
 # Priorities
 
@@ -14,23 +22,21 @@
 
 # Bugs
 
-- [ ] Channel settings will not close at all, via cancel or X or esc. Should follow examples of other uses of createDialog.
-- [x] Clicking users own name at bottom of sidebar no longer opens a dialog to edit profile
-- Escape should close dialogs assuming this is supported by the lib
+n/a
 
 # Console Bugs
 
 none
 
+## Icons 
+
+Uses lucide icons. don't generate SVGs or SVG paths. Eventually factor out existing SVGs to Lucide or other icon lib. 
+
 # Features Needed
 
+n/a
 
 # Features Wanted
-
-- when message has comments have line below with mini avatars of participants and count of replies and time of last reply
-- [x] When opening/clicking a channel or thread link, focus the appropriate message input. 
-- Also, enter key should submit forms including profile edit, channel create.
-- [x] Use nicer form style from Join screen in Profile dialog *(In progress: Modal width, avatar preview, helper text added. Button styling and further alignment pending)* Cannot confirm because dialog no longer opens.
 
 #### Routes
 
@@ -43,31 +49,25 @@ c/[channelId]/m/[messageId] activates thread view
 /admin  maybe. for advanced dangerous things like admin'ing user info and channels, clearing all channels, "everything". 
 ```
 
-#### Join and Leave Channels
-
-No invites or security, but could still have the concept of people who have joined
-
-#### Rich-text editing and formatting 
-
-Using tiptap or something like it. bold, italics, links, 
-
-user and channel mentions would be nice
-
 ### Command Menu (cmdk) with channel nav and search
 
 Full text ish search using fuzzy matching and traversal of full store or selected channel(s)
 
+#### Join and Leave Channels
 
-
-## Icons 
-
-Uses lucide icons. don't generate SVGs or SVG paths. Eventually factor out existing SVGs to Lucide or other icon lib. 
+No invites or security, but could still have the concept of people who have joined/left
 
 #### Enter/Exit Notifications 
 
 When people join/leave channels I am in (syncedstore)
 
 When people join/leave the y webrtc (yjs presence)
+
+#### Rich-text editing and formatting 
+
+Using tiptap or something like it. bold, italics, links, 
+
+user and channel mentions would be nice
 
 
 # Defer
