@@ -14,21 +14,12 @@
 
 # Bugs
 
-- [ ] Errors on first user first load because findUserByUsername returns undefined but code does not expect it. NOT fixed in R2.
-- [] Update profile does not seem to work. See also form features / consistency needed below. *(LLM Assumed this was fixed with r2 and current logic, pending test confirmation)*
-- [ ] Channel settings will not close. may be related to console error below *(NOT Fixed in r2)*
+- [ ] Channel settings will not close at all, via cancel or X or esc. Should follow examples of other uses of createDialog.
 
 
 # Console Bugs
 
-```
-hook.js:608 TypeError: Cannot destructure property 'id' of 'findUserByUsername(...)' as it is null.
-    at HTMLFormElement.handleSubmit (ProfileSetup.svelte:29:15)
-    at HTMLFormElement.<anonymous> (event-modifiers.js:97:14)
-    at events.js:61:21
-    at without_reactive_context (shared.js:44:10)
-    at HTMLFormElement.target_handler (events.js:60:11)
-```
+none
 
 # Features Needed
 
