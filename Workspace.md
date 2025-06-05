@@ -24,6 +24,14 @@
 
 - [ ] UserInfoPopup behaves differently than the other dialogs that use createDialog, mainly in that there is no fade transition like the others have on entry/exit. I assume this is built in and that we are not using what those are using.
 
+## Fixed Bugs
+
+- [x] Input focus issues when navigating between channels and threads
+- [x] Message editing focus not working when clicking edit button
+- [x] Thread input not focusing when opening thread panel
+- [x] Channel input not focusing when closing thread panel
+- [x] Duplicate key error in MessageItem.svelte thread participants
+
 # Console Bugs
 
 none

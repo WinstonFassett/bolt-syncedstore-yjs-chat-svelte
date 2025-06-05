@@ -21,37 +21,68 @@
     showSettings = false
   }
   
-  // Track previous channel ID to detect changes
-  let previousChannelId: string | null = null;
+  import { page } from '$app/stores'
+  import { onMount, afterUpdate } from 'svelte'
   
-  // Focus message input when channel changes
-  $: if ($currentChannel) {
-    const currentChannelId = $currentChannel.meta.value.id;
-    
-    // Check if channel has changed
-    if (currentChannelId !== previousChannelId) {
-      previousChannelId = currentChannelId;
-      
-      // Only focus if thread panel is not open
-      if (!$isThreadPanelOpen && messageInputComponent) {
-        // Wait for the DOM to update after channel switch, then focus
-        tick().then(() => {
-          if (messageInputComponent) { // Double check in case component became null
-            messageInputComponent.focusInput();
-          }
-        });
-      }
+  // Track previous state
+  let previousChannelId: string | null = null
+  let previousThreadId: string | null = null
+  let previousThreadPanelState = false
+  
+  // Focus channel input in these scenarios:
+  // 1. When channel changes
+  // 2. When thread panel closes
+  // 3. When navigating to a channel route directly
+  function focusChannelInputIfNeeded() {
+    if (!$isThreadPanelOpen && messageInputComponent) {
+      tick().then(() => {
+        if (messageInputComponent) {
+          messageInputComponent.focusInput()
+        }
+      })
     }
   }
   
-  // Focus thread input when thread ID changes
-  $: if ($currentThreadIdStore && threadViewInstance && $isThreadPanelOpen) {
-    tick().then(() => {
-      if (threadViewInstance) {
-        threadViewInstance.focusReplyInput();
-      }
-    });
+  // Focus thread input when thread is opened or changed
+  function focusThreadInputIfNeeded() {
+    if ($isThreadPanelOpen && threadViewInstance && $currentThreadIdStore) {
+      tick().then(() => {
+        if (threadViewInstance) {
+          threadViewInstance.focusReplyInput()
+        }
+      })
+    }
   }
+  
+  // Run after every Svelte update
+  afterUpdate(() => {
+    const currentChannelId = $currentChannel?.meta.value.id || null
+    const currentThreadId = $currentThreadIdStore
+    
+    // Channel changed
+    if (currentChannelId && currentChannelId !== previousChannelId) {
+      if (!$isThreadPanelOpen) {
+        focusChannelInputIfNeeded()
+      }
+    }
+    
+    // Thread changed
+    if (currentThreadId && currentThreadId !== previousThreadId) {
+      focusThreadInputIfNeeded()
+    }
+    
+    // Thread panel closed
+    if (previousThreadPanelState && !$isThreadPanelOpen) {
+      focusChannelInputIfNeeded()
+    }
+    
+    // Update previous state
+    previousChannelId = currentChannelId
+    previousThreadId = currentThreadId
+    previousThreadPanelState = $isThreadPanelOpen
+  })
+  
+  // We don't need this reactive statement anymore as it's handled by the route change detection
   
   // Handle thread panel closed event
   function handleThreadClosed() {

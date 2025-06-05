@@ -114,11 +114,20 @@
     emojiInput = ''
   }
 
+  import { tick } from 'svelte'
+  let editTextarea: HTMLTextAreaElement
+
   // Start editing
-  function startEditing() {
+  async function startEditing() {
     editText = message.text
     isEditing = true
     showActions = false
+    
+    // Wait for the DOM to update, then focus the textarea
+    await tick()
+    if (editTextarea) {
+      editTextarea.focus()
+    }
   }
 
   // Save edit
@@ -249,6 +258,7 @@
         <div class="flex flex-col gap-2">
           <textarea
             class="input min-h-[60px] w-full resize-none"
+            bind:this={editTextarea}
             bind:value={editText}
             on:keydown={handleEditKeydown}
             rows="3"
