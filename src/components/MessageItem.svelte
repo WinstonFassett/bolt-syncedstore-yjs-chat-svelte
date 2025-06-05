@@ -2,7 +2,8 @@
   import { createEventDispatcher } from 'svelte'
   import { store, currentUserIdStore } from '../store'
   import { formatChatDate } from '../utils/date'
-  import Avatar from './Avatar.svelte'
+  import Avatar from './Avatar.svelte';
+  import UserInfoPopup from './UserInfoPopup.svelte';
   import { MessageSquare, Pencil, Trash2, Smile, Check, X } from 'lucide-svelte'
   import { fade, slide } from 'svelte/transition'
   
@@ -26,7 +27,21 @@
   let isAddingReaction = false
   let emojiInput = ''
   let isEditing = false
-  let editText = message.text
+  let editText = message.text;
+
+  // State for UserInfoPopup
+  let showUserInfoPopup = false;
+  let selectedUserIdForPopup: string | null = null;
+
+  function openUserInfoPopup(userId: string) {
+    selectedUserIdForPopup = userId;
+    showUserInfoPopup = true;
+  }
+
+  function closeUserInfoPopup() {
+    showUserInfoPopup = false;
+    selectedUserIdForPopup = null;
+  }
   
   // Common emojis for quick access
   const quickEmojis = ['👍', '👎', '❤️', '😂', '🎉', '🔥', '👀']
@@ -104,6 +119,10 @@
   }
 </script>
 
+{#if showUserInfoPopup && selectedUserIdForPopup}
+  <UserInfoPopup userId={selectedUserIdForPopup} closePopup={closeUserInfoPopup} />
+{/if}
+
 <!-- Message container -->
 <div 
   role="group"
@@ -113,7 +132,7 @@
 >
   <div class="flex gap-3">
     <!-- Avatar and User Info Click Area -->
-    <div class="flex-shrink-0" on:click={() => console.log('User info clicked in MessageItem:', user?.username)} role="button" tabindex="0" on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') console.log('User info activated in MessageItem:', user?.username); }}>
+    <div class="flex-shrink-0 cursor-pointer" on:click={() => openUserInfoPopup(message.meta.value.userId)} role="button" tabindex="0" on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') openUserInfoPopup(message.meta.value.userId); }}>
       <Avatar username={user?.username || 'Unknown'} customImage={user?.avatar} />
     </div>
     
@@ -127,9 +146,9 @@
         {@const showFullNameAsPrimary = hasFullName && currentFullName !== currentUsername}
         {@const showUsernameAsPrimary = !hasFullName || currentFullName === currentUsername}
         <div class="mb-1 flex items-baseline">
-          <div on:click={() => console.log('User info clicked in MessageItem:', user.username)} role="button" tabindex="0" on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') console.log('User info activated in MessageItem:', user.username); }}>
+          <div class="cursor-pointer" on:click={() => openUserInfoPopup(message.meta.value.userId)} role="button" tabindex="0" on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') openUserInfoPopup(message.meta.value.userId); }}>
             {#if showFullNameAsPrimary}
-              <span class="mr-2 font-medium" title={`Username: ${currentUsername}`}>{currentFullName}</span>
+              <span class="mr-2 font-medium" title={`${currentUsername}`}>{currentFullName}</span>
               <span class="mr-2 text-xs text-gray-500 dark:text-gray-400 hidden sm:inline">({currentUsername})</span>
             {:else if showUsernameAsPrimary}
               <span class="mr-2 font-medium" title={hasFullName && currentFullName !== currentUsername ? `Full Name: ${currentFullName}` : (hasFullName ? `Full Name: ${currentFullName}` : '')}>{currentUsername}</span>

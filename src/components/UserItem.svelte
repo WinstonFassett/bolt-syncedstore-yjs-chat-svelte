@@ -1,13 +1,34 @@
 <script lang="ts">
-  import Avatar from './Avatar.svelte'
-  import { onlineUsers } from '../store'
-  
-  export let user: any
-  
-  $: isOnline = $onlineUsers.has(user.meta.value.id)
+  import Avatar from './Avatar.svelte';
+  import UserInfoPopup from './UserInfoPopup.svelte';
+  import { onlineUsers } from '../store';
+
+  export let user: any;
+
+  $: isOnline = $onlineUsers.has(user.meta.value.id);
+
+  // State for UserInfoPopup
+  let showUserInfoPopup = false;
+  let selectedUserIdForPopup: string | null = null;
+
+  function openUserInfoPopup(userIdToOpen: string) {
+    selectedUserIdForPopup = userIdToOpen;
+    showUserInfoPopup = true;
+  }
+
+  function closeUserInfoPopup() {
+    showUserInfoPopup = false;
+    selectedUserIdForPopup = null;
+  }
 </script>
 
-<div class="flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-dark-300">
+<div
+  class="flex cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-dark-300"
+  on:click={() => openUserInfoPopup(user.meta.value.id)}
+  on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') openUserInfoPopup(user.meta.value.id); }}
+  role="button"
+  tabindex="0"
+>
   <div class="relative">
     <Avatar username={user.username} customImage={user.avatar} size="sm" />
     {#if isOnline}
@@ -15,6 +36,11 @@
     {/if}
   </div>
   <div class="truncate">
-    {user.username}
+    <!-- This will be updated later to show full name / username as per requirements -->
+    {user.fullName || user.username}
   </div>
 </div>
+
+{#if showUserInfoPopup && selectedUserIdForPopup}
+  <UserInfoPopup userId={selectedUserIdForPopup} closePopup={closeUserInfoPopup} />
+{/if}

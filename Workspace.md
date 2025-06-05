@@ -5,6 +5,7 @@
 
 - Avoid making many small changes in many discrete steps. Operate at the file level making full passes, whether incremental or complete. Recall the whole list of TODOs as you go so that if you are modifying a file, you can see the big picture and make sure you are not missing any important details, and you include related changes from other bullets when they fall into the same files. Whole cloth is a huge priority.  
 - Fix Bugs, but do not foolishly consider them fixed until user has verified. Accessibility does not matter yet. Focus on core functionality described here.
+- Do NOT be arrogant about FIXING BUGS. A bug indicates you were already wrong and thus that your fix is likely also wrong. Bugfixes are unverified and until user verifies them, they are not fixed.
 - Focus on UI needs and ask permission before changing the store index.
 - Do not worry about TS errors, only real errors. do not waste cycles on TS yet. Do not get distracted by anything except what is being requested. Priorities matter.
 - Add desired features
@@ -34,10 +35,10 @@ hook.js:608 TypeError: Cannot destructure property 'id' of 'findUserByUsername(.
 
 - when message has comments have line below with mini avatars of participants and count of replies and time of last reply
 - [x] UI should feature Full Name instead of username, unless unavailable. and if showing both and they are the same, only show once
-- improve usability of forms
 - When opening/clicking a channel or thread link, focus the appropriate message input. 
 - Also, enter key should submit forms including profile edit, channel create.
 - [ ] Use nicer form style from Join screen in Profile dialog *(In progress: Modal width, avatar preview, helper text added. Button styling and further alignment pending)* 
+- improve usability of forms
 
 # Features Wanted
 
@@ -113,6 +114,43 @@ Avoid notifications about past things. Depends on tracking read state of message
 How could we implement this??
 
 # Journal
+
+## Round 3: User Info Popup Implementation & Fixes
+
+**Date:** 2025-06-05
+
+### Goals:
+- Successfully implement the `UserInfoPopup.svelte` component.
+- Integrate the popup into `MessageItem.svelte` and `UserItem.svelte`.
+- Resolve bugs preventing the popup from displaying correctly.
+
+### Work Summary & Key Changes:
+
+*   **`UserInfoPopup.svelte` Development & Fixes:**
+    *   Initially created with incorrect `svelte-headlessui` component imports (`Dialog`, `DialogPanel`).
+    *   Corrected to use `createDialog` and the `use:dialog.modal` action, following patterns from `CurrentUser.svelte`.
+    *   Added logic to reactively call `dialog.open()` when the component receives a valid `userId` prop and user data is loaded.
+    *   Ensured `dialog.close()` is called if `userId` becomes invalid or the parent requests closure via the `closePopup` prop.
+    *   **Critical Fix (USER):** Corrected access to SyncedStore boxed values (e.g., `user.meta.value.id`, `user.meta.value.createdAt`) which was preventing the dialog from opening reliably.
+*   **Integration into `MessageItem.svelte`:**
+    *   Added state variables (`showUserInfoPopup`, `selectedUserIdForPopup`) to manage popup visibility.
+    *   Made user avatars and names clickable, calling `openUserInfoPopup(message.meta.value.userId)`.
+    *   Conditionally rendered `<UserInfoPopup />`, passing `selectedUserIdForPopup` and `closeUserInfoPopup`.
+*   **Integration into `UserItem.svelte` (User List):**
+    *   Similar integration as `MessageItem.svelte`.
+    *   Made the entire user item clickable, calling `openUserInfoPopup(user.meta.value.id)`.
+    *   Conditionally rendered `<UserInfoPopup />`.
+*   **Debugging & Verification:**
+    *   Added console logs to trace `userId` propagation and dialog state changes.
+    *   USER verified that popups are now working correctly after the `.value` access pattern was fixed.
+
+### Key Learnings & Corrections:
+*   **SyncedStore Boxed Values:** Reinforced the critical importance of accessing properties of boxed objects via `.value` (e.g., `meta.value.id`). This was a recurring oversight and a key blocker.
+*   **`svelte-headlessui` Dialog Activation:** Dialogs created with `createDialog` must be explicitly opened via their `dialog.open()` method. Simply rendering the component containing the dialog logic is not enough.
+*   **Iterative Debugging:** Console logs and step-by-step verification of state and prop flow were essential to diagnose why the dialog wasn't appearing.
+
+### Next Steps & Testing Points:
+*   Proceed with outstanding UI/UX tasks: user name display consistency in sidebar/messages, and profile edit UI consistency.
 
 ## Round 2: Gravatar Preview, Profile Form Styling, and r2 Fixes
 
