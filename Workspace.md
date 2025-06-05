@@ -95,6 +95,48 @@ How could we implement this??
 
 Most recent entries come first. Append new entries below these instructions, above the older entries.
 
+## Round 5: SvelteKit Routing & Focus Management
+
+**Date:** 2025-06-05
+
+### Goals:
+- Convert the chat application to use proper SvelteKit routing for channels and threads
+- Ensure browser back/forward navigation works correctly with the application state
+- Add a settings link to the sidebar for easy access
+- Fix input focus issues when navigating between channels and threads
+
+### Work & Key Changes (Tasks & Success Grade):
+
+1. **SvelteKit Routing Implementation (9/10):**
+   * Updated `ChannelItem.svelte` to use `goto` from `$app/navigation` for proper route changes
+   * Modified `MainView.svelte` to navigate to thread routes (`/c/[channelId]/m/[messageId]`) when opening threads
+   * Added route components for channels and threads that sync with the store state
+   * *Outcome:* Successfully implemented proper SPA routing with URL updates matching the application state
+
+2. **Back/Forward Navigation Support (8/10):**
+   * Added `popstate` event listeners in route components to detect browser navigation
+   * Implemented handlers to update store state based on the current URL when navigating with browser controls
+   * *Outcome:* Browser back/forward buttons now correctly update the UI state to match the route
+
+3. **Settings Link Addition (10/10):**
+   * Added a settings button to the sidebar with the Settings icon from Lucide
+   * Placed it above the user section for easy access
+   * *Outcome:* Users can now easily navigate to the settings page from anywhere in the app
+
+4. **Input Focus Management (9/10):**
+   * Fixed thread input focus when opening or switching threads
+   * Added tracking of previous channel ID to detect actual channel changes
+   * Implemented conditional focus logic that respects the thread panel state
+   * Fixed duplicate key error in thread participants rendering that was causing data corruption
+   * *Outcome:* Input focus now works correctly when navigating between channels and threads
+
+### Lessons Learned & Component Usage:
+
+* **SvelteKit Navigation:** Using `goto` from `$app/navigation` for programmatic navigation ensures proper route updates while maintaining SPA behavior
+* **Store Synchronization:** It's crucial to keep store state in sync with the URL for a consistent user experience
+* **Focus Management:** Track state changes and use `tick()` to ensure DOM updates complete before attempting to focus elements
+* **Error Prevention:** Always include null checks and fallback values when using keys in each blocks to prevent duplicate key errors
+
 ## Round 4: UX Enhancements - Input Focus, Reactions, Delete Flow, Thread Summaries
 
 **Date:** 2025-06-05
