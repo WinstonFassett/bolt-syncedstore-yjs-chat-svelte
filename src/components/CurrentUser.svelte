@@ -68,7 +68,7 @@
       tabindex="0"
       on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') dialog.open() }}
     >
-      <div class="flex items-center gap-2" on:click={() => console.log('User info clicked in CurrentUser:', currentUser.username)} role="button" tabindex="0" on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') console.log('User info activated in CurrentUser:', currentUser.username); }}>
+      <div class="flex items-center gap-2">
         <Avatar username={currentUser.username} customImage={currentUser.avatar} size="sm" />
         <div class="truncate">
           {#if showFullNameAsPrimary}

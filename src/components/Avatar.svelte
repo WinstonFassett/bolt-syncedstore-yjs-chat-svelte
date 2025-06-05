@@ -21,6 +21,11 @@
       container: 'w-14 h-14',
       text: 'text-lg',
       imageSize: 56
+    },
+    xl: {
+      container: 'w-24 h-24', // Example size for extra large
+      text: 'text-xl',
+      imageSize: 96 // Gravatar size for xl
     }
   }
 

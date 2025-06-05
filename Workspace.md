@@ -15,7 +15,8 @@
 # Bugs
 
 - [ ] Channel settings will not close at all, via cancel or X or esc. Should follow examples of other uses of createDialog.
-
+- [x] Clicking users own name at bottom of sidebar no longer opens a dialog to edit profile
+- Escape should close dialogs assuming this is supported by the lib
 
 # Console Bugs
 
@@ -24,14 +25,12 @@ none
 # Features Needed
 
 
+# Features Wanted
+
 - when message has comments have line below with mini avatars of participants and count of replies and time of last reply
-- [x] UI should feature Full Name instead of username, unless unavailable. and if showing both and they are the same, only show once
 - When opening/clicking a channel or thread link, focus the appropriate message input. 
 - Also, enter key should submit forms including profile edit, channel create.
-- [ ] Use nicer form style from Join screen in Profile dialog *(In progress: Modal width, avatar preview, helper text added. Button styling and further alignment pending)* 
-- improve usability of forms
-
-# Features Wanted
+- [ ] Use nicer form style from Join screen in Profile dialog *(In progress: Modal width, avatar preview, helper text added. Button styling and further alignment pending)* Cannot confirm because dialog no longer opens.
 
 #### Routes
 

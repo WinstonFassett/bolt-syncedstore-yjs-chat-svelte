@@ -72,8 +72,8 @@
   // Inform parent when dialog is closed internally
   let unsubscribeExpanded: (() => void) | undefined;
   onMount(() => {
-    unsubscribeExpanded = dialog.subscribe(isExpanded => {
-      if (!isExpanded && openModal) {
+    unsubscribeExpanded = dialog.subscribe(dialogState => {
+      if (!dialogState.expanded && openModal) {
         dispatch('close')
       }
     });
