@@ -74,37 +74,66 @@ c/[channelId]/m/[messageId] activates thread view
 
 I read that SvelteKit has built in support for SPAs and client routing because when I tried to opt out of sveltekit it made those points and I said ok. But I don't know how to get it working. And now I'm skeptical of those promises.
 
-#### Enter/Exit Notifications 
+#### ✅ Enter/Exit Notifications 
 
 When people join/leave the users list (syncedstore)
 
 When people join/leave the y webrtc (yjs presence)
 
-### New Message Notifications
+### ✅ New Message Notifications
 
 We don't have the concept of joining or leaving channels yet, but we can assume that when a client is on a channel-related route that it is at least for that time, subbing to its notifiactions. So when looking at a channel or channel thread, always show notifications about new messages when the userId does not match current user.
 
-#### Join and Leave Channels
+#### Rich-text message editing and formatting using Tiptap
 
-No invites or security, but could still have the concept of people who have joined/left specific channels. Where being joined to a channel means you get notifications about that channel as long as they are not about you. 
+Using tiptap or something like it. 
 
-#### Rich-text editing and formatting 
+- Starter kit 
+    - Nodes
+        - Blockquote
+        - BulletList
+        - CodeBlock
+        - Document
+        - HardBreak
+        - Heading
+        - HorizontalRule
+        - ListItem
+        - OrderedList
+        - Paragraph
+        - Text
+    - Marks
+        - Bold
+        - Code
+        - Italic
+        - Strike
+    - Extensions
+        - Dropcursor
+        - Gapcursor
+        - Collaboration
+        - NO History. YJS is not compatible with it.
+- Mentions (users, channels). Great if it's not hard to add user and channel mentions.
+- Emoji
+- YouTube would be nice
 
-Using tiptap or something like it. bold, italics, links, 
+Need a formatting menu.
 
-user and channel mentions would be nice
+
 
 For SyncedStore need to use SyncedXml
 
 ##### Live-editing Rich Text messages
 
 Checkbox user setting shown when editing a message. 
-If checked, connects TipTap directly to the YJS type
+If checked, connects TipTap directly to the YJS type.
 
 
 ### Command Menu (cmdk) with channel nav and search
 
 Full text ish search using fuzzy matching and traversal of full store or selected channel(s)
+
+#### Join and Leave Channels
+
+No invites or security, but could still have the concept of people who have joined/left specific channels. Where being joined to a channel means you get notifications about that channel as long as they are not about you. 
 
 
 # Defer
@@ -127,6 +156,65 @@ How could we implement this??
 ### Instructions for Journal Entries
 
 Most recent entries come first. Append new entries below these instructions, above the older entries.
+
+## Round 6: Notification System Refinement
+
+**Date:** 2025-06-05
+
+### Goals:
+- Implement toast notifications for new messages in the current channel/thread
+- Ensure notifications don't appear for the user's own messages
+- Add detailed logging for debugging notification events
+- Properly handle Yjs document structure for message events
+
+### Key Technical Details:
+- Switched from SyncedStore's `observeDeep` to direct Yjs observation using `doc.getMap('channels').observeDeep()`
+- Yjs provides direct access to the underlying CRDT events through `event.changes.keys`
+- SyncedStore's `observeDeep` doesn't expose the same level of detail about changes
+
+### Implementation Challenges & Solutions:
+- **Yjs Document Navigation:**
+  - Messages are stored in a nested structure: `doc.getMap('channels') → channel.getMap('messages')`
+  - To get the channel ID from a message event, we navigate up: `event.target.parent.get('meta').id`
+  - This is necessary because the message event doesn't directly contain the channel context
+
+- **Type System Quirks:**
+  - SyncedStore's type system doesn't perfectly align with Yjs's runtime types
+  - Required explicit type assertions when accessing nested properties: `(store as any).channels`
+  - Used optional chaining (`?.`) extensively to handle potential undefined values
+
+- **Event Handling:**
+  - Yjs events fire for all changes, including those made locally
+  - Added checks to filter out local changes using `event.transaction.local`
+  - Implemented message age checking to avoid notifying about old messages on initial load
+
+### Specific Code Patterns:
+```typescript
+// Observing Yjs document changes
+doc.getMap('channels').observeDeep((events) => {
+  events.forEach(event => {
+    if (event.changes.keys.size > 0) {
+      // Handle changes
+    }
+  });
+});
+
+// Getting channel ID from message event
+const channelMap = event.target.parent;
+const channelMeta = channelMap.get('meta');
+const channelId = channelMeta?.id || channelMeta?.toJSON()?.id;
+```
+
+### Next Steps:
+- Add support for different notification types (mentions, reactions, etc.)
+- Implement notification settings per channel
+- Add visual indicators for unread messages
+- Consider adding sound notifications for important messages
+
+### Notes:
+- The notification system now correctly shows toasts only for the currently viewed channel/thread
+- Detailed logging has been added to help with debugging any future issues
+- The code includes comments explaining the Yjs document structure and event handling
 
 ## Round 5: SvelteKit Routing & Focus Management
 
