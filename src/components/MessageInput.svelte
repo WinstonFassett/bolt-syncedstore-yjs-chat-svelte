@@ -45,20 +45,28 @@
   }
   
   // Handle editor updates
-  function handleEditorUpdate(html: string, text: string) {
+  function handleEditorUpdate(json: Record<string, any>, text: string) {
+    // Store the plain text for the send button disabled state
     messageContent = text;
   }
   
-  // Handle key events (e.g., Ctrl+Enter to send)
+  // Handle key events (e.g., Cmd+Enter or Ctrl+Enter to send)
   function handleKeyDown(event: KeyboardEvent) {
-    if (event.key === 'Enter' && event.ctrlKey) {
+    // Check for Cmd+Enter (Mac) or Ctrl+Enter (Windows/Linux)
+    if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
       event.preventDefault();
       sendMessage();
     }
     
     // Cancel editing with Escape
-    if (event.key === 'Escape' && editingMessageId) {
-      cancelEditing();
+    if (event.key === 'Escape') {
+      if (editingMessageId) {
+        cancelEditing();
+      } else if (messageContent.trim()) {
+        // Clear the message if not empty
+        messageContent = '';
+        richTextEditor?.clear();
+      }
     }
   }
   
@@ -161,8 +169,10 @@
       <RichTextEditor
         bind:this={richTextEditor}
         onUpdate={handleEditorUpdate}
+        onKeyDown={handleKeyDown}
         placeholder={placeholderText}
         readOnly={disabled || !get(currentUserIdStore)}
+        autoFocus={!disabled && !!get(currentUserIdStore)}
       />
       
       <div class="flex items-center justify-end border-t border-gray-200 dark:border-gray-700 p-2">

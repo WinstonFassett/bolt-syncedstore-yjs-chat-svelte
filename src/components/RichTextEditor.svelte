@@ -23,6 +23,7 @@
   export let autoFocus = false;
   export let readOnly = false;
   export let className = '';
+  export let placeholder = '';
 
   let editor: Editor | null = null;
   let editorElement: HTMLDivElement;
@@ -40,14 +41,10 @@
       content: typeof content === 'string' ? content : content,
       editable: !readOnly,
       autofocus: autoFocus ? 'end' : false,
-      onUpdate: ({ editor }) => {
-        const json = editor.getJSON();
-        const text = editor.getText();
-        onUpdate(json, text);
-      },
       editorProps: {
         attributes: {
           class: `prose dark:prose-invert max-w-none p-2 min-h-[100px] ${className}`,
+          'data-placeholder': placeholder || 'Type something...',
         },
         handleKeyDown: (view, event) => {
           onKeyDown(event);
@@ -64,6 +61,11 @@
           }
           return false;
         },
+      },
+      onUpdate: ({ editor: editorInstance }) => {
+        const json = editorInstance.getJSON();
+        const text = editorInstance.getText();
+        onUpdate(json, text);
       },
     });
 
@@ -131,3 +133,23 @@
     <!-- Editor content will be rendered here -->
   </div>
 </div>
+
+<style>
+  /* Style the placeholder */
+  [data-placeholder]::before {
+    content: attr(data-placeholder);
+    color: #9CA3AF;
+    position: absolute;
+    pointer-events: none;
+    height: 0;
+  }
+  
+  .dark [data-placeholder]::before {
+    color: #6B7280;
+  }
+  
+  /* Show placeholder when editor is empty */
+  .ProseMirror:not(.ProseMirror-focused)[contenteditable=true][data-placeholder]:empty::before {
+    content: attr(data-placeholder);
+  }
+</style>
