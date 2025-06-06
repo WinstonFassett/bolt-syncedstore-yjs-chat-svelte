@@ -11,7 +11,7 @@
 	type Props = {
 		editor: EditorType;
 		content?: ContentType;
-		extensions?: ExtensionsType;
+		extensions?: ExtensionsType | undefined;
 		class?: string;
 		editorClass?: string;
 		defaultToolbar?: boolean;
@@ -19,6 +19,7 @@
 		children?: Snippet;
 		readOnly?: boolean;
 		autoFocus?: boolean;
+		placeholder?: string;
 	};
 
 	let {
@@ -31,12 +32,11 @@
 		header,
 		children,
 		readOnly,
-		autoFocus
+		autoFocus,
+		placeholder
 	}: Props = $props();
 
-	const editorBaseClass =
-		// 'flex-1 prose max-w-full h-full p-2 overflow-auto m-2 outline-base-300 focus:outline-4 outline-offset-4';
-		'prose prose-sm dark:prose-invert max-w-none focus:outline-none'
+	const editorBaseClass = 'flex-1 prose prose-sm dark:prose-invert max-w-none focus:outline-none';
 
 	let element: HTMLElement;
 
@@ -44,7 +44,7 @@
 		const editorInstance = newEditor({
 			element,
 			content,
-			extensions,
+			extensions: extensions ? [...extensions] : undefined,
 			editorClass: cn(editorBaseClass, editorClass),
 			onTransaction: () => {
 				editor = undefined; // ! force toolbar update

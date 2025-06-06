@@ -30,17 +30,18 @@
   let isAddingReaction = false
   let emojiInput = ''
   let isEditing = false
-  let editText = message.text;
   let showConfirmDeleteModal = false;
 
-  let editorBinding: EditorType | null = null;
-  const editor = editorBinding!
+  let editor: EditorType | null = null;
 
   onMount(() => {
-    editor?.on('update', () => {
-      console.log('update', editor)
-    })
+    if (editor) {
+      editor.on('update', () => {
+        // Optionally handle updates
+      });
+    }
   })
+
   // Thread summary
   $: threadReplies = Object.values($store.channels?.[$currentChannelIdStore]?.messages || {}).filter(
     (m: any) => m.meta.value.parentId === message.meta.value.id && !m.deleted
@@ -142,8 +143,8 @@
 
   // Save edit
   function saveEdit() {
-    if (!editorBinding) return;
-    const json = editorBinding.getJSON();
+    if (!editor) return;
+    const json = editor.getJSON();
     // Consider empty if doc is empty or just a single empty paragraph
     if (!json || !json.content || (json.content.length === 1 && json.content[0].type === 'paragraph' && (!json.content[0].content || json.content[0].content.length === 0))) {
       return;
@@ -277,7 +278,7 @@
             autoFocus={true}
           /> -->
           <TiptapEditor
-  bind:editor={editorBinding}
+  bind:editor={editor}
   content={message.text}
   autoFocus={true}
 />
@@ -303,7 +304,7 @@
         </div>
       {:else}
         <TiptapEditor
-  bind:editor={editorBinding}
+  bind:editor={editor}
   content={message.text}
   readOnly={true}
 />

@@ -31,12 +31,9 @@
   function sendMessage() {
     const currentUserId = get(currentUserIdStore);
     if (!channelId || !currentUserId || !editor) return;
-
     const json = editor.getJSON();
     const text = editor.getText();
-
     if (!text.trim()) return;
-
     if (editingMessageId) {
       // Update existing message
       updateMessage(channelId, editingMessageId, json);
@@ -44,10 +41,8 @@
     } else {
       // Add new message
       addMessage(channelId, currentUserId, json, parentId || undefined);
-
       // Clear the editor after sending
       editor.commands.clearContent();
-
       // Dispatch sent event
       dispatch('sent', { channelId, parentId });
     }
@@ -56,8 +51,7 @@
   // Attach update listener to editor
   $: if (editor) {
     editor.on('update', () => {
-      messageContentJSON = editor?.getJSON();
-      messageContentText = editor?.getText() || '';
+      messageContentJSON = editor.getJSON();
     });
   }
 
@@ -75,14 +69,18 @@
         cancelEditing();
       } else if (!isEditorEmpty(messageContentJSON)) {
         // Clear the message if not empty
-        editor?.commands.clearContent();
+        if (editor) {
+          editor.commands.clearContent();
+        }
       }
     }
   }
 
   // Focus the editor
   export function focusInput() {
-    editor?.commands.focus();
+    if (editor) {
+      editor.commands.focus();
+    }
   }
 
   // Initialize with message content if editing
@@ -94,7 +92,6 @@
       if (message) {
         editor.commands.setContent(message.text);
         messageContentJSON = message.text;
-        messageContentText = editor.getText();
       }
     }
   }
@@ -111,13 +108,12 @@
     if (!message || message.deleted) return;
 
     editingMessageId = messageId;
-    messageContentText = message.text;
 
     // Focus the editor and set content
     setTimeout(() => {
-      editor?.focus();
       if (editor) {
-        editor.commands.setContent(messageContentText);
+        editor.commands.setContent(message.text);
+        editor.commands.focus();
       }
     });
   }
@@ -141,7 +137,6 @@
   function cancelEditing() {
     editingMessageId = null;
     messageContentJSON = null;
-    messageContentText = '';
     if (editor) {
       editor.commands.clearContent();
     }
@@ -180,20 +175,15 @@
     <div class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800">
       <!-- <RichTextEditor
         bind:this={richTextEditor}
-        onUpdate={handleEditorUpdate}
-        onKeyDown={handleKeyDown}
+      <Tiptap
+        bind:editor={editor!}
+        content={messageContentJSON}
         placeholder={placeholderText}
         readOnly={disabled || !get(currentUserIdStore)}
         autoFocus={!disabled && !!get(currentUserIdStore)}
-      /> -->
-      <Tiptap
-  bind:editor={editor}
-  content={messageContentJSON}
-  onKeyDown={handleKeyDown}
-  placeholder={placeholderText}
-  readOnly={disabled || !get(currentUserIdStore)}
-  autoFocus={!disabled && !!get(currentUserIdStore)}
-/>
+        onKeyDown={handleKeyDown}
+      />
+      ]
       <div class="flex items-center justify-end border-t border-gray-200 dark:border-gray-700 p-2">
         <button
           class="inline-flex items-center justify-center rounded-md bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-500 dark:focus:ring-offset-gray-800"
