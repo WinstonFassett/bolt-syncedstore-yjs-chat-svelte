@@ -36,7 +36,7 @@
 		placeholder
 	}: Props = $props();
 
-	const editorBaseClass = 'flex-1 prose prose-sm dark:prose-invert max-w-none focus:outline-none p-2';
+	const editorBaseClass = 'flex-1 prose prose-sm dark:prose-invert max-w-none focus:outline-none';
 
 	let element: HTMLElement;
 
