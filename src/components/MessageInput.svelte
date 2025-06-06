@@ -1,4 +1,7 @@
 <script lang="ts">
+  // --- Multiline mode state ---
+  let multilineMode = false;
+
   import { createEventDispatcher } from 'svelte';
   import { store, currentUserIdStore, addMessage, updateMessage } from '../store';
   import { get } from 'svelte/store';
@@ -46,6 +49,8 @@
       // Dispatch sent event
       dispatch('sent', { channelId, parentId });
     }
+    // Always return to single-line mode after sending
+    multilineMode = false;
   }
 
   import { Extension } from '@tiptap/core';
@@ -57,7 +62,34 @@ const customKeymapExtension = Extension.create({
   addProseMirrorPlugins() {
     return [
       keymap({
-        'Mod-Enter': () => { sendMessage(); return true; },
+        'Enter': () => {
+          if (!multilineMode) {
+            sendMessage();
+            return true;
+          }
+          // In multiline mode, allow Enter for newline
+          return false;
+        },
+        'Mod-Enter': () => {
+          if (multilineMode) {
+            sendMessage();
+            return true;
+          }
+          return false;
+        },
+        'Shift-Enter': () => {
+          if (!multilineMode) {
+            multilineMode = true;
+            if (editor) editor.commands.enter(); // Insert newline at cursor
+            return true;
+          }
+          // In multiline, allow Shift+Enter for newline
+          return false;
+        },
+        'Mod-m': () => {
+          multilineMode = !multilineMode;
+          return true;
+        },
         'Escape': () => {
           if (editingMessageId) cancelEditing();
           else if (!isEditorEmpty(messageContentJSON) && editor) editor.commands.clearContent();
@@ -145,11 +177,18 @@ const customKeymapExtension = Extension.create({
   // Get placeholder text based on current state
   $: placeholderText = (() => {
     if (disabled) return "This channel is locked";
-
     const currentUserId = get(currentUserIdStore);
     if (!currentUserId) return "Set up your profile to send messages";
-    
     return isThreadReply ? "Reply in thread..." : "Type a message...";
+  })();
+
+  // Contextual hint
+  $: inputHint = (() => {
+    if (multilineMode) {
+      return 'Press Cmd+Enter to send. Escape to cancel. Cmd+M for single-line.';
+    } else {
+      return 'Press Enter to send. Shift+Enter or Cmd+M for multiline.';
+    }
   })();
   
   // Check if send button should be disabled
@@ -171,28 +210,29 @@ const customKeymapExtension = Extension.create({
       </button>
     </div>
   {/if}
-  <form class="relative" on:submit|preventDefault={sendMessage} autocomplete="off">
-    <div class="relative">
-      <div class="w-full">
-        <Tiptap
-          bind:editor={editor!}
-          content={messageContentJSON}
-          placeholder={placeholderText}
-          readOnly={disabled || !get(currentUserIdStore)}
-          autoFocus={!disabled && !!get(currentUserIdStore)}
-          extensions={[customKeymapExtension]}
-          class="w-full input pr-12 min-h-20 max-h-32 resize-none"
-        />
-        <button
-          type="submit"
-          disabled={isSendDisabled}
-          aria-label={editingMessageId ? 'Save edit' : 'Send message'}
-          class="absolute right-3  bottom-2 p-2 rounded-full bg-gray-200 text-gray-500 hover:bg-primary-600 hover:text-white dark:bg-dark-400 dark:text-gray-400 dark:hover:bg-primary-600 dark:hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary-400"
-          tabindex="0"
-        >
-          <Send size={18} />
-        </button>
-      </div>
+  <form class="flex flex-col gap-1" on:submit|preventDefault={sendMessage} autocomplete="off">
+    <div class="flex items-end gap-2">
+      <Tiptap
+        bind:editor={editor!}
+        content={messageContentJSON}
+        placeholder={placeholderText}
+        readOnly={disabled || !get(currentUserIdStore)}
+        autoFocus={!disabled && !!get(currentUserIdStore)}
+        extensions={[customKeymapExtension]}
+        class={`flex-1 input {
+  overflow-y: unset;
+}${multilineMode ? 'min-h-20 max-h-32 overflow-y-auto' : 'min-h-10 max-h-20'} resize-none`}
+      />
+      <button
+        type="submit"
+        disabled={isSendDisabled}
+        aria-label={editingMessageId ? 'Save edit' : 'Send message'}
+        class="mb-1 ml-2 p-2 rounded-full bg-gray-200 text-gray-500 hover:bg-primary-600 hover:text-white dark:bg-dark-400 dark:text-gray-400 dark:hover:bg-primary-600 dark:hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary-400"
+        tabindex="0"
+      >
+        <Send size={18} />
+      </button>
     </div>
+    <div class="mt-1 text-xs text-gray-500 dark:text-gray-400">{inputHint}</div>
   </form>
 </div>
