@@ -66,7 +66,7 @@
 	});
 </script>
 
-<div bind:this={element} class={cn('flex', className)}>
+<div bind:this={element} class={cn('flex flex-col', className)}>
 	{@render header?.()}
 
 	{#if defaultToolbar}
