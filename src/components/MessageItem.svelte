@@ -1,4 +1,19 @@
 <script lang="ts">
+import { Extension } from '@tiptap/core';
+import { keymap } from '@tiptap/pm/keymap';
+
+// Keymap for editing (Cmd/Ctrl+Enter = save, Escape = cancel)
+const editKeymapExtension = Extension.create({
+  name: 'editKeymap',
+  addProseMirrorPlugins() {
+    return [
+      keymap({
+        'Mod-Enter': () => { saveEdit(); return true; },
+        'Escape': () => { cancelEdit(); return true; }
+      })
+    ];
+  }
+});
   import { createEventDispatcher, onMount } from 'svelte'
   import { store, currentUserIdStore, currentChannelIdStore } from '../store'
   import { formatChatDate } from '../utils/date'
@@ -274,13 +289,14 @@
           <!-- <RichTextEditor
             bind:content={editText}
             onUpdate={(html, text) => editText = html}
-            onKeyDown={handleEditorKeyDown}
+            
             autoFocus={true}
           /> -->
           <TiptapEditor
             bind:editor={editor!}
             content={message.text}
             autoFocus={true}
+            extensions={[editKeymapExtension]}
           />
           <div class="flex items-center gap-2 text-sm">
             <button 
