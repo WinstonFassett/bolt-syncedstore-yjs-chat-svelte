@@ -33,7 +33,8 @@
   let editText = message.text;
   let showConfirmDeleteModal = false;
 
-  let editor: EditorType | null = null;
+  let editorBinding: EditorType | null = null;
+  const editor = editorBinding!
 
   onMount(() => {
     editor?.on('update', () => {
@@ -125,13 +126,6 @@
 
   // Start editing
   function startEditing() {
-    try {
-      // Try to parse existing content as JSON, fall back to plain text if it fails
-      editText = typeof message.text === 'string' ? JSON.parse(message.text) : message.text;
-    } catch (e) {
-      // If parsing fails, use as plain text
-      editText = message.text;
-    }
     isEditing = true;
     showActions = false;
   }
@@ -148,23 +142,20 @@
 
   // Save edit
   function saveEdit() {
-    if (!editText) return;
-    
-    // Convert to string if it's a JSON object
-    const textToSave = typeof editText === 'object' ? JSON.stringify(editText) : editText;
-    
-    if (textToSave.trim() === '') return;
-    
-    message.text = textToSave;
+    if (!editorBinding) return;
+    const json = editorBinding.getJSON();
+    // Consider empty if doc is empty or just a single empty paragraph
+    if (!json || !json.content || (json.content.length === 1 && json.content[0].type === 'paragraph' && (!json.content[0].content || json.content[0].content.length === 0))) {
+      return;
+    }
+    message.text = json;
     message.updatedAt = Date.now();
     isEditing = false;
   }
 
   // Cancel edit
   function cancelEdit() {
-    editText = message.text
     isEditing = false;
-    isEditing = false
   }
 
   // Show delete confirmation modal
@@ -286,10 +277,10 @@
             autoFocus={true}
           /> -->
           <TiptapEditor
-            bind:editor={editor!}
-            content={editText}
-            autoFocus={true}
-          />
+  bind:editor={editorBinding}
+  content={message.text}
+  autoFocus={true}
+/>
           <div class="flex items-center gap-2 text-sm">
             <button 
               class="inline-flex items-center gap-1 rounded-md bg-primary-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:bg-primary-600 dark:hover:bg-primary-700"
@@ -312,10 +303,10 @@
         </div>
       {:else}
         <TiptapEditor
-          bind:editor={editor!}
-          content={message.text}
-          readOnly={true}
-        />
+  bind:editor={editorBinding}
+  content={message.text}
+  readOnly={true}
+/>
       {/if}
       <!-- <code>{JSON.stringify({
         isDeleted, isInThread, threadSummary
