@@ -2,7 +2,7 @@
 	import '../core/editor.css';
 
 	import { onMount, onDestroy, type Snippet } from 'svelte';
-	import { newEditor } from '../core/editor.js';
+	import { defaultExtensions, newEditor } from '../core/editor.js';
 	import { cn } from '../core/utils.js';
 
 	import type { EditorType, ContentType, ExtensionsType } from '../type.js';
@@ -41,10 +41,11 @@
 	let element: HTMLElement;
 
 	onMount(() => {
+		const allExtensions = extensions ? [...defaultExtensions, ...extensions] : defaultExtensions;
 		const editorInstance = newEditor({
 			element,
 			content,
-			extensions: extensions ? [...extensions] : undefined,
+			extensions: allExtensions,
 			editorClass: cn(editorBaseClass, editorClass),
 			onTransaction: () => {
 				editor = undefined; // ! force toolbar update

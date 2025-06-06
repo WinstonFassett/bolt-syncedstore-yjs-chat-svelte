@@ -48,32 +48,32 @@
     }
   }
 
+  import { Extension } from '@tiptap/core';
+import { keymap } from '@tiptap/pm/keymap';
+
+// Custom Tiptap keymap extension for send/cancel
+const customKeymapExtension = Extension.create({
+  name: 'customKeymap',
+  addProseMirrorPlugins() {
+    return [
+      keymap({
+        'Mod-Enter': () => { sendMessage(); return true; },
+        'Escape': () => {
+          if (editingMessageId) cancelEditing();
+          else if (!isEditorEmpty(messageContentJSON) && editor) editor.commands.clearContent();
+          return true;
+        }
+      })
+    ];
+  }
+});
+
+
   // Attach update listener to editor
   $: if (editor) {
     editor.on('update', () => {
       messageContentJSON = editor.getJSON();
     });
-  }
-
-  // Handle key events (e.g., Cmd+Enter or Ctrl+Enter to send)
-  function handleKeyDown(event: KeyboardEvent) {
-    // Check for Cmd+Enter (Mac) or Ctrl+Enter (Windows/Linux)
-    if (event.key === 'Enter' && (event.metaKey || event.ctrlKey)) {
-      event.preventDefault();
-      sendMessage();
-    }
-
-    // Cancel editing with Escape
-    if (event.key === 'Escape') {
-      if (editingMessageId) {
-        cancelEditing();
-      } else if (!isEditorEmpty(messageContentJSON)) {
-        // Clear the message if not empty
-        if (editor) {
-          editor.commands.clearContent();
-        }
-      }
-    }
   }
 
   // Focus the editor
@@ -173,17 +173,15 @@
   
   <div class="relative">
     <div class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800">
-      <!-- <RichTextEditor
-        bind:this={richTextEditor}
       <Tiptap
         bind:editor={editor!}
         content={messageContentJSON}
         placeholder={placeholderText}
         readOnly={disabled || !get(currentUserIdStore)}
         autoFocus={!disabled && !!get(currentUserIdStore)}
-        onKeyDown={handleKeyDown}
+
+        extensions={[customKeymapExtension]}
       />
-      ]
       <div class="flex items-center justify-end border-t border-gray-200 dark:border-gray-700 p-2">
         <button
           class="inline-flex items-center justify-center rounded-md bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-500 dark:focus:ring-offset-gray-800"
