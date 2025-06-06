@@ -35,6 +35,12 @@ Until we figure it out we can hide / remove them
 
 # Bugs
 
+This Tiptap branch is in-progress after 3 different approaches. 
+Main bug is The MessageInput does not work. The main thing missing functionally is getting the content back from the editor and sending it to the store. Maybe it could be 2-way bound? Similarly messages are rendering as editable when they should be read only unless in edit mode. Saved edits should propagate back. 
+
+
+## Other Shortcomings
+
 When user sets up profile, it should look and see if there is an existing profile with a matching username and if it does it should show that user the info and ask if it is them or if they want to create a new profile.
 
 ## Fixed Bugs

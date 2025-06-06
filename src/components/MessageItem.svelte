@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { createEventDispatcher } from 'svelte'
+  import { createEventDispatcher, onMount } from 'svelte'
   import { store, currentUserIdStore, currentChannelIdStore } from '../store'
   import { formatChatDate } from '../utils/date'
   import Avatar from './Avatar.svelte';
@@ -35,7 +35,11 @@
 
   let editor: EditorType | null = null;
 
-
+  onMount(() => {
+    editor?.on('update', () => {
+      console.log('update', editor)
+    })
+  })
   // Thread summary
   $: threadReplies = Object.values($store.channels?.[$currentChannelIdStore]?.messages || {}).filter(
     (m: any) => m.meta.value.parentId === message.meta.value.id && !m.deleted
@@ -281,7 +285,11 @@
             onKeyDown={handleEditorKeyDown}
             autoFocus={true}
           /> -->
-          <TiptapEditor bind:editor={editor!} content={editText} />
+          <TiptapEditor
+            bind:editor={editor!}
+            content={editText}
+            autoFocus={true}
+          />
           <div class="flex items-center gap-2 text-sm">
             <button 
               class="inline-flex items-center gap-1 rounded-md bg-primary-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:bg-primary-600 dark:hover:bg-primary-700"
@@ -303,7 +311,11 @@
           </div>
         </div>
       {:else}
-        <TiptapEditor editor={editor!} content={message.text} />
+        <TiptapEditor
+          bind:editor={editor!}
+          content={message.text}
+          readOnly={true}
+        />
       {/if}
       <!-- <code>{JSON.stringify({
         isDeleted, isInThread, threadSummary

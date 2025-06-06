@@ -17,6 +17,8 @@
 		defaultToolbar?: boolean;
 		header?: Snippet;
 		children?: Snippet;
+		readOnly?: boolean;
+		autoFocus?: boolean;
 	};
 
 	let {
@@ -27,7 +29,9 @@
 		editorClass,
 		defaultToolbar: defaultToolbar,
 		header,
-		children
+		children,
+		readOnly,
+		autoFocus
 	}: Props = $props();
 
 	const editorBaseClass =
@@ -47,6 +51,12 @@
 				editor = editorInstance;
 			}
 		});
+		if (readOnly) {
+			editorInstance.setEditable(false);
+		}
+		if (autoFocus) {
+			editorInstance.commands.focus();
+		}
 		editor = editorInstance;
 	});
 

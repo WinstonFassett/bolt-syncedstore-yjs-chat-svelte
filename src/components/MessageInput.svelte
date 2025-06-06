@@ -72,7 +72,8 @@
   
   // Focus the editor
   export function focusInput() {
-    richTextEditor?.focus();
+    // richTextEditor?.focus();
+    editor?.commands.focus()
   }
   
   // Initialize with message content if editing
@@ -174,7 +175,15 @@
         readOnly={disabled || !get(currentUserIdStore)}
         autoFocus={!disabled && !!get(currentUserIdStore)}
       /> -->
-      <Tiptap bind:editor={editor!} content={messageContent} />
+      <Tiptap
+        bind:editor={richTextEditor}
+        content={messageContent}
+        onUpdate={({ detail }) => handleEditorUpdate(detail.json, detail.text)}
+        onKeyDown={handleKeyDown}
+        placeholder={placeholderText}
+        readOnly={disabled || !get(currentUserIdStore)}
+        autoFocus={!disabled && !!get(currentUserIdStore)}
+      />
       <div class="flex items-center justify-end border-t border-gray-200 dark:border-gray-700 p-2">
         <button
           class="inline-flex items-center justify-center rounded-md bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-500 dark:focus:ring-offset-gray-800"
