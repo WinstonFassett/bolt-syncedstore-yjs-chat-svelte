@@ -2,6 +2,7 @@
   import { createEventDispatcher } from 'svelte'
   import { store, currentUserIdStore, currentChannelIdStore } from '../store'
   import RichTextMessage from './RichTextMessage.svelte'
+  import RichTextEditor from './RichTextEditor.svelte'
   import { formatChatDate } from '../utils/date'
   import Avatar from './Avatar.svelte';
   import UserInfoPopup from './UserInfoPopup.svelte';
@@ -115,19 +116,20 @@
     emojiInput = ''
   }
 
-  import { tick } from 'svelte'
-  let editTextarea: HTMLTextAreaElement
-
   // Start editing
-  async function startEditing() {
-    editText = message.text
-    isEditing = true
-    showActions = false
-    
-    // Wait for the DOM to update, then focus the textarea
-    await tick()
-    if (editTextarea) {
-      editTextarea.focus()
+  function startEditing() {
+    editText = message.text;
+    isEditing = true;
+    // Focus is handled by the RichTextEditor's autoFocus prop
+  }
+  
+  function handleEditorKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Escape') {
+      event.preventDefault();
+      cancelEdit();
+    } else if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') {
+      event.preventDefault();
+      saveEdit();
     }
   }
 
@@ -173,11 +175,11 @@
 
   // Handle keyboard events for editing
   function handleEditKeydown(event: KeyboardEvent) {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault()
-      saveEdit()
+    if (event.ctrlKey && event.key === 'Enter') {
+      event.preventDefault();
+      saveEdit();
     } else if (event.key === 'Escape') {
-      cancelEdit()
+      cancelEdit();
     }
   }
 </script>
@@ -257,30 +259,29 @@
         </div>
       {:else if isEditing}
         <div class="flex flex-col gap-2">
-          <textarea
-            class="input min-h-[60px] w-full resize-none"
-            bind:this={editTextarea}
-            bind:value={editText}
-            on:keydown={handleEditKeydown}
-            rows="3"
-          ></textarea>
+          <RichTextEditor
+            bind:content={editText}
+            onUpdate={(html, text) => editText = html}
+            onKeyDown={handleEditorKeyDown}
+            autoFocus={true}
+          />
           <div class="flex items-center gap-2 text-sm">
             <button 
-              class="inline-flex items-center gap-1 rounded px-2 py-1 text-primary-600 hover:bg-primary-50 dark:text-primary-400 dark:hover:bg-dark-300"
+              class="inline-flex items-center gap-1 rounded-md bg-primary-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:bg-primary-600 dark:hover:bg-primary-700"
               on:click={saveEdit}
             >
-              <Check size={16} />
-              Save
+              <Check size={16} class="mr-1" />
+              Save Changes
             </button>
             <button 
-              class="inline-flex items-center gap-1 rounded px-2 py-1 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-dark-300"
+              class="inline-flex items-center gap-1 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
               on:click={cancelEdit}
             >
-              <X size={16} />
+              <X size={16} class="mr-1" />
               Cancel
             </button>
-            <span class="text-xs text-gray-500 dark:text-gray-400">
-              Press Enter to save, Escape to cancel
+            <span class="ml-2 text-xs text-gray-500 dark:text-gray-400">
+              Press Ctrl+Enter to save, Escape to cancel
             </span>
           </div>
         </div>
