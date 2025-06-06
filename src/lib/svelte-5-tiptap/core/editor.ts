@@ -18,7 +18,7 @@ import Link from '@tiptap/extension-link';
 import ImageResize from 'tiptap-extension-resize-image';
 import { FontSize } from './custom-extension/font-size.js';
 
-import { jsonContent } from './content-demo.js';
+// import { jsonContent } from './content-demo.js';
 
 export const defaultExtensions: Extensions = [
 	StarterKit.configure({
@@ -60,7 +60,7 @@ export function newEditor(params: {
 
 	return new Editor({
 		element,
-		content: content ?? jsonContent,
+		content: content,
 		extensions: extensions ?? defaultExtensions,
 		editorProps: {
 			attributes: {

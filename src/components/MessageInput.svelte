@@ -9,47 +9,58 @@
   export let parentId: string | null = null;
   export let isThreadReply = false;
   export let disabled = false;
-  
+
   let editor: EditorType | null = null;
-  let richTextEditor: EditorInstance | null = null;
   let editingMessageId: string | null = null;
-  let messageContent = '';
-  
+  let messageContentJSON: any = null;
+
+  function isEditorEmpty(json: any): boolean {
+    // Tiptap empty doc: { type: 'doc', content: [{ type: 'paragraph', content: [] }] }
+    if (!json || !json.content || json.content.length === 0) return true;
+    if (json.content.length === 1 && json.content[0].type === 'paragraph') {
+      const para = json.content[0];
+      return !para.content || para.content.length === 0 || (para.content.length === 1 && para.content[0].type === 'text' && !para.content[0].text.trim());
+    }
+    return false;
+  }
+
   const dispatch = createEventDispatcher<{
     sent: { channelId: string; parentId: string | null };
   }>();
 
   function sendMessage() {
     const currentUserId = get(currentUserIdStore);
-    if (!channelId || !currentUserId || !richTextEditor) return;
-    
-    const html = richTextEditor.getHTML();
-    const text = richTextEditor.getText();
-    
+    if (!channelId || !currentUserId || !editor) return;
+
+    const json = editor.getJSON();
+    const text = editor.getText();
+
     if (!text.trim()) return;
-    
+
     if (editingMessageId) {
       // Update existing message
-      updateMessage(channelId, editingMessageId, html);
+      updateMessage(channelId, editingMessageId, json);
       editingMessageId = null;
     } else {
       // Add new message
-      addMessage(channelId, currentUserId, html, parentId || undefined);
-      
+      addMessage(channelId, currentUserId, json, parentId || undefined);
+
       // Clear the editor after sending
-      richTextEditor.clear();
-      
+      editor.commands.clearContent();
+
       // Dispatch sent event
       dispatch('sent', { channelId, parentId });
     }
   }
-  
-  // Handle editor updates
-  function handleEditorUpdate(json: Record<string, any>, text: string) {
-    // Store the plain text for the send button disabled state
-    messageContent = text;
+
+  // Attach update listener to editor
+  $: if (editor) {
+    editor.on('update', () => {
+      messageContentJSON = editor?.getJSON();
+      messageContentText = editor?.getText() || '';
+    });
   }
-  
+
   // Handle key events (e.g., Cmd+Enter or Ctrl+Enter to send)
   function handleKeyDown(event: KeyboardEvent) {
     // Check for Cmd+Enter (Mac) or Ctrl+Enter (Windows/Linux)
@@ -57,89 +68,89 @@
       event.preventDefault();
       sendMessage();
     }
-    
+
     // Cancel editing with Escape
     if (event.key === 'Escape') {
       if (editingMessageId) {
         cancelEditing();
-      } else if (messageContent.trim()) {
+      } else if (!isEditorEmpty(messageContentJSON)) {
         // Clear the message if not empty
-        messageContent = '';
-        richTextEditor?.clear();
+        editor?.commands.clearContent();
       }
     }
   }
-  
+
   // Focus the editor
   export function focusInput() {
-    // richTextEditor?.focus();
-    editor?.commands.focus()
+    editor?.commands.focus();
   }
-  
+
   // Initialize with message content if editing
-  $: if (editingMessageId && channelId && richTextEditor) {
+  $: if (editingMessageId && channelId && editor) {
     const currentStore = get(store);
     const channel = currentStore.channels[channelId];
     if (channel) {
       const message = channel.messages[editingMessageId];
       if (message) {
-        richTextEditor.$set({ content: message.text });
-        messageContent = message.text;
+        editor.commands.setContent(message.text);
+        messageContentJSON = message.text;
+        messageContentText = editor.getText();
       }
     }
   }
-  
+
   // Start editing a message
   export function startEditing(messageId: string) {
     if (!channelId) return;
-    
+
     const currentStore = get(store);
     const channel = currentStore.channels[channelId];
     if (!channel) return;
-    
+
     const message = channel.messages[messageId];
     if (!message || message.deleted) return;
-    
+
     editingMessageId = messageId;
-    messageContent = message.text;
-    
+    messageContentText = message.text;
+
     // Focus the editor and set content
     setTimeout(() => {
-      richTextEditor?.focus();
-      if (richTextEditor) {
-        richTextEditor.$set({ content: messageContent });
+      editor?.focus();
+      if (editor) {
+        editor.commands.setContent(messageContentText);
       }
     });
   }
-  
+
   // Delete a message
   export function deleteMessage(messageId: string) {
     if (!channelId) return;
-    
+
     const currentStore = get(store);
     const channel = currentStore.channels[channelId];
     if (!channel) return;
-    
+
     const message = channel.messages[messageId];
     if (message) {
       message.deleted = true;
       message.updatedAt = Date.now();
     }
   }
-  
+
   // Cancel editing
   function cancelEditing() {
     editingMessageId = null;
-    messageContent = '';
-    if (richTextEditor) {
-      richTextEditor.clear();
+    messageContentJSON = null;
+    messageContentText = '';
+    if (editor) {
+      editor.commands.clearContent();
     }
   }
-  
+
   // Get placeholder text based on current state
   $: placeholderText = (() => {
     if (disabled) return "This channel is locked";
-    
+
     const currentUserId = get(currentUserIdStore);
     if (!currentUserId) return "Set up your profile to send messages";
     
@@ -147,7 +158,7 @@
   })();
   
   // Check if send button should be disabled
-  $: isSendDisabled = disabled || !get(currentUserIdStore) || !messageContent.trim();
+  $: isSendDisabled = disabled || !get(currentUserIdStore) || isEditorEmpty(messageContentJSON);
 </script>
 
 <div class="px-4 py-3">
@@ -176,14 +187,13 @@
         autoFocus={!disabled && !!get(currentUserIdStore)}
       /> -->
       <Tiptap
-        bind:editor={richTextEditor}
-        content={messageContent}
-        onUpdate={({ detail }) => handleEditorUpdate(detail.json, detail.text)}
-        onKeyDown={handleKeyDown}
-        placeholder={placeholderText}
-        readOnly={disabled || !get(currentUserIdStore)}
-        autoFocus={!disabled && !!get(currentUserIdStore)}
-      />
+  bind:editor={editor}
+  content={messageContentJSON}
+  onKeyDown={handleKeyDown}
+  placeholder={placeholderText}
+  readOnly={disabled || !get(currentUserIdStore)}
+  autoFocus={!disabled && !!get(currentUserIdStore)}
+/>
       <div class="flex items-center justify-end border-t border-gray-200 dark:border-gray-700 p-2">
         <button
           class="inline-flex items-center justify-center rounded-md bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-500 dark:focus:ring-offset-gray-800"
