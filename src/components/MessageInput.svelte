@@ -156,43 +156,43 @@ const customKeymapExtension = Extension.create({
   $: isSendDisabled = disabled || !get(currentUserIdStore) || isEditorEmpty(messageContentJSON);
 </script>
 
-<div class="px-4 py-3">
+<div class="p-4 border-t border-gray-200 dark:border-dark-400">
   {#if editingMessageId}
     <div class="mb-2 flex items-center text-sm">
       <span class="text-gray-600 dark:text-gray-400">
         Editing message
       </span>
-      <button 
+      <button
         class="ml-2 text-primary-600 hover:underline dark:text-primary-400"
         on:click={cancelEditing}
+        type="button"
       >
         Cancel
       </button>
     </div>
   {/if}
-  
-  <div class="relative">
-    <div class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800">
-      <Tiptap
-        bind:editor={editor!}
-        content={messageContentJSON}
-        placeholder={placeholderText}
-        readOnly={disabled || !get(currentUserIdStore)}
-        autoFocus={!disabled && !!get(currentUserIdStore)}
-
-        extensions={[customKeymapExtension]}
-      />
-      <div class="flex items-center justify-end border-t border-gray-200 dark:border-gray-700 p-2">
+  <form class="relative" on:submit|preventDefault={sendMessage} autocomplete="off">
+    <div class="relative">
+      <div class="w-full">
+        <Tiptap
+          bind:editor={editor!}
+          content={messageContentJSON}
+          placeholder={placeholderText}
+          readOnly={disabled || !get(currentUserIdStore)}
+          autoFocus={!disabled && !!get(currentUserIdStore)}
+          extensions={[customKeymapExtension]}
+          class="w-full input pr-12 min-h-[48px] max-h-32 resize-none"
+        />
         <button
-          class="inline-flex items-center justify-center rounded-md bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-500 dark:focus:ring-offset-gray-800"
-          on:click={sendMessage}
+          type="submit"
           disabled={isSendDisabled}
-          aria-label={editingMessageId ? "Save edit" : "Send message"}
+          aria-label={editingMessageId ? 'Save edit' : 'Send message'}
+          class="absolute right-3 bottom-3 p-2 rounded-full bg-gray-200 text-gray-500 hover:bg-primary-600 hover:text-white dark:bg-dark-400 dark:text-gray-400 dark:hover:bg-primary-600 dark:hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary-400"
+          tabindex="0"
         >
-          <Send size={20} class="mr-1" />
-          {editingMessageId ? 'Save' : 'Send'}
+          <Send size={18} />
         </button>
       </div>
     </div>
-  </div>
+  </form>
 </div>
