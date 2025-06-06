@@ -1,6 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
   import { store, currentUserIdStore, currentChannelIdStore } from '../store'
+  import RichTextMessage from './RichTextMessage.svelte'
   import { formatChatDate } from '../utils/date'
   import Avatar from './Avatar.svelte';
   import UserInfoPopup from './UserInfoPopup.svelte';
@@ -284,7 +285,7 @@
           </div>
         </div>
       {:else}
-        <p class="whitespace-pre-line break-words text-gray-800 dark:text-gray-200">{message.text}</p>
+        <RichTextMessage content={message.text} />
       {/if}
       <!-- <code>{JSON.stringify({
         isDeleted, isInThread, threadSummary
