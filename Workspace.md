@@ -1,5 +1,8 @@
 # Workspace
 
+package manager: pnpm
+
+
 # Important Context
 
 - This is a Sveltekit 5 bootstrapped app to be a SPA without SSR
@@ -84,11 +87,11 @@ When people join/leave the y webrtc (yjs presence)
 
 We don't have the concept of joining or leaving channels yet, but we can assume that when a client is on a channel-related route that it is at least for that time, subbing to its notifiactions. So when looking at a channel or channel thread, always show notifications about new messages when the userId does not match current user.
 
-#### Rich-text message editing and formatting using Tiptap
+#### ✅ Rich-text message editing and formatting using Tiptap
 
 Using tiptap or something like it. 
 
-- Starter kit 
+-  Starter kit 
     - Nodes
         - Blockquote
         - BulletList
@@ -121,7 +124,11 @@ Need a formatting menu.
 
 For SyncedStore need to use SyncedXml
 
-##### Live-editing Rich Text messages
+##### Google-Wave-style Live-editing Rich Text messages
+
+Authors can toggle channels into Wave mode 
+via a toggle displayed with the tiptap inputs
+
 
 Checkbox user setting shown when editing a message. 
 If checked, connects TipTap directly to the YJS type.
