@@ -5,6 +5,7 @@
   import { Send } from 'lucide-svelte';
   import RichTextEditor from './RichTextEditor.svelte';
   import type { EditorInstance } from './RichTextEditor.svelte';
+	import Tiptap from './Tiptap.svelte';
   
   export let channelId: string | null = null;
   export let parentId: string | null = null;
@@ -166,15 +167,15 @@
   
   <div class="relative">
     <div class="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800">
-      <RichTextEditor
+      <!-- <RichTextEditor
         bind:this={richTextEditor}
         onUpdate={handleEditorUpdate}
         onKeyDown={handleKeyDown}
         placeholder={placeholderText}
         readOnly={disabled || !get(currentUserIdStore)}
         autoFocus={!disabled && !!get(currentUserIdStore)}
-      />
-      
+      /> -->
+      <Tiptap content={messageContent} />
       <div class="flex items-center justify-end border-t border-gray-200 dark:border-gray-700 p-2">
         <button
           class="inline-flex items-center justify-center rounded-md bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-500 dark:focus:ring-offset-gray-800"

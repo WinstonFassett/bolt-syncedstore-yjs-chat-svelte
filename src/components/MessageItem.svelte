@@ -9,6 +9,7 @@
   import ConfirmDeleteModal from './ConfirmDeleteModal.svelte';
   import { MessageSquare, Pencil, Trash2, Smile, Check, X, SmilePlus, RotateCcw } from 'lucide-svelte'
   import { fade, slide } from 'svelte/transition'
+	import Tiptap from './Tiptap.svelte';
   
   export let message: any
   export let showThreadButton = true
@@ -272,12 +273,13 @@
         </div>
       {:else if isEditing}
         <div class="flex flex-col gap-2">
-          <RichTextEditor
+          <!-- <RichTextEditor
             bind:content={editText}
             onUpdate={(html, text) => editText = html}
             onKeyDown={handleEditorKeyDown}
             autoFocus={true}
-          />
+          /> -->
+          <Tiptap content={editText} />
           <div class="flex items-center gap-2 text-sm">
             <button 
               class="inline-flex items-center gap-1 rounded-md bg-primary-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:bg-primary-600 dark:hover:bg-primary-700"

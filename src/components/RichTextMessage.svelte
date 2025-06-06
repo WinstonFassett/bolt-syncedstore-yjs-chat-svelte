@@ -18,10 +18,13 @@
   import CodeBlock from '@tiptap/extension-code-block';
   import HorizontalRule from '@tiptap/extension-horizontal-rule';
   import Image from '@tiptap/extension-image';
-
-  export let content: string | Record<string, any> = '';
+	import Tiptap from './Tiptap.svelte';
+  
+  const { content = '', className = '' } = $props<{ content?: string; className?: string }>();
+  // export let content: string | Record<string, any> = '';
   export const readOnly = true; // Always read-only for this component
-  export let className = '';
+  
+  // export let className = '';
 
   let editor: Editor | null = null;
   let editorElement: HTMLDivElement;
@@ -89,28 +92,30 @@
   });
 
   // Update content when the prop changes
-  $: if (editor && content) {
-    try {
-      const currentContent = JSON.stringify(editor.getJSON());
-      const newContent = typeof content === 'string' ? 
-        (content.trim().startsWith('{') ? content : JSON.stringify(content)) : 
-        JSON.stringify(content);
-      
-      if (currentContent !== newContent) {
-        const parsedContent = typeof content === 'string' && content.trim().startsWith('{') ? 
-          JSON.parse(content) : content;
-        editor.commands.setContent(parsedContent);
+  $effect(() => {
+    if (editor && content) {
+      try {
+        const currentContent = JSON.stringify(editor.getJSON());
+        const newContent = typeof content === 'string' ? 
+          (content.trim().startsWith('{') ? content : JSON.stringify(content)) : 
+          JSON.stringify(content);
+        
+        if (currentContent !== newContent) {
+          const parsedContent = typeof content === 'string' && content.trim().startsWith('{') ? 
+            JSON.parse(content) : content;
+          editor.commands.setContent(parsedContent);
+        }
+      } catch (e) {
+        console.error('Error updating content:', e);
+        editor.commands.setContent(content);
       }
-    } catch (e) {
-      console.error('Error updating content:', e);
-      editor.commands.setContent(content);
     }
-  }
+  });
 </script>
 
-<div bind:this={editorElement} class={className}>
-  <!-- Editor content will be rendered here -->
-</div>
+<!-- <div bind:this={editorElement} class={className}>
+</div> -->
+<Tiptap content={content} />
 
 <style>
   /* Let Tailwind's @tailwindcss/typography handle all the styling */
