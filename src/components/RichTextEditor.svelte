@@ -17,8 +17,8 @@
   // Re-export the interface for convenience
   export type { EditorInstance };
 
-  export let content = '';
-  export let onUpdate: (html: string, text: string) => void = () => {};
+  export let content: Record<string, any> | string = '';
+  export let onUpdate: (json: Record<string, any>, text: string) => void = () => {};
   export let onKeyDown: (event: KeyboardEvent) => void = () => {};
   export let autoFocus = false;
   export let readOnly = false;
@@ -37,13 +37,13 @@
       extensions: [
         StarterKit,
       ],
-      content: content,
+      content: typeof content === 'string' ? content : content,
       editable: !readOnly,
       autofocus: autoFocus ? 'end' : false,
       onUpdate: ({ editor }) => {
-        const html = editor.getHTML();
+        const json = editor.getJSON();
         const text = editor.getText();
-        onUpdate(html, text);
+        onUpdate(json, text);
       },
       editorProps: {
         attributes: {
@@ -77,12 +77,19 @@
   });
 
   // Update content when the prop changes
-  $: if (editor && content !== editor.getHTML() && document.activeElement !== editor.view.dom) {
-    const { from, to } = editor.state.selection;
-    editor.commands.setContent(content);
-    // Restore cursor position if possible
-    if (from <= editor.state.doc.content.size) {
-      editor.commands.setTextSelection({ from, to });
+  $: if (editor && content && document.activeElement !== editor.view.dom) {
+    const currentContent = JSON.stringify(editor.getJSON());
+    const newContent = typeof content === 'string' ? content : JSON.stringify(content);
+    
+    if (currentContent !== newContent) {
+      const { from, to } = editor.state.selection;
+      editor.commands.setContent(content);
+      // Restore cursor position if possible
+      if (from <= editor.state.doc.content.size) {
+        setTimeout(() => {
+          editor?.commands.setTextSelection({ from, to });
+        });
+      }
     }
   }
 

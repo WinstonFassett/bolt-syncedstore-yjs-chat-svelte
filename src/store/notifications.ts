@@ -259,24 +259,47 @@ export function setupMessageNotifications(initOnly: boolean = false) {
           const user = storeData?.users?.[userId];
           
           if (!channel || !user) {
-            console.log('⚠️ Channel or user not found', { channelId, userId })
-            return
+            console.log('⚠️ Channel or user not found', { channelId, userId });
+            return;
           }
           
-          // Format the notification
-          const displayName = (user.fullName || user.username || 'Someone') as string
-          const channelName = (channel.name || 'a channel') as string
-          const messageText = (message.text || '') as string
-          const messagePreview = messageText.length > 30 
-            ? messageText.substring(0, 30) + '...' 
-            : messageText
-          
-          console.log(`🔔 Showing toast: ${displayName} in #${channelName}: ${messagePreview}`)
-          addToast(
-            `${displayName} in #${channelName}: ${messagePreview}`,
-            'info',
-            8000
-          )
+          // Format the notification message
+          let messageText = '';
+          try {
+            // Try to parse the message text as JSON
+            const content = typeof message.text === 'string' && message.text.trim().startsWith('{') 
+              ? JSON.parse(message.text) 
+              : message.text;
+              
+            // If it's a JSON object, extract the text content
+            if (content && typeof content === 'object' && content.type === 'doc') {
+              // Simple text extraction from JSON content
+              messageText = content.content
+                ?.map((node: any) => 
+                  node.content?.map((n: any) => n.text).join('') || ''
+                )
+                .join(' ')
+                .substring(0, 50) || '';
+            } else {
+              // Fallback to plain text
+              messageText = String(message.text || '').substring(0, 50);
+            }
+            
+            const displayName = user.fullName || user.username || 'Someone';
+            const channelName = channel.name || 'a channel';
+            const notificationText = message.threadId
+              ? `New reply in thread from ${displayName}: ${messageText}${messageText.length === 50 ? '...' : ''}`
+              : `New message from ${displayName} in #${channelName}: ${messageText}${messageText.length === 50 ? '...' : ''}`;
+            
+            console.log(`🔔 Showing toast: ${notificationText}`);
+            addToast(notificationText, 'info', 8000);
+            
+          } catch (e) {
+            console.error('Error formatting notification:', e);
+            // Fallback to a simple notification if there's an error
+            const displayName = user.fullName || user.username || 'Someone';
+            addToast(`New message from ${displayName}`, 'info', 8000);
+          }
         }
       })
     }

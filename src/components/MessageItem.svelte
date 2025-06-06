@@ -118,9 +118,15 @@
 
   // Start editing
   function startEditing() {
-    editText = message.text;
+    try {
+      // Try to parse existing content as JSON, fall back to plain text if it fails
+      editText = typeof message.text === 'string' ? JSON.parse(message.text) : message.text;
+    } catch (e) {
+      // If parsing fails, use as plain text
+      editText = message.text;
+    }
     isEditing = true;
-    // Focus is handled by the RichTextEditor's autoFocus prop
+    showActions = false;
   }
   
   function handleEditorKeyDown(event: KeyboardEvent) {
@@ -135,15 +141,22 @@
 
   // Save edit
   function saveEdit() {
-    if (!editText.trim()) return
-    message.text = editText.trim()
-    message.updatedAt = Date.now()
-    isEditing = false
+    if (!editText) return;
+    
+    // Convert to string if it's a JSON object
+    const textToSave = typeof editText === 'object' ? JSON.stringify(editText) : editText;
+    
+    if (textToSave.trim() === '') return;
+    
+    message.text = textToSave;
+    message.updatedAt = Date.now();
+    isEditing = false;
   }
 
   // Cancel edit
   function cancelEdit() {
     editText = message.text
+    isEditing = false;
     isEditing = false
   }
 

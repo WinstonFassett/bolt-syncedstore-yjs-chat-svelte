@@ -36,8 +36,8 @@
         {/if}
       </div>
       
-      <div class="toast-content">
-        {toast.message}
+      <div class="toast-content prose prose-sm dark:prose-invert max-w-none">
+        {@html toast.message}
       </div>
       
       <button 
