@@ -31,7 +31,8 @@
 	}: Props = $props();
 
 	const editorBaseClass =
-		'flex-1 prose max-w-full h-full p-2 overflow-auto m-2 outline-base-300 focus:outline-4 outline-offset-4';
+		// 'flex-1 prose max-w-full h-full p-2 overflow-auto m-2 outline-base-300 focus:outline-4 outline-offset-4';
+		'prose prose-sm dark:prose-invert max-w-none focus:outline-none'
 
 	let element: HTMLElement;
 
@@ -54,7 +55,7 @@
 	});
 </script>
 
-<div bind:this={element} class={cn('flex h-full w-full flex-col border', className)}>
+<div bind:this={element} class={cn('flex', className)}>
 	{@render header?.()}
 
 	{#if defaultToolbar}

@@ -1,16 +1,15 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
   import { store, currentUserIdStore, currentChannelIdStore } from '../store'
-  import RichTextMessage from './RichTextMessage.svelte'
-  import RichTextEditor from './RichTextEditor.svelte'
   import { formatChatDate } from '../utils/date'
   import Avatar from './Avatar.svelte';
   import UserInfoPopup from './UserInfoPopup.svelte';
   import ConfirmDeleteModal from './ConfirmDeleteModal.svelte';
   import { MessageSquare, Pencil, Trash2, Smile, Check, X, SmilePlus, RotateCcw } from 'lucide-svelte'
   import { fade, slide } from 'svelte/transition'
-	import Tiptap from './Tiptap.svelte';
+	import { TiptapEditor, type EditorType} from '../lib/svelte-5-tiptap';
   
+
   export let message: any
   export let showThreadButton = true
   export let isInThread = false // True if this message is being rendered inside the ThreadView itself
@@ -33,6 +32,9 @@
   let isEditing = false
   let editText = message.text;
   let showConfirmDeleteModal = false;
+
+  let editor: EditorType | null = null;
+
 
   // Thread summary
   $: threadReplies = Object.values($store.channels?.[$currentChannelIdStore]?.messages || {}).filter(
@@ -279,7 +281,7 @@
             onKeyDown={handleEditorKeyDown}
             autoFocus={true}
           /> -->
-          <Tiptap content={editText} />
+          <TiptapEditor bind:editor={editor!} content={editText} />
           <div class="flex items-center gap-2 text-sm">
             <button 
               class="inline-flex items-center gap-1 rounded-md bg-primary-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:bg-primary-600 dark:hover:bg-primary-700"
@@ -301,7 +303,7 @@
           </div>
         </div>
       {:else}
-        <RichTextMessage content={message.text} />
+        <TiptapEditor editor={editor!} content={message.text} />
       {/if}
       <!-- <code>{JSON.stringify({
         isDeleted, isInThread, threadSummary

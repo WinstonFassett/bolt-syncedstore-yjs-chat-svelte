@@ -3,15 +3,14 @@
   import { store, currentUserIdStore, addMessage, updateMessage } from '../store';
   import { get } from 'svelte/store';
   import { Send } from 'lucide-svelte';
-  import RichTextEditor from './RichTextEditor.svelte';
-  import type { EditorInstance } from './RichTextEditor.svelte';
-	import Tiptap from './Tiptap.svelte';
+	import { TiptapEditor as Tiptap, type EditorType } from '../lib/svelte-5-tiptap';
   
   export let channelId: string | null = null;
   export let parentId: string | null = null;
   export let isThreadReply = false;
   export let disabled = false;
   
+  let editor: EditorType | null = null;
   let richTextEditor: EditorInstance | null = null;
   let editingMessageId: string | null = null;
   let messageContent = '';
@@ -175,7 +174,7 @@
         readOnly={disabled || !get(currentUserIdStore)}
         autoFocus={!disabled && !!get(currentUserIdStore)}
       /> -->
-      <Tiptap content={messageContent} />
+      <Tiptap bind:editor={editor!} content={messageContent} />
       <div class="flex items-center justify-end border-t border-gray-200 dark:border-gray-700 p-2">
         <button
           class="inline-flex items-center justify-center rounded-md bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-500 dark:focus:ring-offset-gray-800"
