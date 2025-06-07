@@ -55,7 +55,7 @@
         <h3 class="font-medium mb-2">Messages:</h3>
         <div class="space-y-2">
           {#each Object.values($store.channels[$currentChannelIdStore]?.messages ?? {}) as message}
-            <div class="p-2 bg-gray-100 rounded dark:bg-dark-200">
+            <div class="p-2 bg-gray-100 rounded-sm dark:bg-dark-200">
               <div class="text-sm text-gray-600 dark:text-gray-400">
                 {$store.users[message.meta.value.userId]?.username}:
               </div>

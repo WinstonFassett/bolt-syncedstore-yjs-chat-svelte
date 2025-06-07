@@ -46,7 +46,7 @@
     <div class="flex h-14 items-center justify-between border-b border-gray-200 px-4 dark:border-dark-400">
       <h2 class="font-medium">Thread</h2>
       <button
-        class="rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-dark-300 dark:hover:text-gray-200"
+        class="rounded-sm p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-dark-300 dark:hover:text-gray-200"
         on:click={closeThread}
         aria-label="Close thread"
       >

@@ -35,7 +35,7 @@
     </div>
     
     <button
-      class="rounded p-1 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-dark-300 dark:hover:text-gray-200"
+      class="rounded-sm p-1 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-dark-300 dark:hover:text-gray-200"
       on:click={openSettings}
       aria-label="Channel settings"
     >
@@ -46,8 +46,8 @@
     </button>
   {:else}
     <div>
-      <div class="h-6 w-32 animate-pulse rounded bg-gray-200 dark:bg-dark-300"></div>
-      <div class="mt-1 h-4 w-48 animate-pulse rounded bg-gray-200 dark:bg-dark-300"></div>
+      <div class="h-6 w-32 animate-pulse rounded-sm bg-gray-200 dark:bg-dark-300"></div>
+      <div class="mt-1 h-4 w-48 animate-pulse rounded-sm bg-gray-200 dark:bg-dark-300"></div>
     </div>
   {/if}
 </div>

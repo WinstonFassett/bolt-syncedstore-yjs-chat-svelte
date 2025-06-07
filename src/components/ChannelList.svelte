@@ -44,7 +44,7 @@
       Channels
     </h2>
     <button 
-      class="rounded p-1 text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-dark-300 dark:hover:text-gray-200"
+      class="rounded-sm p-1 text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-dark-300 dark:hover:text-gray-200"
       on:click={dialog.open}
       aria-label="Add channel"
     >
@@ -85,7 +85,7 @@
         <div class="mb-4 flex items-center justify-between">
           <h3 class="text-lg font-medium">Create Channel</h3>
           <button
-            class="rounded p-1 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-dark-300 dark:hover:text-gray-200"
+            class="rounded-sm p-1 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-dark-300 dark:hover:text-gray-200"
             on:click={dialog.close}
           >
             <X size={20} />

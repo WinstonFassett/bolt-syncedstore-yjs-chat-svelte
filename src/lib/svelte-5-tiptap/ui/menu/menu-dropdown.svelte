@@ -51,7 +51,7 @@
 	{#if open}
 		<div
 			class={cn(
-				'menu menu-horizontal dropdown-content bg-base-100 rounded-box z-1 -mx-2 w-30 gap-1 p-2 shadow-sm',
+				'menu menu-horizontal dropdown-content bg-base-100 rounded-box z-1 -mx-2 w-30 gap-1 p-2 shadow-xs',
 				menuClass
 			)}
 		>

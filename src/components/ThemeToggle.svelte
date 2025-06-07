@@ -7,7 +7,7 @@
 </script>
 
 <button
-  class="rounded p-1 text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-dark-300 dark:hover:text-gray-200"
+  class="rounded-sm p-1 text-gray-500 transition-colors hover:bg-gray-200 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-dark-300 dark:hover:text-gray-200"
   on:click={toggleTheme}
   aria-label={$isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
 >

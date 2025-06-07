@@ -20,7 +20,7 @@
 
 <!-- Notification Bell Button -->
 <button 
-  class="relative rounded p-1.5 text-gray-600 transition-colors hover:bg-gray-200 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-dark-300 dark:hover:text-gray-200"
+  class="relative rounded-sm p-1.5 text-gray-600 transition-colors hover:bg-gray-200 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-dark-300 dark:hover:text-gray-200"
   on:click={openDialog}
   aria-label="Notifications"
 >
@@ -31,7 +31,7 @@
 {#if isOpen}
   <!-- Backdrop -->
   <div 
-    class="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm" 
+    class="fixed inset-0 z-40 bg-black/30 backdrop-blur-xs" 
     on:click={closeDialog}
     on:keydown={(e) => e.key === 'Escape' && closeDialog()}
     role="button"
@@ -50,7 +50,7 @@
       
       <div class="flex items-center gap-2">
         <button
-          class="rounded p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-dark-300 dark:hover:text-gray-200"
+          class="rounded-sm p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-dark-300 dark:hover:text-gray-200"
           on:click={closeDialog}
           title="Close notifications"
         >

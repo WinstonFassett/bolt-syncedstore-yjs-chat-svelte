@@ -187,7 +187,7 @@
     {#each menuItems as item}
       {#if item.type === 'button'}
         <button
-          class="p-1.5 rounded hover:bg-gray-200 dark:hover:bg-gray-700 {item.isActive && item.isActive() ? 'text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'}"
+          class="p-1.5 rounded-sm hover:bg-gray-200 dark:hover:bg-gray-700 {item.isActive && item.isActive() ? 'text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'}"
           on:click={item.action}
           title={item.title}
           disabled={isCodeBlock && item.title !== 'Code Block'} 
@@ -204,12 +204,12 @@
   {#if !isCodeBlock}
     <div 
       id="tiptap-bubble-menu-content"
-      class="flex gap-1 p-1 bg-white dark:bg-gray-800 rounded shadow-lg border border-gray-200 dark:border-gray-700"
+      class="flex gap-1 p-1 bg-white dark:bg-gray-800 rounded-sm shadow-lg border border-gray-200 dark:border-gray-700"
       style="display: none;" 
     >
       {#each bubbleMenuItems as item}
         <button
-          class="p-1.5 rounded hover:bg-gray-100 dark:hover:bg-gray-700 {item.isActive && item.isActive() ? 'text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'}"
+          class="p-1.5 rounded-sm hover:bg-gray-100 dark:hover:bg-gray-700 {item.isActive && item.isActive() ? 'text-primary-600 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300'}"
           on:click={item.action}
           title={item.title}
         >

@@ -35,7 +35,7 @@
     <!-- Warning banner -->
     <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-8">
       <div class="flex">
-        <div class="flex-shrink-0">
+        <div class="shrink-0">
           <AlertTriangle class="h-5 w-5 text-yellow-400" />
         </div>
         <div class="ml-3">
@@ -62,7 +62,7 @@
     </div>
     
     <!-- Tab content -->
-    <div class="bg-white dark:bg-dark-100 rounded-lg shadow p-6">
+    <div class="bg-white dark:bg-dark-100 rounded-lg shadow-sm p-6">
       {#if activeTab === 'users'}
         <div>
           <h2 class="text-lg font-medium mb-6">User Management</h2>
@@ -202,7 +202,7 @@
                     This will delete all messages in all channels. This action cannot be undone.
                   </p>
                 </div>
-                <button class="rounded-md bg-red-100 px-4 py-2 text-sm font-medium text-red-800 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800">
+                <button class="rounded-md bg-red-100 px-4 py-2 text-sm font-medium text-red-800 hover:bg-red-200 focus:outline-hidden focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:bg-red-900 dark:text-red-200 dark:hover:bg-red-800">
                   Clear All Messages
                 </button>
               </div>
@@ -216,7 +216,7 @@
                     This will delete all users, channels, and messages. This action cannot be undone.
                   </p>
                 </div>
-                <button class="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:bg-red-700 dark:hover:bg-red-600">
+                <button class="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-hidden focus:ring-2 focus:ring-red-500 focus:ring-offset-2 dark:bg-red-700 dark:hover:bg-red-600">
                   Reset All Data
                 </button>
               </div>

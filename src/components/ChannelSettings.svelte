@@ -113,7 +113,7 @@
       <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100" id="modal-title">Channel Settings</h3>
       <button
         type="button"
-        class="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-primary-500 dark:text-gray-500 dark:hover:bg-dark-300 dark:hover:text-gray-400"
+        class="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-hidden focus:ring-2 focus:ring-primary-500 dark:text-gray-500 dark:hover:bg-dark-300 dark:hover:text-gray-400"
         on:click={internalCloseTrigger}
       >
         <X size={20} aria-hidden="true" />

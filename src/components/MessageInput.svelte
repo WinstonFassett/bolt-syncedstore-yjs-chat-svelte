@@ -227,7 +227,7 @@ const customKeymapExtension = Extension.create({
         type="submit"
         disabled={isSendDisabled}
         aria-label={editingMessageId ? 'Save edit' : 'Send message'}
-        class="mb-1 ml-2 p-2 rounded-full bg-gray-200 text-gray-500 hover:bg-primary-600 hover:text-white dark:bg-dark-400 dark:text-gray-400 dark:hover:bg-primary-600 dark:hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-primary-400"
+        class="mb-1 ml-2 p-2 rounded-full bg-gray-200 text-gray-500 hover:bg-primary-600 hover:text-white dark:bg-dark-400 dark:text-gray-400 dark:hover:bg-primary-600 dark:hover:text-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-hidden focus:ring-2 focus:ring-primary-400"
         tabindex="0"
       >
         <Send size={18} />

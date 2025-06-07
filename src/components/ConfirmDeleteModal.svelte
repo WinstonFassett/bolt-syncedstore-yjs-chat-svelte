@@ -54,7 +54,7 @@
 {#if $dialog.expanded}
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4" use:dialog.modal>
     <div 
-      class="fixed inset-0 bg-black/30 dark:bg-black/50 backdrop-blur-sm"
+      class="fixed inset-0 bg-black/30 dark:bg-black/50 backdrop-blur-xs"
       in:fade={{ duration: 150 }}
       out:fade={{ duration: 150 }}
       on:click={handleCancel}
@@ -72,7 +72,7 @@
           Delete Message
         </h3>
         <button 
-          class="-m-1.5 rounded p-1.5 text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400"
+          class="-m-1.5 rounded-sm p-1.5 text-gray-400 hover:text-gray-500 dark:text-gray-500 dark:hover:text-gray-400"
           on:click={handleCancel}
           aria-label="Close"
         >

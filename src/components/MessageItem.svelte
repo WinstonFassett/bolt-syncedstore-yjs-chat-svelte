@@ -232,7 +232,7 @@ const editKeymapExtension = Extension.create({
 >
   <div class="flex gap-3">
     <!-- Avatar and User Info Click Area -->
-    <div class="flex-shrink-0 cursor-pointer" on:click={() => openUserInfoPopup(message.meta.value.userId)} role="button" tabindex="0" on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') openUserInfoPopup(message.meta.value.userId); }}>
+    <div class="shrink-0 cursor-pointer" on:click={() => openUserInfoPopup(message.meta.value.userId)} role="button" tabindex="0" on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') openUserInfoPopup(message.meta.value.userId); }}>
       <Avatar username={user?.username || 'Unknown'} customImage={user?.avatar} />
     </div>
     
@@ -270,11 +270,11 @@ const editKeymapExtension = Extension.create({
       
       <!-- Message text -->
       {#if isDeleted}
-        <div class="flex items-center justify-between rounded border border-dashed border-gray-300 bg-gray-50 p-2 text-sm dark:border-dark-400 dark:bg-dark-300">
+        <div class="flex items-center justify-between rounded-sm border border-dashed border-gray-300 bg-gray-50 p-2 text-sm dark:border-dark-400 dark:bg-dark-300">
           <p class="italic text-gray-500 dark:text-gray-400">This message was deleted</p>
           {#if isCurrentUser}
             <button 
-              class="ml-2 inline-flex items-center gap-1.5 rounded px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:text-blue-400 dark:hover:bg-blue-900/20 dark:focus:ring-offset-dark-300"
+              class="ml-2 inline-flex items-center gap-1.5 rounded-sm px-2 py-1 text-xs text-blue-600 hover:bg-blue-50 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 dark:text-blue-400 dark:hover:bg-blue-900/20 dark:focus:ring-offset-dark-300"
               on:click={undeleteMessage}
               aria-label="Undelete message"
               title="Undelete message"
@@ -300,14 +300,14 @@ const editKeymapExtension = Extension.create({
           />
           <div class="flex items-center gap-2 text-sm">
             <button 
-              class="inline-flex items-center gap-1 rounded-md bg-primary-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:bg-primary-600 dark:hover:bg-primary-700"
+              class="inline-flex items-center gap-1 rounded-md bg-primary-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-primary-700 focus:outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:bg-primary-600 dark:hover:bg-primary-700"
               on:click={saveEdit}
             >
               <Check size={16} class="mr-1" />
               Save Changes
             </button>
             <button 
-              class="inline-flex items-center gap-1 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+              class="inline-flex items-center gap-1 rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
               on:click={cancelEdit}
             >
               <X size={16} class="mr-1" />
@@ -394,12 +394,12 @@ const editKeymapExtension = Extension.create({
       <!-- Message actions -->
       {#if showActions && !isDeleted && !isAddingReaction && !isEditing}
         <div 
-          class="absolute right-4 top-2 flex items-center gap-1 rounded-md border border-gray-200 bg-white shadow-sm dark:border-dark-400 dark:bg-dark-200"
+          class="absolute right-4 top-2 flex items-center gap-1 rounded-md border border-gray-200 bg-white shadow-xs dark:border-dark-400 dark:bg-dark-200"
           transition:fade|local={{ duration: 100 }}
         >
           <!-- Add reaction button -->
           <button
-            class="rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-dark-300 dark:hover:text-gray-300"
+            class="rounded-sm p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-dark-300 dark:hover:text-gray-300"
             on:click={() => isAddingReaction = true}
             aria-label="Add reaction"
           >
@@ -409,7 +409,7 @@ const editKeymapExtension = Extension.create({
           <!-- Reply/Thread button -->
           {#if showThreadButton && !isInThread}
             <button
-              class="rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-dark-300 dark:hover:text-gray-300"
+              class="rounded-sm p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-dark-300 dark:hover:text-gray-300"
               on:click={() => {
                 // Use the same direct navigation approach as thread summary
                 const channelId = $currentChannelIdStore;
@@ -425,7 +425,7 @@ const editKeymapExtension = Extension.create({
           <!-- Edit/Delete buttons (only for user's own messages) -->
           {#if isCurrentUser}
             <button
-              class="rounded p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-dark-300 dark:hover:text-gray-300"
+              class="rounded-sm p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-dark-300 dark:hover:text-gray-300"
               on:click={startEditing}
               aria-label="Edit message"
             >
@@ -433,7 +433,7 @@ const editKeymapExtension = Extension.create({
             </button>
             
             <button
-              class="rounded p-1.5 text-red-500 transition-colors hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20"
+              class="rounded-sm p-1.5 text-red-500 transition-colors hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20"
               on:click={requestDeleteMessage}
               aria-label="Delete message"
             >
@@ -452,7 +452,7 @@ const editKeymapExtension = Extension.create({
           <div class="mb-2 flex gap-1">
             {#each quickEmojis as emoji}
               <button
-                class="rounded p-1 hover:bg-gray-100 dark:hover:bg-dark-300"
+                class="rounded-sm p-1 hover:bg-gray-100 dark:hover:bg-dark-300"
                 on:click={() => toggleReaction(emoji)}
               >
                 {emoji}

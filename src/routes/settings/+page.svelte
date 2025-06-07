@@ -49,7 +49,7 @@
     </div>
     
     <!-- Tab content -->
-    <div class="bg-white dark:bg-dark-100 rounded-lg shadow p-6">
+    <div class="bg-white dark:bg-dark-100 rounded-lg shadow-sm p-6">
       {#if activeTab === 'user'}
         <div>
           <h2 class="text-lg font-medium mb-6">User Settings</h2>
@@ -64,7 +64,7 @@
                 <input 
                   type="text" 
                   value={currentUser.username}
-                  class="w-full max-w-md rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-dark-200 dark:border-dark-400 dark:text-white"
+                  class="w-full max-w-md rounded-md border-gray-300 shadow-xs focus:border-primary-500 focus:ring-primary-500 dark:bg-dark-200 dark:border-dark-400 dark:text-white"
                   disabled
                 />
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
@@ -79,7 +79,7 @@
                 <input 
                   type="text" 
                   value={currentUser.meta.value.fullName}
-                  class="w-full max-w-md rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-dark-200 dark:border-dark-400 dark:text-white"
+                  class="w-full max-w-md rounded-md border-gray-300 shadow-xs focus:border-primary-500 focus:ring-primary-500 dark:bg-dark-200 dark:border-dark-400 dark:text-white"
                 />
               </div>
               
@@ -90,7 +90,7 @@
                 <input 
                   type="text" 
                   value={currentUser.meta.value.avatarUrl}
-                  class="w-full max-w-md rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-dark-200 dark:border-dark-400 dark:text-white"
+                  class="w-full max-w-md rounded-md border-gray-300 shadow-xs focus:border-primary-500 focus:ring-primary-500 dark:bg-dark-200 dark:border-dark-400 dark:text-white"
                 />
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                   Enter a URL to an image for your avatar
@@ -98,7 +98,7 @@
               </div>
               
               <div>
-                <button class="rounded-md bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:bg-primary-500 dark:hover:bg-primary-600 dark:focus:ring-offset-dark-100">
+                <button class="rounded-md bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 focus:outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:bg-primary-500 dark:hover:bg-primary-600 dark:focus:ring-offset-dark-100">
                   Save Changes
                 </button>
               </div>
@@ -117,7 +117,7 @@
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Theme
               </label>
-              <select class="w-full max-w-md rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 dark:bg-dark-200 dark:border-dark-400 dark:text-white">
+              <select class="w-full max-w-md rounded-md border-gray-300 shadow-xs focus:border-primary-500 focus:ring-primary-500 dark:bg-dark-200 dark:border-dark-400 dark:text-white">
                 <option value="system">System Default</option>
                 <option value="light">Light</option>
                 <option value="dark">Dark</option>
@@ -134,7 +134,7 @@
                   <input 
                     type="checkbox" 
                     id="notify-messages"
-                    class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-400"
+                    class="h-4 w-4 rounded-sm border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-400"
                   />
                   <label for="notify-messages" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
                     New messages
@@ -144,7 +144,7 @@
                   <input 
                     type="checkbox" 
                     id="notify-mentions"
-                    class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-400"
+                    class="h-4 w-4 rounded-sm border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-400"
                   />
                   <label for="notify-mentions" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
                     Mentions only
@@ -154,7 +154,7 @@
             </div>
             
             <div>
-              <button class="rounded-md bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:bg-primary-500 dark:hover:bg-primary-600 dark:focus:ring-offset-dark-100">
+              <button class="rounded-md bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 focus:outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:bg-primary-500 dark:hover:bg-primary-600 dark:focus:ring-offset-dark-100">
                 Save Changes
               </button>
             </div>
@@ -179,7 +179,7 @@
                     This will clear all locally stored data
                   </p>
                 </div>
-                <button class="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                <button class="rounded-md bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-hidden focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
                   Clear Data
                 </button>
               </div>
@@ -196,7 +196,7 @@
                 <input 
                   type="checkbox" 
                   id="offline-mode"
-                  class="h-4 w-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-400"
+                  class="h-4 w-4 rounded-sm border-gray-300 text-primary-600 focus:ring-primary-500 dark:border-dark-400"
                 />
                 <label for="offline-mode" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
                   Work offline (changes will sync when you reconnect)
