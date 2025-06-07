@@ -12,14 +12,11 @@ services:
       args:
         - VITE_SIGNALING_SERVERS=${VITE_SIGNALING_SERVERS}
     environment:
-      - SERVICE_FQDN_FRONTEND_80
+      - SERVICE_FQDN_FRONTEND_3000
       - VITE_SIGNALING_SERVERS=${VITE_SIGNALING_SERVERS}
     labels:
       - traefik.http.middlewares.authentik-auth@file
-    # healthcheck:
-    #   test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health", "||", "exit", "1"]
-    #   interval: 30s
-    #   timeout: 3s
+    # healthcheck:npms
   signaling:
     build:
       context: .
