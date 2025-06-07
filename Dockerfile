@@ -3,6 +3,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci
 COPY . .
+ARG VITE_SIGNALING_SERVERS=ws://localhost:4444
+ENV VITE_SIGNALING_SERVERS=$VITE_SIGNALING_SERVERS
 RUN npm run build
 RUN npm prune --production
 
