@@ -64,9 +64,16 @@ export const awareness = new awarenessProtocol.Awareness(doc)
 // Set up persistence with IndexedDB
 export const persistenceProvider = new IndexeddbPersistence('yjs-chat-app', doc)
 
+// Get signaling server URL from environment variable with fallback to localhost
+const signalingServers = import.meta.env.VITE_SIGNALING_SERVERS 
+  ? import.meta.env.VITE_SIGNALING_SERVERS.split(',').map((s: string) => s.trim())
+  : ['ws://localhost:4444']
+
+console.log('Using signaling servers:', signalingServers)
+
 // Set up WebRTC provider
 export const rtcProvider = new WebrtcProvider('yjs-chat-app', doc, {
-  signaling: ['ws://localhost:4444'],
+  signaling: signalingServers,
   awareness
 })
 

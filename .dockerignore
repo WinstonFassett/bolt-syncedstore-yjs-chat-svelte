@@ -1,0 +1,50 @@
+# Dependencies
+node_modules/
+
+# Build files
+dist/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Git
+.git
+.gitignore
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Local development
+.svelte-kit/
+build/
+package/
+
+# Test files
+coverage/
+__tests__/
+*.test.*
+
+# Debug logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
