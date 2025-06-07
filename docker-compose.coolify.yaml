@@ -16,6 +16,10 @@ services:
       - VITE_SIGNALING_SERVERS=${VITE_SIGNALING_SERVERS}
     labels:
       - traefik.http.middlewares.authentik-auth@file
+    # healthcheck:
+    #   test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health", "||", "exit", "1"]
+    #   interval: 30s
+    #   timeout: 3s
   signaling:
     build:
       context: .
