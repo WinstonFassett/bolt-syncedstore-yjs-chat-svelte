@@ -219,7 +219,7 @@ const customKeymapExtension = Extension.create({
         readOnly={disabled || !get(currentUserIdStore)}
         autoFocus={!disabled && !!get(currentUserIdStore)}
         extensions={[customKeymapExtension]}
-        class={`flex-1 input {
+        class={`flex-1  {
   overflow-y: unset;
 }${multilineMode ? 'min-h-20 max-h-32 overflow-y-auto' : 'min-h-10 max-h-20'} resize-none`}
       />
