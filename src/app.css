@@ -1,5 +1,4 @@
 @import 'tailwindcss';
-
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
 @plugin 'daisyui';
@@ -107,9 +106,9 @@
   @apply bg-red-500 text-white hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-500;
 }
 
-@utility input {
+/* @utility input {
   @apply rounded-md border border-gray-300 px-3 py-2 text-sm shadow-xs focus:border-primary-500 focus:outline-hidden focus:ring-1 focus:ring-primary-500 dark:border-dark-400 dark:bg-dark-200 dark:text-white dark:focus:border-primary-500;
-}
+} */
 
 @utility channel-item {
   @apply flex cursor-pointer items-center rounded-md px-3 py-2 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-dark-300;
