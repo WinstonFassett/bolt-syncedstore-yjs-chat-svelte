@@ -23,6 +23,70 @@ package manager: pnpm
 - Ensure consistency (of the right things) and get rid of the junk
 - Nice UI, thoughtful touches, nice transitions and animations, careful use of icons, color and layout. Don't generate SVG icons, just use existing lucide etc already imported
 
+
+# Current Project: Refactor into Shadcn UI Svelte sidebar layout
+
+I have installed Shadcn Svelte and the sidebar-01 example route/page. Look at it for inspiration and then refactor our app layout to use its approach to sidebar/app layout, toggling. 
+
+```tsx
+<Sidebar.Provider>
+	<AppSidebar />
+	<Sidebar.Inset>
+		<header class="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+			<Sidebar.Trigger class="-ml-1" />
+			<Separator orientation="vertical" class="mr-2 h-4" />
+			<Breadcrumb.Root>
+				<Breadcrumb.List>
+					<Breadcrumb.Item class="hidden md:block">
+						<Breadcrumb.Link href="#">Building Your Application</Breadcrumb.Link>
+					</Breadcrumb.Item>
+					<Breadcrumb.Separator class="hidden md:block" />
+					<Breadcrumb.Item>
+						<Breadcrumb.Page>Data Fetching</Breadcrumb.Page>
+					</Breadcrumb.Item>
+				</Breadcrumb.List>
+			</Breadcrumb.Root>
+		</header>
+		<div class="flex flex-1 flex-col gap-4 p-4">
+			<div class="grid auto-rows-min gap-4 md:grid-cols-3">
+				<div class="bg-muted/50 aspect-video rounded-xl"></div>
+				<div class="bg-muted/50 aspect-video rounded-xl"></div>
+				<div class="bg-muted/50 aspect-video rounded-xl"></div>
+			</div>
+			<div class="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min"></div>
+		</div>
+	</Sidebar.Inset>
+</Sidebar.Provider>
+```
+
+But do not port in things we do not need.
+
+I have also installed shad's dialog component. After we get the layout working we should refactor our dialogs to use it and Shad CN UI components / design. 
+
+usage:
+
+```tsx
+<script lang="ts">
+  import * as Dialog from "$lib/components/ui/dialog/index.js";
+</script>
+ 
+<Dialog.Root>
+  <Dialog.Trigger>Open</Dialog.Trigger>
+  <Dialog.Content>
+    <Dialog.Header>
+      <Dialog.Title>Are you sure absolutely sure?</Dialog.Title>
+      <Dialog.Description>
+        This action cannot be undone. This will permanently delete your account
+        and remove your data from our servers.
+      </Dialog.Description>
+    </Dialog.Header>
+  </Dialog.Content>
+</Dialog.Root>
+```
+
+
+# OLDER ENTRIES
+
 # Inbox
 
 The work offline setting does not appear to work, is still live. 
