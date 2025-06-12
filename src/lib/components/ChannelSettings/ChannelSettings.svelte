@@ -103,14 +103,14 @@
   }
 </script>
 
-<div class="w-full max-w-2xl">
-  <div class="border-b border-border px-6 py-4">
+<div class="w-full max-w-2xl flex flex-col max-h-[calc(100vh-4rem)] md:max-h-[80vh]">
+  <div class="border-b border-border px-6 py-4 flex-shrink-0">
     <Dialog.Title class="text-lg font-semibold">
       {isLocked ? 'Channel Locked' : 'Lock Channel'}
     </Dialog.Title>
   </div>
   
-  <div class="space-y-6 p-6">
+  <div class="space-y-6 p-6 overflow-y-auto flex-1">
     <div class="space-y-2">
       <Label for="channel-name">Channel Name</Label>
       <div class="flex items-center">
