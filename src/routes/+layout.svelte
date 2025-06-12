@@ -15,6 +15,7 @@
   import ProfileSetup from '$lib/components/ProfileSetup.svelte';
   import CommandMenu from '$lib/components/CommandMenu.svelte';
   import ToastContainer from '$lib/components/ToastContainer.svelte';
+  import ChannelSettingsDialog from '$lib/components/ChannelSettingsDialog.svelte';
 	import { setupMessageNotifications, setupUserPresenceNotifications } from '$lib/store/notifications';
   
   // Loading state
@@ -105,6 +106,9 @@
   {#if showCommandMenu}
     <CommandMenu on:close={() => showCommandMenu = false} />
   {/if}
+  
+  <!-- Global Dialogs -->
+  <ChannelSettingsDialog />
   
   <!-- Main app layout with slot for page content -->
   <div class="flex h-full overflow-hidden">

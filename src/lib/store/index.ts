@@ -21,7 +21,7 @@ type Message = {
   reactions?: { [emoji: string]: string[] }
 }
 
-type Channel = {
+export type Channel = {
   meta: Box<{
     id: string
     createdAt: number

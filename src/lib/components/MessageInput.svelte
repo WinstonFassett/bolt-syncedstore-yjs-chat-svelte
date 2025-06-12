@@ -7,7 +7,7 @@
   import { get } from 'svelte/store';
   import { Send } from 'lucide-svelte';
   import { TiptapEditor as Tiptap, type EditorType } from '$lib/svelte-5-tiptap';
-  import { shouldFocusChannelInput, shouldFocusThreadInput } from '$lib/stores/routeFocus';
+  import { shouldFocusChannelInput, shouldFocusThreadInput, requestFocus } from '$lib/stores/routeFocus';
   
   export let channelId: string | null = null;
   export let parentId: string | null = null;
@@ -114,13 +114,30 @@ const customKeymapExtension = Extension.create({
     });
   }
 
-  // Focus the editor based on route and focus state
-  $: if (currentEditor) {
-    const shouldFocus = isThreadReply ? $shouldFocusThreadInput : $shouldFocusChannelInput;
-    if (shouldFocus && !disabled) {
-      currentEditor.commands.focus();
+  // Focus the editor when the component mounts or when focus is requested
+  onMount(() => {
+    if (currentEditor && !disabled) {
+      // Request focus for this input type
+      requestFocus(isThreadReply ? 'thread' : 'channel');
+      
+      // Set up a subscription to handle focus requests
+      const unsubscribe = isThreadReply 
+        ? shouldFocusThreadInput.subscribe(shouldFocus => {
+            if (shouldFocus && currentEditor) {
+              currentEditor.commands.focus();
+            }
+          })
+        : shouldFocusChannelInput.subscribe(shouldFocus => {
+            if (shouldFocus && currentEditor) {
+              currentEditor.commands.focus();
+            }
+          });
+      
+      return () => {
+        if (unsubscribe) unsubscribe();
+      };
     }
-  }
+  });
 
   // Handle editor initialization
   function handleEditorInit(editorInstance: EditorType) {
