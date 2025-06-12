@@ -59,7 +59,10 @@ I have installed Shadcn Svelte and the sidebar-01 example route/page. Look at it
 </Sidebar.Provider>
 ```
 
-But do not port in things we do not need.
+I would prefer for the pages for routes/c/channelId and routes/c/channelId/m/messageId share a layout so that their panes are consistent across navigation. Start by adding the sidebar layout stuff and putting our components inside it. ie where example has breadcrumb is where we would put channel header. Be sure to include the sidebar toggle preceding it in the same row. Use our regular sidebar contents. But do not port in things we do not need. I think we may want thread as a right sidebar, but custom width. 
+
+
+## Up Next
 
 I have also installed shad's dialog component. After we get the layout working we should refactor our dialogs to use it and Shad CN UI components / design. 
 
