@@ -8,40 +8,11 @@
   import { onMount } from 'svelte'
   import { setupUserPresenceNotifications, initializeChannelMemberships, setupMessageNotifications } from '$lib/store/notifications'
   
+  // shouldn't we be using a route and not an event???
   function goToSettings() {
     window.location.href = '/settings'
   }
   
-  let unsubscribePresence: (() => void) | undefined;
-  let unsubscribeMessages: (() => void) | undefined;
-  
-  // Initialize notifications system when component mounts
-  onMount(() => {
-    // Initialize channel memberships
-    initializeChannelMemberships()
-    
-    // Wait for persistence to be loaded before setting up notifications
-    persistenceProvider.whenSynced.then(() => {
-      console.log('Persistence loaded, initializing notifications')
-      
-      // NO!!! NONE OF THIS YOU ASSHOLE. NOT IN THE FUCKING SIDEBAR
-      // Initialize tracking with current state
-      // setupUserPresenceNotifications(true)
-      // setupMessageNotifications(true)
-      
-      // // Setup user presence notifications
-      // unsubscribePresence = setupUserPresenceNotifications()
-      
-      // Setup message notifications
-      // unsubscribeMessages = setupMessageNotifications()
-    })
-    
-    return () => {
-      // Clean up subscriptions when component unmounts
-      if (unsubscribePresence) unsubscribePresence()
-      if (unsubscribeMessages) unsubscribeMessages()
-    }
-  })
 </script>
 
 <aside class="flex h-full flex-col bg-gray-50 dark:bg-dark-200">

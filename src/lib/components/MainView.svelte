@@ -2,7 +2,7 @@
   import { onMount } from 'svelte'
   import { page } from '$app/stores'
   import { goto } from '$app/navigation'
-  import ChannelSettings from '$lib/components/ChannelSettings.svelte';
+  import ChannelSettings from '$lib/components/ChannelSettings';
   import { currentChannel, currentUserIdStore, isThreadPanelOpen, currentThreadIdStore } from '$lib/store'
   import MessageList from './MessageList.svelte'
   import MessageInput from './MessageInput.svelte'

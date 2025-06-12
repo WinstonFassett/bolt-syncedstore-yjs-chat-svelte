@@ -1,7 +1,7 @@
 <script lang="ts">
   import { currentChannel, isThreadPanelOpen, currentThreadIdStore } from '$lib/store'
   import ChannelHeader from './ChannelHeader.svelte'
-  import ChannelSettings from './ChannelSettings.svelte'
+  import ChannelSettings from './ChannelSettings'
   
   // Local state
   let showSettings = false

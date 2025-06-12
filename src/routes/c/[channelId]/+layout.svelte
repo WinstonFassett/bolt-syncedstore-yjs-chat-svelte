@@ -7,7 +7,7 @@
   import * as Sidebar from "$lib/components/ui/sidebar/index.js";
   import { currentChannel } from '$lib/store';
   import ChannelHeader from '$lib/components/ChannelHeader.svelte';
-  import ChannelSettings from '$lib/components/ChannelSettings.svelte';
+  import ChannelSettings from '$lib/components/ChannelSettings';
   import { resetFocusState } from '$lib/stores/routeFocus';
   
   // Local state for channel settings dialog
