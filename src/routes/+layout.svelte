@@ -17,7 +17,8 @@
   import ToastContainer from '$lib/components/ToastContainer.svelte';
   import ChannelSettingsDialog from '$lib/components/ChannelSettingsDialog.svelte';
 	import { setupMessageNotifications, setupUserPresenceNotifications } from '$lib/store/notifications';
-  
+  import { Toaster } from "$lib/components/ui/sonner/index.js";
+
   // Loading state
   let isLoading = false;
   let showCommandMenu = false;
@@ -115,3 +116,4 @@
     <slot />
   </div>
 {/if}
+<Toaster />

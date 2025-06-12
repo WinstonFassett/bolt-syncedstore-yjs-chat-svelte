@@ -6,10 +6,16 @@ import { preventDefault } from "../../utils/preventDefault";  import { onMount }
   import { Textarea } from '$lib/components/ui/textarea';
   import { Label } from '$lib/components/ui/label';
   import { Separator } from '$lib/components/ui/separator';
+  // import { toast } from '$lib/components/ui/toast';
+  import Sonner from "../ui/sonner/sonner.svelte";
+  import { toast } from 'svelte-sonner'; // Adjust path if needed
+
   import { Lock, Trash2, MessageSquare, X, AlertTriangle, XIcon } from 'lucide-svelte';
   import * as Dialog from '$lib/components/ui/dialog';
   // Import store functions and types from the correct location
   import { store } from '$lib/store';
+  import { goto } from '$app/navigation';
+  import { page } from '$app/stores';
   import type { Channel } from '$lib/store/index';
   
   // Import store methods directly
@@ -79,12 +85,28 @@ import { preventDefault } from "../../utils/preventDefault";  import { onMount }
   }
   
   // Delete the channel
-  function handleDeleteChannel(event: Event): void {
+  function handleDeleteChannel(event: Event) {
     event.preventDefault();
     if (!channel) return;
-    const success = deleteChannel(channel.meta.value.id);
+    const channelId = channel.meta.value.id;
+    const success = deleteChannel(channelId);
     if (success) {
-      onClose();
+      onClose(); // Close the dialog first
+      // toast({
+      //   title: 'Channel deleted',
+      //   description: 'The channel was deleted successfully.',
+      //   variant: 'success'
+      // });
+      toast('Channel deleted', {
+        description: 'The channel was deleted successfully.',
+        type: 'success'
+      });      
+      // Optionally, add a short delay to ensure dialog closes before navigation
+      setTimeout(() => {
+        if ($page.url.pathname.includes(channelId)) {
+          goto('/'); // or your fallback route
+        }
+      }, 50);
     }
   }
   
@@ -311,7 +333,7 @@ import { preventDefault } from "../../utils/preventDefault";  import { onMount }
     <button 
       type="button"
       onclick={preventDefault(handleSubmit)}
-      disabled={!editingName.trim()}
+      disabled={!editingName?.trim()}
       class="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
     >
       Save Changes
