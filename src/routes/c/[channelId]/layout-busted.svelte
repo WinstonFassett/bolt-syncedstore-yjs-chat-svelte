@@ -1,12 +1,14 @@
 <script lang="ts">
-	import ExampleAppSidebar from "$lib/components/example-app-sidebar.svelte";
+	import AppSidebar from '../../../components/Sidebar.svelte';
 	import * as Breadcrumb from "$lib/components/ui/breadcrumb/index.js";
 	import { Separator } from "$lib/components/ui/separator/index.js";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
+  import * as SidebarUI from '$lib/components/ui/sidebar/index.js';
 </script>
 
 <Sidebar.Provider>
-	<ExampleAppSidebar />
+  <AppSidebar />
+  
 	<Sidebar.Inset>
 		<header class="flex h-16 shrink-0 items-center gap-2 border-b px-4">
 			<Sidebar.Trigger class="-ml-1" />
@@ -33,3 +35,25 @@
 		</div>
 	</Sidebar.Inset>
 </Sidebar.Provider>
+
+
+
+<SidebarUI.Provider>
+  <div class="flex h-screen">
+    <!-- Sidebar (always visible, toggleable for mobile if desired) -->
+
+
+    <!-- Main Content Area -->
+    <SidebarUI.Inset class="flex-1 flex flex-col">
+      <header class="flex h-16 shrink-0 items-center gap-2 border-b px-4">
+        <SidebarUI.Trigger class="-ml-1" />
+        <Separator orientation="vertical" class="mr-2 h-4" />
+        <!-- Optional: Add chat breadcrumbs or channel info here -->
+        <slot name="header" />
+      </header>
+      <main class="flex-1 overflow-auto">
+        <slot />
+      </main>
+    </SidebarUI.Inset>
+  </div>
+</SidebarUI.Provider>
