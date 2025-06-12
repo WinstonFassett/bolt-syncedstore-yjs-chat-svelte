@@ -3,7 +3,7 @@
   import { createDialog } from 'svelte-headlessui'
   import { X } from 'lucide-svelte'
   import { fade, scale } from 'svelte/transition'
-  import { store, updateChannel, clearChannelMessages, toggleChannelLock, deleteChannel } from '../store'
+  import { store, updateChannel, clearChannelMessages, toggleChannelLock, deleteChannel } from '$lib/store'
   
   export let channel: any | null = null
   export let openModal = false // Controlled by parent

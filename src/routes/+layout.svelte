@@ -10,12 +10,12 @@
     isStoreInitialized, 
     initializeStore, 
     persistenceProvider
-  } from '../store';
+  } from '$lib/store';
   
-  import ProfileSetup from '../components/ProfileSetup.svelte';
-  import CommandMenu from '../components/CommandMenu.svelte';
-  import ToastContainer from '../components/ToastContainer.svelte';
-	import { setupMessageNotifications, setupUserPresenceNotifications } from '../store/notifications';
+  import ProfileSetup from '$lib/components/ProfileSetup.svelte';
+  import CommandMenu from '$lib/components/CommandMenu.svelte';
+  import ToastContainer from '$lib/components/ToastContainer.svelte';
+	import { setupMessageNotifications, setupUserPresenceNotifications } from '$lib/store/notifications';
   
   // Loading state
   let isLoading = false;

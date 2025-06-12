@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { ArrowLeft, Users, MessageSquare, Trash2, AlertTriangle } from 'lucide-svelte';
-  import { store } from '../../store';
+  import { store } from '$lib/store';
   
   // Tabs for different admin sections
   const tabs = [

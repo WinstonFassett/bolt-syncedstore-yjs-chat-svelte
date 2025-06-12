@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import { findUserByUsername, createUser, currentUserIdStore, setAwarenessUser, store } from '../store'
+  import { findUserByUsername, createUser, currentUserIdStore, setAwarenessUser, store } from '$lib/store'
   import { getGravatarUrl } from '../utils/avatar'
   
   const dispatch = createEventDispatcher<{

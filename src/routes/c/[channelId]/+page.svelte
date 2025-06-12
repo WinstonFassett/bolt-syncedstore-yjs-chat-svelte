@@ -1,9 +1,9 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { onMount, onDestroy } from 'svelte';
-  import { currentChannelIdStore, isThreadPanelOpen, currentThreadIdStore } from '../../../store';
-  import Sidebar from '../../../components/Sidebar.svelte';
-  import MainView from '../../../components/MainView.svelte';
+  import { currentChannelIdStore, isThreadPanelOpen, currentThreadIdStore } from '$lib/store';
+  import Sidebar from '$lib/components/Sidebar.svelte';
+  import MainView from '$lib/components/MainView.svelte';
 
   // Set current channel ID from route parameter
   $: {

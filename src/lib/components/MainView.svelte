@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation'
-  import { currentChannel, currentUserIdStore, isThreadPanelOpen, currentThreadIdStore } from '../store'
+  import { currentChannel, currentUserIdStore, isThreadPanelOpen, currentThreadIdStore } from '$lib/store'
   import { tick } from 'svelte'
   import ChannelHeader from './ChannelHeader.svelte'
   import MessageList from './MessageList.svelte'

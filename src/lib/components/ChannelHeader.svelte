@@ -1,6 +1,6 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte'
-  import type { Channel } from '../store'
+  import type { Channel } from '$lib/store'
   
   export let channel: Channel | null = null
   

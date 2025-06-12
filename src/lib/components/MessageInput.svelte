@@ -3,10 +3,10 @@
   let multilineMode = false;
 
   import { createEventDispatcher } from 'svelte';
-  import { store, currentUserIdStore, addMessage, updateMessage } from '../store';
+  import { store, currentUserIdStore, addMessage, updateMessage } from '$lib/store';
   import { get } from 'svelte/store';
   import { Send } from 'lucide-svelte';
-	import { TiptapEditor as Tiptap, type EditorType } from '../lib/svelte-5-tiptap';
+	import { TiptapEditor as Tiptap, type EditorType } from '$lib/svelte-5-tiptap';
   
   export let channelId: string | null = null;
   export let parentId: string | null = null;

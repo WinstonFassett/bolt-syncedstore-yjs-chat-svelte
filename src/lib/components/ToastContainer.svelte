@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { toasts, addToast } from '../store/toasts';
+  import { toasts, addToast } from '$lib/store/toasts';
   import { fade, fly } from 'svelte/transition';
   import { flip } from 'svelte/animate';
   import { CheckCircle, Info, AlertTriangle, AlertCircle, X } from 'lucide-svelte';

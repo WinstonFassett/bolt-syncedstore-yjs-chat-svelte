@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { Cog, User, Monitor, ArrowLeft } from 'lucide-svelte';
-  import { currentUserIdStore, store } from '../../store';
+  import { currentUserIdStore, store } from '$lib/store';
   
   // Tabs for different settings sections
   const tabs = [

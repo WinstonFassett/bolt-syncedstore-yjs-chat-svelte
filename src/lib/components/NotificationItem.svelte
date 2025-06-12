@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { store } from '../store';
-  import { NotificationType, markNotificationAsRead } from '../store/notifications';
+  import { store } from '$lib/store';
+  import { NotificationType, markNotificationAsRead } from '$lib/store/notifications';
   import { UserPlus, UserMinus, LogIn, LogOut } from 'lucide-svelte';
   import { fade } from 'svelte/transition';
   

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { store, addUser, addMessage } from '../store/test'
+  import { store, addUser, addMessage } from '$lib/store/test'
   
   let newUserName = $state('')
   let newUserAge = $state(0)

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { store, currentChannelIdStore, currentThreadIdStore, isThreadPanelOpen } from '../store'
+  import { store, currentChannelIdStore, currentThreadIdStore, isThreadPanelOpen } from '$lib/store'
   import { tick } from 'svelte'
   import MessageItem from './MessageItem.svelte'
   import MessageList from './MessageList.svelte'

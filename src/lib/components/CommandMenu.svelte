@@ -1,7 +1,7 @@
 <script lang="ts">
   import { createEventDispatcher } from 'svelte';
   import { goto } from '$app/navigation';
-  import { store } from '../store';
+  import { store } from '$lib/store';
   import { Search, Hash, Plus, User, Settings, Shield } from 'lucide-svelte';
   
   const dispatch = createEventDispatcher();

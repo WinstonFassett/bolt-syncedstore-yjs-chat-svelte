@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { currentChannelIdStore, currentUserIdStore } from '../store';
-  import { channelMemberships, joinChannel, leaveChannel, isChannelMember } from '../store/notifications';
+  import { currentChannelIdStore, currentUserIdStore } from '$lib/store';
+  import { channelMemberships, joinChannel, leaveChannel, isChannelMember } from '$lib/store/notifications';
   import { LogIn, LogOut } from 'lucide-svelte';
   
   export let channel: any;

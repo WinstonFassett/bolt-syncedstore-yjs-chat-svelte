@@ -15,14 +15,14 @@ const editKeymapExtension = Extension.create({
   }
 });
   import { createEventDispatcher, onMount } from 'svelte'
-  import { store, currentUserIdStore, currentChannelIdStore } from '../store'
+  import { store, currentUserIdStore, currentChannelIdStore } from '$lib/store'
   import { formatChatDate } from '../utils/date'
   import Avatar from './Avatar.svelte';
   import UserInfoPopup from './UserInfoPopup.svelte';
   import ConfirmDeleteModal from './ConfirmDeleteModal.svelte';
   import { MessageSquare, Pencil, Trash2, Smile, Check, X, SmilePlus, RotateCcw } from 'lucide-svelte'
   import { fade, slide } from 'svelte/transition'
-	import { TiptapEditor, type EditorType} from '../lib/svelte-5-tiptap';
+	import { TiptapEditor, type EditorType} from '$lib/svelte-5-tiptap';
   
 
   export let message: any

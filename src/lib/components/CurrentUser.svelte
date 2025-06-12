@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { store, currentUserIdStore, setAwarenessUser, clearAwarenessUser } from '../store'
+  import { store, currentUserIdStore, setAwarenessUser, clearAwarenessUser } from '$lib/store'
   import Avatar from './Avatar.svelte'
   import { onMount } from 'svelte'
   import { createDialog } from 'svelte-headlessui'

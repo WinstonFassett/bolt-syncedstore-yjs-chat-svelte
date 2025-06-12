@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onMount, afterUpdate, createEventDispatcher } from 'svelte'
-  import { store, currentChannelIdStore, currentChannel } from '../store'
+  import { store, currentChannelIdStore, currentChannel } from '$lib/store'
   import { isSameDay, formatDateDivider } from '../utils/date'
   import MessageItem from './MessageItem.svelte'
   

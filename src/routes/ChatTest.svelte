@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { store, currentUserIdStore, currentChannelIdStore, findUserByUsername, addMessage, initializeStore } from '../store'
+  import { store, currentUserIdStore, currentChannelIdStore, findUserByUsername, addMessage, initializeStore } from '$lib/store'
   
   let username = $state('')
   let messageText = $state('')

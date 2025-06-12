@@ -1,10 +1,10 @@
 <script lang="ts">
   import { page } from '$app/stores';
   import { onMount, onDestroy } from 'svelte';
-  import { currentChannelIdStore, currentThreadIdStore, isThreadPanelOpen } from '../../../../../store';
-  import Sidebar from '../../../../../components/Sidebar.svelte';
-  import MainView from '../../../../../components/MainView.svelte';
-  import ThreadView from '../../../../../components/ThreadView.svelte';
+  import { currentChannelIdStore, currentThreadIdStore, isThreadPanelOpen } from '$lib/store';
+  import Sidebar from '$lib/components/Sidebar.svelte';
+  import MainView from '$lib/components/MainView.svelte';
+  import ThreadView from '$lib/components/ThreadView.svelte';
   
   // Get the channel ID and message ID from the route params
   const channelId = $page.params.channelId;

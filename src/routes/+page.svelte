@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
-  import { store, currentChannelIdStore } from '../store';
+  import { store, currentChannelIdStore } from '$lib/store';
   
   onMount(() => {
     // Check if there's a current channel

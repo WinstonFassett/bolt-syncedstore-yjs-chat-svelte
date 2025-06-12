@@ -4,9 +4,9 @@
   import CurrentUser from './CurrentUser.svelte'
   import ThemeToggle from './ThemeToggle.svelte'
   import { Settings } from 'lucide-svelte'
-  import { connectionStatus, persistenceProvider } from '../store'
+  import { connectionStatus, persistenceProvider } from '$lib/store'
   import { onMount } from 'svelte'
-  import { setupUserPresenceNotifications, initializeChannelMemberships, setupMessageNotifications } from '../store/notifications'
+  import { setupUserPresenceNotifications, initializeChannelMemberships, setupMessageNotifications } from '$lib/store/notifications'
   
   function goToSettings() {
     window.location.href = '/settings'

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { store, onlineUsers } from '../store'
+  import { store, onlineUsers } from '$lib/store'
   import UserItem from './UserItem.svelte'
   
   // User filter state

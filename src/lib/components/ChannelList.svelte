@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { store } from '../store'
+  import { store } from '$lib/store'
   import ChannelItem from './ChannelItem.svelte'
   import { createDialog } from 'svelte-headlessui'
   import { Plus, X } from 'lucide-svelte'

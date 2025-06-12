@@ -1,6 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { store } from '../../store';
+  import { store } from '$lib/store';
   
   // This is a stub component for the join page
   // It will list available channels and allow users to join them

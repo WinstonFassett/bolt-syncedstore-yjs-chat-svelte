@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { isDarkMode } from '../store'
+  import { isDarkMode } from '$lib/store'
   
   function toggleTheme() {
     isDarkMode.update(current => !current)

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { store } from '../store';
+  import { store } from '$lib/store';
   import { getGravatarUrl } from '../utils/avatar';
   import { createDialog } from 'svelte-headlessui';
   import { X } from 'lucide-svelte';

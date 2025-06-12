@@ -1,7 +1,7 @@
 <script lang="ts">
   import Avatar from './Avatar.svelte';
   import UserInfoPopup from './UserInfoPopup.svelte';
-  import { onlineUsers } from '../store';
+  import { onlineUsers } from '$lib/store';
 
   export let user: any;
 
