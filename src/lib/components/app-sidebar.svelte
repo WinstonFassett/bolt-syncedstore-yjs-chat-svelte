@@ -1,4 +1,5 @@
 <script lang="ts" module>
+	import AppSidebar from '../../components/Sidebar.svelte'
 	// sample data
 	const data = {
 		versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
@@ -143,12 +144,14 @@
 
 <Sidebar.Root {...restProps} bind:ref>
 	<Sidebar.Header>
-		<VersionSwitcher versions={data.versions} defaultVersion={data.versions[0]} />
-		<SearchForm />
+		<!-- <VersionSwitcher versions={data.versions} defaultVersion={data.versions[0]} />
+		<SearchForm /> -->
 	</Sidebar.Header>
 	<Sidebar.Content>
+		<AppSidebar />
+
 		<!-- We create a Sidebar.Group for each parent. -->
-		{#each data.navMain as group (group.title)}
+		<!-- {#each data.navMain as group (group.title)}
 			<Sidebar.Group>
 				<Sidebar.GroupLabel>{group.title}</Sidebar.GroupLabel>
 				<Sidebar.GroupContent>
@@ -165,7 +168,7 @@
 					</Sidebar.Menu>
 				</Sidebar.GroupContent>
 			</Sidebar.Group>
-		{/each}
+		{/each} -->
 	</Sidebar.Content>
 	<Sidebar.Rail />
 </Sidebar.Root>

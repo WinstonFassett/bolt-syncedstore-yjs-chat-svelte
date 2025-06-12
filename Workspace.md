@@ -26,7 +26,9 @@ package manager: pnpm
 
 # Current Project: Refactor into Shadcn UI Svelte sidebar layout
 
-I have installed Shadcn Svelte and the sidebar-01 example route/page. Look at it for inspiration and then refactor our app layout to use its approach to sidebar/app layout, toggling. 
+I have installed Shadcn Svelte and the sidebar-01 example route/page. Look at it for inspiration and then refactor our app page layout to use its approach to sidebar/app layout, toggling. 
+
+i don't think we want to update the base layout. i specifially meant the CHAT routes. we might need a new layout for those. 
 
 ```tsx
 <Sidebar.Provider>
