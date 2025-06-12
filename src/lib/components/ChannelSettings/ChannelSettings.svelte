@@ -151,145 +151,141 @@ import { preventDefault } from "../../utils/preventDefault";  import { onMount }
       <Separator />
       
       <!-- Danger Zone -->
-      <div class="space-y-4">
+      <div class="rounded-lg border border-destructive/30 bg-destructive/5 p-4 space-y-4">
         <div class="space-y-2">
           <h3 class="text-lg font-medium text-destructive">Danger Zone</h3>
           <p class="text-sm text-muted-foreground">
             These actions are irreversible. Please be certain.
           </p>
         </div>
-        
-        <div class="rounded-lg border border-destructive/30 bg-destructive/5 p-4">
-          <div class="flex items-center justify-between">
-            <div>
-              <h4 class="font-medium">
-                {isLocked ? 'Channel is locked' : 'Lock Channel'}
-              </h4>
-              <p class="text-sm text-muted-foreground pr-2">
-                {isLocked 
-                  ? 'Only admins can send messages in this channel.'
-                  : 'All members can send messages in this channel.'}
-              </p>
-            </div>
-            {#if isLocked}
-              <button 
-                type="button"
-                onclick={preventDefault(toggleLock)}
-                class="inline-flex items-center justify-center rounded-md border border-destructive/50 bg-background px-4 py-2 text-sm font-medium text-destructive shadow-sm hover:bg-destructive/10 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-              >
-                <Lock class="mr-2 h-4 w-4" />
-                Unlock Channel
-              </button>
-            {:else}
-              <button 
-                type="button"
-                onclick={preventDefault(toggleLock)}
-                class="inline-flex items-center justify-center rounded-md border border-destructive/50 bg-background px-4 py-2 text-sm font-medium text-destructive shadow-sm hover:bg-destructive/10 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-              >
-                <Lock class="mr-2 h-4 w-4" />
-                Lock Channel
-              </button>
-            {/if}
+        <!-- Lock Channel (no border, just button) -->
+        <div class="flex items-center justify-between">
+          <div>
+            <h4 class="font-medium">
+              {isLocked ? 'Channel is locked' : 'Lock Channel'}
+            </h4>
+            <p class="text-sm text-muted-foreground pr-2">
+              {isLocked 
+                ? 'Only admins can send messages in this channel.'
+                : 'All members can send messages in this channel.'}
+            </p>
           </div>
+          {#if isLocked}
+            <button 
+              type="button"
+              onclick={preventDefault(toggleLock)}
+              class="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            >
+              <Lock class="mr-2 h-4 w-4" />
+              Unlock Channel
+            </button>
+          {:else}
+            <button 
+              type="button"
+              onclick={preventDefault(toggleLock)}
+              class="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            >
+              <Lock class="mr-2 h-4 w-4" />
+              Lock Channel
+            </button>
+          {/if}
         </div>
-      </div>
-      <!-- Clear Messages -->
-      <div class="space-y-2">
-        {#if confirmClear}
-          <div class="rounded-lg border border-warning/50 bg-warning/10 p-4">
-            <div class="flex items-start gap-2">
-              <AlertTriangle class="mt-0.5 h-4 w-4 text-warning-foreground" />
-              <div class="flex-1 space-y-2">
-                <p class="text-sm font-medium text-warning-foreground">
-                  Clear all messages?
-                </p>
-                <p class="text-sm text-warning-foreground/80">
-                  This will permanently delete all messages in this channel. This action cannot be undone.
-                </p>
-                <div class="flex justify-end gap-2 pt-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onclick={() => confirmClear = false}
-                    type="button"
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    variant="destructive"
-                    size="sm"
-                    onclick={handleClearMessages}
-                    type="button"
-                  >
-                    <Trash2 class="mr-2 h-4 w-4" />
-                    Clear All
-                  </Button>
+        <!-- Clear Messages (destructive) -->
+        <div class="space-y-2">
+          {#if confirmClear}
+            <div class="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
+              <div class="flex items-start gap-2">
+                <AlertTriangle class="mt-0.5 h-4 w-4 text-destructive" />
+                <div class="flex-1 space-y-2">
+                  <p class="text-sm font-medium text-destructive">
+                    Clear all messages?
+                  </p>
+                  <p class="text-sm text-destructive/80">
+                    This will permanently delete all messages in this channel. This action cannot be undone.
+                  </p>
+                  <div class="flex justify-end gap-2 pt-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onclick={() => confirmClear = false}
+                      type="button"
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      variant="destructive"
+                      size="sm"
+                      onclick={handleClearMessages}
+                      type="button"
+                    >
+                      <Trash2 class="mr-2 h-4 w-4" />
+                      Clear All
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        {:else}
-          <Button 
-            variant="outline" 
-            class="w-full justify-start gap-2"
-            onclick={() => {
-              console.log('clear!')
-              confirmClear = true
-            }}
-            type="button"
-          >
-            <MessageSquare class="h-4 w-4" />
-            Clear All Messages
-          </Button>
-        {/if}
-      </div>
-      
-      <!-- Delete Channel -->
-      <div class="space-y-2 pt-2">
-        {#if confirmDelete}
-          <div class="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
-            <div class="flex items-start gap-2">
-              <AlertTriangle class="mt-0.5 h-4 w-4 text-destructive" />
-              <div class="flex-1 space-y-2">
-                <p class="text-sm font-medium text-destructive">
-                  Delete this channel?
-                </p>
-                <p class="text-sm text-destructive/80">
-                  This will permanently delete the channel and all its messages. This action cannot be undone.
-                </p>
-                <div class="flex justify-end gap-2 pt-2">
-                  <Button 
-                    variant="outline" 
-                    size="sm"
-                    onclick={() => confirmDelete = false}
-                    type="button"
-                  >
-                    Cancel
-                  </Button>
-                  <Button 
-                    variant="destructive"
-                    size="sm"
-                    onclick={handleDeleteChannel}
-                    type="button"
-                  >
-                    <Trash2 class="mr-2 h-4 w-4" />
-                    Delete Channel
-                  </Button>
+          {:else}
+            <Button 
+              variant="outline" 
+              class="w-full justify-start gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive"
+              onclick={() => {
+                confirmClear = true
+              }}
+              type="button"
+            >
+              <MessageSquare class="h-4 w-4" />
+              Clear All Messages
+            </Button>
+          {/if}
+        </div>
+        <!-- Delete Channel (destructive) -->
+        <div class="space-y-2 pt-2">
+          {#if confirmDelete}
+            <div class="rounded-lg border border-destructive/50 bg-destructive/10 p-4">
+              <div class="flex items-start gap-2">
+                <AlertTriangle class="mt-0.5 h-4 w-4 text-destructive" />
+                <div class="flex-1 space-y-2">
+                  <p class="text-sm font-medium text-destructive">
+                    Delete this channel?
+                  </p>
+                  <p class="text-sm text-destructive/80">
+                    This will permanently delete the channel and all its messages. This action cannot be undone.
+                  </p>
+                  <div class="flex justify-end gap-2 pt-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onclick={() => confirmDelete = false}
+                      type="button"
+                    >
+                      Cancel
+                    </Button>
+                    <Button 
+                      variant="destructive"
+                      size="sm"
+                      onclick={handleDeleteChannel}
+                      type="button"
+                    >
+                      <Trash2 class="mr-2 h-4 w-4" />
+                      Delete Channel
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        {:else}
-          <Button 
-            variant="outline" 
-            class="w-full justify-start gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive"
-            onclick={() => confirmDelete = true}
-            type="button"
-          >
-            <Trash2 class="h-4 w-4" />
-            Delete Channel
-          </Button>
-        {/if}
+          {:else}
+            <Button 
+              variant="outline" 
+              class="w-full justify-start gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive"
+              onclick={() => confirmDelete = true}
+              type="button"
+            >
+              <Trash2 class="h-4 w-4" />
+              Delete Channel
+            </Button>
+          {/if}
+        </div>
       </div>
     </div>
   </div>
