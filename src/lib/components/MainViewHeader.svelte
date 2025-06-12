@@ -1,17 +1,10 @@
 <script lang="ts">
-  import { goto } from '$app/navigation'
-  import { currentChannel, currentUserIdStore, isThreadPanelOpen, currentThreadIdStore } from '$lib/store'
-  import { tick } from 'svelte'
+  import { currentChannel, isThreadPanelOpen, currentThreadIdStore } from '$lib/store'
   import ChannelHeader from './ChannelHeader.svelte'
-  import MessageList from './MessageList.svelte'
-  import MessageInput from './MessageInput.svelte'
   import ChannelSettings from './ChannelSettings.svelte'
-  import ThreadView from './ThreadView.svelte'
   
   // Local state
   let showSettings = false
-  let messageInputComponent: MessageInput // Reference to the MessageInput component
-  let threadViewInstance: ThreadView // Reference to the ThreadView component
   
   function openChannelSettings() {
     showSettings = true
@@ -19,39 +12,6 @@
   
   function closeChannelSettings() {
     showSettings = false
-  }
-  
-  import { page } from '$app/stores'
-  import { onMount, afterUpdate } from 'svelte'
-  
-  // Track previous state
-  let previousChannelId: string | null = null
-  let previousThreadId: string | null = null
-  let previousThreadPanelState = false
-  
-  // Focus channel input in these scenarios:
-  // 1. When channel changes
-  // 2. When thread panel closes
-  // 3. When navigating to a channel route directly
-  function focusChannelInputIfNeeded() {
-    if (!$isThreadPanelOpen && messageInputComponent) {
-      tick().then(() => {
-        if (messageInputComponent) {
-          messageInputComponent.focusInput()
-        }
-      })
-    }
-  }
-  
-  // Focus thread input when thread is opened or changed
-  function focusThreadInputIfNeeded() {
-    if ($isThreadPanelOpen && threadViewInstance && $currentThreadIdStore) {
-      tick().then(() => {
-        if (threadViewInstance) {
-          threadViewInstance.focusReplyInput()
-        }
-      })
-    }
   }
   
   // Run after every Svelte update

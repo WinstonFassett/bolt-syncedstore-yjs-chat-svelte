@@ -142,7 +142,11 @@ const customKeymapExtension = Extension.create({
 
   // Initialize with message content if editing
   $: if (editingMessageId && channelId && currentEditor) {
-    const currentStore = get(store);
+    const currentStore = get(store) as {
+      channels: Record<string, {
+        messages: Record<string, { text: any }>;
+      }>;
+    };
     const channel = currentStore.channels[channelId];
     if (channel) {
       const message = channel.messages[editingMessageId];
