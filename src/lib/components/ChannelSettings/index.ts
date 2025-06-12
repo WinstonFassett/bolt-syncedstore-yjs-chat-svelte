@@ -1,3 +1,3 @@
-import ChannelSettings from './ChannelSettings.svelte';
+import ChannelSettings from './ChannelSettingsContent.svelte';
 
 export default ChannelSettings;

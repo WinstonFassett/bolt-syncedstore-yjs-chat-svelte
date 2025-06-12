@@ -1,14 +1,11 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
-  import { page } from '$app/stores'
-  import { goto } from '$app/navigation'
-  import ChannelSettings from '$lib/components/ChannelSettings';
-  import { currentChannel, currentUserIdStore, isThreadPanelOpen, currentThreadIdStore } from '$lib/store'
-  import MessageList from './MessageList.svelte'
-  import MessageInput from './MessageInput.svelte'
-  import ThreadView from './ThreadView.svelte'
-  import type { MessageInput as MessageInputType } from './MessageInput.svelte'
-  import type { ThreadView as ThreadViewType } from './ThreadView.svelte'
+  import { goto } from '$app/navigation';
+  import { currentChannel, currentThreadIdStore, isThreadPanelOpen } from '$lib/store';
+  import type { MessageInput as MessageInputType } from './MessageInput.svelte';
+  import MessageInput from './MessageInput.svelte';
+  import MessageList from './MessageList.svelte';
+  import type { ThreadView as ThreadViewType } from './ThreadView.svelte';
+  import ThreadView from './ThreadView.svelte';
   
   // References to child components
   let messageInputComponent: MessageInputType

@@ -6,7 +6,7 @@ import { preventDefault } from "../../utils/preventDefault";  import { onMount }
   import { Textarea } from '$lib/components/ui/textarea';
   import { Label } from '$lib/components/ui/label';
   import { Separator } from '$lib/components/ui/separator';
-  import { Lock, Trash2, MessageSquare, X, AlertTriangle } from 'lucide-svelte';
+  import { Lock, Trash2, MessageSquare, X, AlertTriangle, XIcon } from 'lucide-svelte';
   import * as Dialog from '$lib/components/ui/dialog';
   // Import store functions and types from the correct location
   import { store } from '$lib/store';
@@ -104,14 +104,20 @@ import { preventDefault } from "../../utils/preventDefault";  import { onMount }
   }
 </script>
 
+<Dialog.Content showCloseButton={false}>
+
+
 <div class="w-full max-w-2xl flex flex-col max-h-[calc(100vh-4rem)] md:max-h-[80vh]">
-  <div class="border-b border-border px-6 py-4 flex-shrink-0">
+  <div class="border-b border-border px-6 py-4 flex items-center justify-between flex-shrink-0">
     <Dialog.Title class="text-lg font-semibold">
       Channel Settings
       {#if channel}
         <span class="text-sm text-muted-foreground">#{channel.name}</span>
       {/if}
     </Dialog.Title>
+    <Dialog.Close class="ml-4 opacity-70 hover:opacity-100">
+      <XIcon />
+    </Dialog.Close>
   </div>
   
   <div class="space-y-6 p-6 overflow-y-auto flex-1">
@@ -312,3 +318,5 @@ import { preventDefault } from "../../utils/preventDefault";  import { onMount }
     </button>
   </div>
 </div>
+
+</Dialog.Content>
