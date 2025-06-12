@@ -3,6 +3,7 @@
   import { currentChannelIdStore, currentUserIdStore } from '$lib/store';
   import { channelMemberships, joinChannel, leaveChannel, isChannelMember } from '$lib/store/notifications';
   import { LogIn, LogOut } from 'lucide-svelte';
+  import { useSidebar } from '$lib/components/ui/sidebar/context.svelte';
   
   export let channel: any;
   
@@ -11,6 +12,8 @@
   $: userId = $currentUserIdStore;
   $: isMember = userId ? isChannelMember(channelId, userId) : false;
 
+  const sidebar = useSidebar();
+  
   function selectChannel() {
     // Update the current channel ID in the store
     currentChannelIdStore.set(channelId);
@@ -18,6 +21,11 @@
     // If not already a member, join the channel
     if (userId && !isMember) {
       joinChannel(channelId, userId);
+    }
+    
+    // Close sidebar on mobile when a channel is selected
+    if (sidebar.isMobile) {
+      sidebar.setOpenMobile(false);
     }
     
     // Navigate to the channel route
