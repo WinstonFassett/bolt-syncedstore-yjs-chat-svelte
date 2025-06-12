@@ -1,4 +1,7 @@
 <script lang="ts">
+
+import { preventDefault } from "../utils/preventDefault";
+
   import { store } from '$lib/store'
   import ChannelItem from './ChannelItem.svelte'
   import { createDialog } from 'svelte-headlessui'
@@ -81,7 +84,7 @@
         use:dialog.modal
         transition:scale={{ duration: 200, start: 0.95 }}
       >
-        <form on:submit|preventDefault={handleCreateChannel}>
+        <form on:submit={preventDefault(handleCreateChannel)}>
         <div class="mb-4 flex items-center justify-between">
           <h3 class="text-lg font-medium">Create Channel</h3>
           <button

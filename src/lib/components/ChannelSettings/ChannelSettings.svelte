@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+
+import { preventDefault } from "../../utils/preventDefault";  import { onMount } from 'svelte';
   import { Button } from '$lib/components/ui/button';
   import { Input } from '$lib/components/ui/input';
   import { Textarea } from '$lib/components/ui/textarea';
@@ -173,7 +174,7 @@
             {#if isLocked}
               <button 
                 type="button"
-                on:click|preventDefault={toggleLock}
+                onclick={preventDefault(toggleLock)}
                 class="inline-flex items-center justify-center rounded-md border border-destructive/50 bg-background px-4 py-2 text-sm font-medium text-destructive shadow-sm hover:bg-destructive/10 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
               >
                 <Lock class="mr-2 h-4 w-4" />
@@ -182,7 +183,7 @@
             {:else}
               <button 
                 type="button"
-                on:click|preventDefault={toggleLock}
+                onclick={preventDefault(toggleLock)}
                 class="inline-flex items-center justify-center rounded-md border border-destructive/50 bg-background px-4 py-2 text-sm font-medium text-destructive shadow-sm hover:bg-destructive/10 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
               >
                 <Lock class="mr-2 h-4 w-4" />
@@ -209,7 +210,7 @@
                   <Button 
                     variant="outline" 
                     size="sm"
-                    on:click={() => confirmClear = false}
+                    onclick={() => confirmClear = false}
                     type="button"
                   >
                     Cancel
@@ -217,7 +218,7 @@
                   <Button 
                     variant="destructive"
                     size="sm"
-                    on:click={handleClearMessages}
+                    onclick={handleClearMessages}
                     type="button"
                   >
                     <Trash2 class="mr-2 h-4 w-4" />
@@ -231,7 +232,10 @@
           <Button 
             variant="outline" 
             class="w-full justify-start gap-2"
-            on:click={() => confirmClear = true}
+            onclick={() => {
+              console.log('clear!')
+              confirmClear = true
+            }}
             type="button"
           >
             <MessageSquare class="h-4 w-4" />
@@ -257,7 +261,7 @@
                   <Button 
                     variant="outline" 
                     size="sm"
-                    on:click={() => confirmDelete = false}
+                    onclick={() => confirmDelete = false}
                     type="button"
                   >
                     Cancel
@@ -265,7 +269,7 @@
                   <Button 
                     variant="destructive"
                     size="sm"
-                    on:click={handleDeleteChannel}
+                    onclick={handleDeleteChannel}
                     type="button"
                   >
                     <Trash2 class="mr-2 h-4 w-4" />
@@ -279,7 +283,7 @@
           <Button 
             variant="outline" 
             class="w-full justify-start gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive"
-            on:click={() => confirmDelete = true}
+            onclick={() => confirmDelete = true}
             type="button"
           >
             <Trash2 class="h-4 w-4" />
@@ -301,7 +305,7 @@
     </Dialog.Close>
     <button 
       type="button"
-      on:click|preventDefault={handleSubmit}
+      onclick={preventDefault(handleSubmit)}
       disabled={!editingName.trim()}
       class="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
     >

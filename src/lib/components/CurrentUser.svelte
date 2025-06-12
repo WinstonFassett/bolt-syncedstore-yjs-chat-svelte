@@ -1,4 +1,7 @@
 <script lang="ts">
+
+import { preventDefault } from "../utils/preventDefault";
+
   import { store, currentUserIdStore, setAwarenessUser, clearAwarenessUser } from '$lib/store'
   import Avatar from './Avatar.svelte'
   import { onMount } from 'svelte'
@@ -126,7 +129,7 @@
             </div>
 
             <!-- Avatar Preview - Moved and Centered -->
-            <form on:submit|preventDefault={updateProfile}>
+            <form on:submit={preventDefault(updateProfile)}>
             <div class="mb-4 flex flex-col items-center">
               <span class="mb-1 block text-xs font-medium text-gray-700 dark:text-gray-300">Avatar Preview:</span>
               <Avatar username={editingUsername} customImage={currentUser?.avatar} size="xl" />

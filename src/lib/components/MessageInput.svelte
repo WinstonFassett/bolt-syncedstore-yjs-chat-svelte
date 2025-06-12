@@ -1,4 +1,7 @@
 <script lang="ts">
+
+import { preventDefault } from '$lib/utils/preventDefault'
+
   // --- Multiline mode state ---
   let multilineMode = false;
 
@@ -256,7 +259,7 @@ const customKeymapExtension = Extension.create({
       </button>
     </div>
   {/if}
-  <form class="flex flex-col gap-1" on:submit|preventDefault={sendMessage} autocomplete="off">
+  <form class="flex flex-col gap-1" on:submit={preventDefault(sendMessage)} autocomplete="off">
     <div class="flex items-end gap-2">
       <Tiptap
         bind:editor={editor!}

@@ -152,7 +152,7 @@ App.svelte:
 
 <main id="app">
     <h1>Todo Svelte</h1>
-    <form on:submit|preventDefault={addTodo}>
+    <form on:submit={preventDefault(addTodo)}>
         <input
                 class="new-todo"
                 autocomplete="off"

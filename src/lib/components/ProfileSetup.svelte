@@ -1,4 +1,7 @@
 <script lang="ts">
+
+import { preventDefault } from "../utils/preventDefault";
+
   import { createEventDispatcher } from 'svelte'
   import { findUserByUsername, createUser, currentUserIdStore, setAwarenessUser, store } from '$lib/store'
   import { getGravatarUrl } from '../utils/avatar'
@@ -70,7 +73,7 @@
       </p>
     </div>
     
-    <form on:submit|preventDefault={handleSubmit}>
+    <form on:submit={preventDefault(handleSubmit)}>
       <div class="mb-6 flex flex-col items-center">
         {#if gravatarUrl}
           <div class="mb-2 h-20 w-20 overflow-hidden rounded-full">
