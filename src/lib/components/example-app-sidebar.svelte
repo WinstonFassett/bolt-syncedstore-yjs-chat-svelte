@@ -137,18 +137,22 @@
 	import VersionSwitcher from "./version-switcher.svelte";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import type { ComponentProps } from "svelte";
+	import SidebarHeaderContent from "./SidebarHeaderContent.svelte";
+	import SidebarContent from "./SidebarContent.svelte";
 
 	let { ref = $bindable(null), ...restProps }: ComponentProps<typeof Sidebar.Root> = $props();
 </script>
 
 <Sidebar.Root {...restProps} bind:ref>
 	<Sidebar.Header>
-		<VersionSwitcher versions={data.versions} defaultVersion={data.versions[0]} />
-		<SearchForm />
+		<!-- <VersionSwitcher versions={data.versions} defaultVersion={data.versions[0]} />
+		<SearchForm /> -->
+		<SidebarHeaderContent />
 	</Sidebar.Header>
 	<Sidebar.Content>
+		<SidebarContent />
 		<!-- We create a Sidebar.Group for each parent. -->
-		{#each data.navMain as group (group.title)}
+		<!-- {#each data.navMain as group (group.title)}
 			<Sidebar.Group>
 				<Sidebar.GroupLabel>{group.title}</Sidebar.GroupLabel>
 				<Sidebar.GroupContent>
@@ -165,7 +169,7 @@
 					</Sidebar.Menu>
 				</Sidebar.GroupContent>
 			</Sidebar.Group>
-		{/each}
+		{/each} -->
 	</Sidebar.Content>
 	<Sidebar.Rail />
 </Sidebar.Root>

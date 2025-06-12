@@ -2,18 +2,24 @@
   // --- Multiline mode state ---
   let multilineMode = false;
 
-  import { createEventDispatcher } from 'svelte';
+  import { createEventDispatcher, onMount } from 'svelte';
   import { store, currentUserIdStore, addMessage, updateMessage } from '$lib/store';
   import { get } from 'svelte/store';
   import { Send } from 'lucide-svelte';
-	import { TiptapEditor as Tiptap, type EditorType } from '$lib/svelte-5-tiptap';
+  import { TiptapEditor as Tiptap, type EditorType } from '$lib/svelte-5-tiptap';
+  import { shouldFocusChannelInput, shouldFocusThreadInput } from '$lib/stores/routeFocus';
   
   export let channelId: string | null = null;
   export let parentId: string | null = null;
   export let isThreadReply = false;
   export let disabled = false;
-
-  let editor: EditorType | null = null;
+  export let editor: EditorType | null = null; // Expose editor for external binding
+  
+  // Internal editor reference if not bound from outside
+  let internalEditor: EditorType | null = null;
+  
+  // Use the bound editor or internal editor
+  $: currentEditor = editor || internalEditor;
   let editingMessageId: string | null = null;
   let messageContentJSON: any = null;
 
@@ -33,9 +39,9 @@
 
   function sendMessage() {
     const currentUserId = get(currentUserIdStore);
-    if (!channelId || !currentUserId || !editor) return;
-    const json = editor.getJSON();
-    const text = editor.getText();
+    if (!channelId || !currentUserId || !currentEditor) return;
+    const json = currentEditor.getJSON();
+    const text = currentEditor.getText();
     if (!text.trim()) return;
     if (editingMessageId) {
       // Update existing message
@@ -45,7 +51,7 @@
       // Add new message
       addMessage(channelId, currentUserId, json, parentId || undefined);
       // Clear the editor after sending
-      editor.commands.clearContent();
+      currentEditor.commands.clearContent();
       // Dispatch sent event
       dispatch('sent', { channelId, parentId });
     }
@@ -108,21 +114,40 @@ const customKeymapExtension = Extension.create({
     });
   }
 
-  // Focus the editor
-  export function focusInput() {
-    if (editor) {
-      editor.commands.focus();
+  // Focus the editor based on route and focus state
+  $: if (currentEditor) {
+    const shouldFocus = isThreadReply ? $shouldFocusThreadInput : $shouldFocusChannelInput;
+    if (shouldFocus && !disabled) {
+      currentEditor.commands.focus();
+    }
+  }
+
+  // Handle editor initialization
+  function handleEditorInit(editorInstance: EditorType) {
+    if (!editor) {
+      internalEditor = editorInstance;
+    }
+    // Set initial content if we're editing a message
+    if (editingMessageId && channelId) {
+      const currentStore = get(store);
+      const channel = currentStore.channels[channelId];
+      if (channel) {
+        const message = channel.messages[editingMessageId];
+        if (message && currentEditor) {
+          currentEditor.commands.setContent(message.text);
+        }
+      }
     }
   }
 
   // Initialize with message content if editing
-  $: if (editingMessageId && channelId && editor) {
+  $: if (editingMessageId && channelId && currentEditor) {
     const currentStore = get(store);
     const channel = currentStore.channels[channelId];
     if (channel) {
       const message = channel.messages[editingMessageId];
       if (message) {
-        editor.commands.setContent(message.text);
+        currentEditor.commands.setContent(message.text);
         messageContentJSON = message.text;
       }
     }
@@ -143,9 +168,9 @@ const customKeymapExtension = Extension.create({
 
     // Focus the editor and set content
     setTimeout(() => {
-      if (editor) {
-        editor.commands.setContent(message.text);
-        editor.commands.focus();
+      if (currentEditor) {
+        currentEditor.commands.setContent(message.text);
+        currentEditor.commands.focus();
       }
     });
   }

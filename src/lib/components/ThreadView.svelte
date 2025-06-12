@@ -1,41 +1,28 @@
 <script lang="ts">
   import { store, currentChannelIdStore, currentThreadIdStore, isThreadPanelOpen } from '$lib/store'
-  import { tick } from 'svelte'
   import MessageItem from './MessageItem.svelte'
   import MessageList from './MessageList.svelte'
   import MessageInput from './MessageInput.svelte'
   import { X } from 'lucide-svelte'
+  import { shouldFocusThreadInput } from '$lib/stores/routeFocus'
+  import type { EditorType } from '$lib/svelte-5-tiptap'
   
-  let threadMessageInput: MessageInput // Reference to the MessageInput component for thread replies
+  // Store a reference to the message input's editor
+  let messageInput: { editor: EditorType | null } = { editor: null }
 
   // Get the parent message
   $: parentMessage = $currentChannelIdStore && $currentThreadIdStore 
     ? $store.channels[$currentChannelIdStore]?.messages[$currentThreadIdStore]
     : null
     
-  // Watch for thread ID changes to focus input
-  $: if ($currentThreadIdStore && $isThreadPanelOpen && threadMessageInput) {
-    focusReplyInput();
+  // Focus the thread input when it should be focused and the editor is available
+  $: if ($shouldFocusThreadInput && messageInput.editor) {
+    messageInput.editor.commands.focus()
   }
-  
-  // Function to focus the reply input, callable from parent
-  export async function focusReplyInput() {
-    await tick(); // Ensure MessageInput is rendered
-    if (threadMessageInput) {
-      threadMessageInput.focusInput();
-    }
-  }
-
-  // Create a dispatch function for events
-  import { createEventDispatcher } from 'svelte'
-  const dispatch = createEventDispatcher()
 
   // Close the thread panel
   function closeThread() {
     isThreadPanelOpen.set(false)
-    
-    // Dispatch an event to focus the channel input
-    dispatch('threadClosed')
     currentThreadIdStore.set(null)
   }
 </script>
@@ -71,7 +58,7 @@
     <!-- Thread input -->
     <div class="border-t border-gray-200 dark:border-dark-400">
       <MessageInput 
-        bind:this={threadMessageInput}
+        bind:editor={messageInput.editor}
         channelId={$currentChannelIdStore} 
         parentId={$currentThreadIdStore}
         isThreadReply={true}

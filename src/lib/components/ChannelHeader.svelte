@@ -13,7 +13,7 @@
   }
 </script>
 
-<div class="flex h-14 items-center justify-between border-b border-gray-200 px-4 dark:border-dark-400">
+<div class="flex-1 flex h-14 items-center justify-between px-4">
   {#if channel}
     <div>
       <div class="flex items-center">

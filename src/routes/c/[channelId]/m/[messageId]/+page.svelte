@@ -50,9 +50,6 @@
   });
 </script>
 
-<!-- Main app layout with thread view -->
-<div class="w-64 shrink-0 overflow-hidden border-r border-gray-200 dark:border-dark-400">
-  <Sidebar />
-</div>
+
 
 <MainView {isThreadView} {messageId} />

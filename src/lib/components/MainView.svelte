@@ -1,97 +1,23 @@
 <script lang="ts">
+  import { onMount } from 'svelte'
+  import { page } from '$app/stores'
   import { goto } from '$app/navigation'
+  import ChannelSettings from '$lib/components/ChannelSettings.svelte';
   import { currentChannel, currentUserIdStore, isThreadPanelOpen, currentThreadIdStore } from '$lib/store'
-  import { tick } from 'svelte'
-  import ChannelHeader from './ChannelHeader.svelte'
   import MessageList from './MessageList.svelte'
   import MessageInput from './MessageInput.svelte'
-  import ChannelSettings from './ChannelSettings.svelte'
   import ThreadView from './ThreadView.svelte'
+  import type { MessageInput as MessageInputType } from './MessageInput.svelte'
+  import type { ThreadView as ThreadViewType } from './ThreadView.svelte'
   
-  // Local state
-  let showSettings = false
-  let messageInputComponent: MessageInput // Reference to the MessageInput component
-  let threadViewInstance: ThreadView // Reference to the ThreadView component
-  
-  function openChannelSettings() {
-    showSettings = true
-  }
-  
-  function closeChannelSettings() {
-    showSettings = false
-  }
-  
-  import { page } from '$app/stores'
-  import { onMount, afterUpdate } from 'svelte'
-  
-  // Track previous state
-  let previousChannelId: string | null = null
-  let previousThreadId: string | null = null
-  let previousThreadPanelState = false
-  
-  // Focus channel input in these scenarios:
-  // 1. When channel changes
-  // 2. When thread panel closes
-  // 3. When navigating to a channel route directly
-  function focusChannelInputIfNeeded() {
-    if (!$isThreadPanelOpen && messageInputComponent) {
-      tick().then(() => {
-        if (messageInputComponent) {
-          messageInputComponent.focusInput()
-        }
-      })
-    }
-  }
-  
-  // Focus thread input when thread is opened or changed
-  function focusThreadInputIfNeeded() {
-    if ($isThreadPanelOpen && threadViewInstance && $currentThreadIdStore) {
-      tick().then(() => {
-        if (threadViewInstance) {
-          threadViewInstance.focusReplyInput()
-        }
-      })
-    }
-  }
-  
-  // Run after every Svelte update
-  afterUpdate(() => {
-    const currentChannelId = $currentChannel?.meta.value.id || null
-    const currentThreadId = $currentThreadIdStore
-    
-    // Channel changed
-    if (currentChannelId && currentChannelId !== previousChannelId) {
-      if (!$isThreadPanelOpen) {
-        focusChannelInputIfNeeded()
-      }
-    }
-    
-    // Thread changed
-    if (currentThreadId && currentThreadId !== previousThreadId) {
-      focusThreadInputIfNeeded()
-    }
-    
-    // Thread panel closed
-    if (previousThreadPanelState && !$isThreadPanelOpen) {
-      focusChannelInputIfNeeded()
-    }
-    
-    // Update previous state
-    previousChannelId = currentChannelId
-    previousThreadId = currentThreadId
-    previousThreadPanelState = $isThreadPanelOpen
-  })
-  
-  // We don't need this reactive statement anymore as it's handled by the route change detection
+  // References to child components
+  let messageInputComponent: MessageInputType
+  let threadViewInstance: ThreadViewType
+  let messageList: any // Type this properly based on your MessageList component
   
   // Handle thread panel closed event
   function handleThreadClosed() {
-    // Focus the channel input when thread panel is closed
-    tick().then(() => {
-      if (messageInputComponent) {
-        messageInputComponent.focusInput();
-      }
-    });
+    // No-op: Focus is now handled by route-based focus management
   }
 
   async function handleReplyInThread(event: CustomEvent<{ messageId: string }>) {
@@ -121,53 +47,78 @@
       }
     }
   }
+  
+  function handleThreadOpen(event: CustomEvent<{ messageId: string }>) {
+    // Handle thread open event
+    const { messageId } = event.detail
+    if (messageId) {
+      currentThreadIdStore.set(messageId)
+      isThreadPanelOpen.set(true)
+    }
+  }
+  
+  function handleMessageSubmit(message: string) {
+    // Implement message submission logic
+    console.log('Message submitted:', message)
+    // Add your message submission logic here
+  }
+  
+  function closeThreadPanel() {
+    isThreadPanelOpen.set(false)
+    currentThreadIdStore.set(null)
+  }
+  
+  // No need for default export in Svelte components
+  // The component is automatically exported as default
 </script>
 
-<slot name="header">
-  <ChannelHeader channel={$currentChannel} on:openSettings={openChannelSettings} />
-</slot>
+<!-- Header is now handled in the layout component -->
 
-<div class="flex flex-1 flex-col overflow-hidden">
-  {#if $currentChannel}
-    <div class="flex-1 overflow-hidden">
-      <MessageList 
-        channelId={$currentChannel.meta.value.id} 
-        on:replyInThread={handleReplyInThread} 
+<div class="flex flex-1 overflow-hidden">
+  <!-- Main Chat Area -->
+  <div class="flex-1 flex flex-col overflow-hidden">
+    {#if $currentChannel}
+      <div class="flex-1 overflow-y-auto">
+        <MessageList 
+          channelId={$currentChannel.meta.value.id}
+          bind:this={messageList}
+          on:threadOpen={handleThreadOpen}
+        />
+      </div>
+      
+      <div class="p-4 border-t bg-background">
+        <MessageInput 
+          bind:this={messageInputComponent}
+          channelId={$currentChannel.meta.value.id}
+          on:submit={handleMessageSubmit}
+        />
+      </div>
+    {:else}
+      <div class="flex-1 flex items-center justify-center text-gray-500">
+        <div class="text-center p-8">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto mb-4 text-gray-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+          </svg>
+          <h3 class="text-lg font-medium">No channel selected</h3>
+          <p class="mt-1">Select a channel from the sidebar to start chatting</p>
+        </div>
+      </div>
+    {/if}
+  </div>
+  
+  <!-- Thread View Panel -->
+  {#if $isThreadPanelOpen && $currentThreadIdStore}
+    <div class="w-full md:w-1/2 lg:w-2/5 xl:w-1/3 border-l h-full overflow-hidden flex flex-col bg-background">
+      <ThreadView 
+        bind:this={threadViewInstance}
+        channelId={$currentChannel?.meta.value.id}
+        threadId={$currentThreadIdStore}
+        on:close={closeThreadPanel}
       />
-    </div>
-    <div class="border-t border-gray-200 dark:border-dark-400">
-      <MessageInput 
-        bind:this={messageInputComponent}
-        channelId={$currentChannel.meta.value.id} 
-        disabled={$currentChannel.locked} 
-      />
-    </div>
-  {:else}
-    <div class="flex h-full flex-col items-center justify-center p-4 text-center">
-      <svg xmlns="http://www.w3.org/2000/svg" class="mb-4 h-16 w-16 text-gray-300 dark:text-gray-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-      </svg>
-      <h2 class="mb-2 text-xl font-medium">Welcome to YJS Chat</h2>
-      {#if !$currentUserIdStore}
-        <p class="mb-4 text-gray-600 dark:text-gray-400">
-          Set up your profile to get started
-        </p>
-      {:else}
-        <p class="mb-4 text-gray-600 dark:text-gray-400">
-          Select a channel from the sidebar to start chatting
-        </p>
-      {/if}
     </div>
   {/if}
 </div>
 
-<slot name="thread">
-  {#if $isThreadPanelOpen}
-    <div class="w-0 md:w-2/5 xl:w-1/3 block h-full">
-      <ThreadView bind:this={threadViewInstance} on:threadClosed={handleThreadClosed} />
-    </div>
-  {/if}
-</slot>
+<!-- Removed duplicate thread view -->
 
 <!-- Channel Settings Modal -->
-<ChannelSettings channel={$currentChannel} openModal={showSettings} on:close={closeChannelSettings} />
