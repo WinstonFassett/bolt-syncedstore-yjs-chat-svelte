@@ -7,7 +7,7 @@ import {
   doc, 
   awareness 
 } from './index';
-import { addToast } from './toasts';
+import { toast } from 'svelte-sonner';
 import { syncedStore, getYjsValue, observeDeep } from '@syncedstore/core'
 import type { Box } from '@syncedstore/core';
 
@@ -129,7 +129,7 @@ export function setupUserPresenceNotifications(initOnly: boolean = false) {
         const user = storeData.users[userId]
         if (user) {
           const displayName = user.fullName || user.username || 'Someone'
-          addToast(`${displayName} entered the chat`, 'info', 5000)
+          toast.info(`${displayName} entered the chat`, { duration: 5000 })
         }
       }
     })
@@ -141,7 +141,7 @@ export function setupUserPresenceNotifications(initOnly: boolean = false) {
         const user = storeData.users[userId]
         if (user) {
           const displayName = user.fullName || user.username || 'Someone'
-          addToast(`${displayName} exited the chat`, 'info', 5000)
+          toast.info(`${displayName} exited the chat`, { duration: 5000 })
         }
       }
     })
@@ -292,13 +292,13 @@ export function setupMessageNotifications(initOnly: boolean = false) {
               : `New message from ${displayName} in #${channelName}: ${messageText}${messageText.length === 50 ? '...' : ''}`;
             
             console.log(`🔔 Showing toast: ${notificationText}`);
-            addToast(notificationText, 'info', 8000);
+            toast.info(notificationText, { duration: 8000 });
             
           } catch (e) {
             console.error('Error formatting notification:', e);
             // Fallback to a simple notification if there's an error
             const displayName = user.fullName || user.username || 'Someone';
-            addToast(`New message from ${displayName}`, 'info', 8000);
+            toast.info(`New message from ${displayName}`, { duration: 8000 });
           }
         }
       })
@@ -344,7 +344,7 @@ export function joinChannel(channelId: string, userId: string) {
     if (user && channel) {
       const displayName = user.fullName || user.username || 'Someone'
       const channelName = channel.name || 'a channel'
-      addToast(`${displayName} joined #${channelName}`, 'info', 5000)
+      toast.info(`${displayName} joined #${channelName}`, { duration: 5000 })
     }
   }
 }
@@ -371,7 +371,7 @@ export function leaveChannel(channelId: string, userId: string) {
     if (user && channel) {
       const displayName = user.fullName || user.username || 'Someone'
       const channelName = channel.name || 'a channel'
-      addToast(`${displayName} left #${channelName}`, 'info', 5000)
+      toast.info(`${displayName} left #${channelName}`, { duration: 5000 })
     }
   }
 }

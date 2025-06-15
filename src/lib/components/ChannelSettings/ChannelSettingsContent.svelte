@@ -6,9 +6,7 @@ import { preventDefault } from "../../utils/preventDefault";  import { onMount }
   import { Textarea } from '$lib/components/ui/textarea';
   import { Label } from '$lib/components/ui/label';
   import { Separator } from '$lib/components/ui/separator';
-  // import { toast } from '$lib/components/ui/toast';
-  import Sonner from "../ui/sonner/sonner.svelte";
-  import { toast } from 'svelte-sonner'; // Adjust path if needed
+  import { toast } from 'svelte-sonner';
 
   import { Lock, Trash2, MessageSquare, X, AlertTriangle, XIcon } from 'lucide-svelte';
   import * as Dialog from '$lib/components/ui/dialog';
