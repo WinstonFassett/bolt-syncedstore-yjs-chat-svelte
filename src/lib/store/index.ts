@@ -1,5 +1,5 @@
 import { syncedStore, getYjsValue, type Box, boxed } from '@syncedstore/core'
-import { WebrtcProvider } from 'y-webrtc'
+import { TrysteroProvider } from '@winstonfassett/y-webrtc-trystero'
 import { IndexeddbPersistence } from 'y-indexeddb'
 import { Doc } from 'yjs'
 import { readable, writable, derived, get } from 'svelte/store'
@@ -69,11 +69,10 @@ const signalingServers = import.meta.env.VITE_SIGNALING_SERVERS
   ? import.meta.env.VITE_SIGNALING_SERVERS.split(',').map((s: string) => s.trim())
   : ['ws://localhost:4444']
 
-console.log('Using signaling servers:', signalingServers)
 
 // Set up WebRTC provider
-export const rtcProvider = new WebrtcProvider('yjs-chat-app', doc, {
-  signaling: signalingServers,
+export const rtcProvider = new TrysteroProvider('yjs-chat-app', doc, {
+  appId: 'yjs-chat-app',  
   awareness
 })
 

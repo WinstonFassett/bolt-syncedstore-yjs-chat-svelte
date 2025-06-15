@@ -25,7 +25,7 @@
 		"typescript": "^5.5.3"
 	},
 	"scripts": {
-		"dev": "vite dev",
+		"dev": "vite dev --host 0.0.0.0",
 		"build": "vite build",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
@@ -79,6 +79,7 @@
 		"@tiptap/pm": "^2.13.0",
 		"@tiptap/starter-kit": "^2.13.0",
 		"@tiptap/suggestion": "^2.13.0",
+		"@winstonfassett/y-webrtc-trystero": "^0.1.0-beta.2",
 		"clsx": "^2.1.1",
 		"daisyui": "^5.0.43",
 		"date-fns": "^3.3.1",
@@ -87,11 +88,11 @@
 		"svelte-headlessui": "^0.0.33",
 		"tailwind-merge": "^3.3.1",
 		"tiptap-extension-resize-image": "^1.2.2",
+		"trystero": "^0.21.6",
 		"uuid": "^9.0.1",
 		"vite": "^6.3.5",
 		"y-indexeddb": "^9.0.12",
 		"y-protocols": "^1.0.6",
-		"y-webrtc": "^10.3.0",
 		"yjs": "^13.6.12"
 	},
 	"pnpm": {
