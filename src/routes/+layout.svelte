@@ -46,8 +46,16 @@
     const workspaceId = getWorkspaceIdFromPath();
     if (workspaceId) {
       setWorkspaceId(workspaceId);
+      localStorage.setItem('workspaceId', workspaceId); // Persist for future reloads
       goto('/');
       return;
+    }
+    // If we have a workspaceId in localStorage, set it and check if store is initialized
+    let id = localStorage.getItem('workspaceId');
+    if (id) {
+      setWorkspaceId(id);
+      // If the store is empty, show bootstrap prompt (handled by UI)
+      // If the store is already initialized, do nothing (UI will proceed)
     }
     // Wait for IndexedDB to load
     if (persistenceProvider) {
