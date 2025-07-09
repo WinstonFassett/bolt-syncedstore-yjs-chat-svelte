@@ -366,46 +366,38 @@ export function getThreadReplies(channelId: string, messageId: string): Message[
     .sort((a, b) => a.meta.value.createdAt - b.meta.value.createdAt)
 }
 
-// Connection status
-export const connectionStatus = readable('connected', (set) => {
-  const onStatusChange = (event: any) => {
-    if (event.status === 'connected') {
-      set('connected')
-    } else {
-      set('disconnected')
-    }
-  }
-  
-  set(rtcProvider.connected ? 'connected' : 'disconnected')
-  rtcProvider.on('status', onStatusChange)
-  
-  return () => {
-    rtcProvider.off('status', onStatusChange)
-  }
-})
-
 // Online users tracking
 export const onlineUsers = readable<Set<string>>(new Set(), (set) => {
   const checkOnlineUsers = () => {
     const online = new Set<string>()
     const states = rtcProvider.awareness.getStates()
-    
-    states.forEach((state) => {
+    states.forEach((state: any) => {
       if (state.user?.id) {
         online.add(state.user.id)
       }
     })
-    
     set(online)
   }
-  
   checkOnlineUsers()
   rtcProvider.awareness.on('change', checkOnlineUsers)
-  
   return () => {
     rtcProvider.awareness.off('change', checkOnlineUsers)
   }
 })
+
+// Connection status based on number of online users (excluding current user)
+export const connectionStatus = derived(
+  [onlineUsers, currentUserIdStore],
+  ([$onlineUsers, $currentUserId], set) => {
+    if (!$currentUserId) {
+      set('disconnected')
+      return
+    }
+    const count = Array.from($onlineUsers).filter(id => id !== $currentUserId).length
+    set(count > 0 ? 'connected' : 'disconnected')
+  },
+  'disconnected' // initial value
+)
 
 // Awareness functions
 export function setAwarenessUser(userId: string) {
