@@ -4,56 +4,73 @@
   import { onMount } from 'svelte';
   import { goto } from '$app/navigation';
   import {
-    doc, 
+    setWorkspaceId,
     store,
-    currentUserIdStore, 
-    isStoreInitialized, 
-    initializeStore, 
+    doc,
+    currentUserIdStore,
+    isStoreInitialized,
+    initializeStore,
     persistenceProvider
   } from '$lib/store';
+  import { page } from '$app/stores';
   
   import ProfileSetup from '$lib/components/ProfileSetup.svelte';
   import CommandMenu from '$lib/components/CommandMenu.svelte';
   import ToastContainer from '$lib/components/ToastContainer.svelte';
   import ChannelSettingsDialog from '$lib/components/ChannelSettingsDialog.svelte';
-	import { setupMessageNotifications, setupUserPresenceNotifications } from '$lib/store/notifications';
+  import { setupMessageNotifications, setupUserPresenceNotifications } from '$lib/store/notifications';
   import { Toaster } from "$lib/components/ui/sonner/index.js";
 
   // Loading state
   let isLoading = false;
   let showCommandMenu = false;
-  
+
+  function getWorkspaceIdFromPath() {
+    const match = window.location.pathname.match(/^\/workspace\/([\w-]+)/);
+    return match ? match[1] : null;
+  }
+
+  function handleBootstrapStore() {
+    let id = localStorage.getItem('workspaceId');
+    if (!id) {
+      id = crypto.randomUUID();
+      localStorage.setItem('workspaceId', id);
+    }
+    setWorkspaceId(id);
+    initializeStore();
+  }
+
   onMount(() => {
     let unsubscribePresence: (() => void) | undefined;
     let unsubscribeMessages: (() => void) | undefined;
+    const workspaceId = getWorkspaceIdFromPath();
+    if (workspaceId) {
+      setWorkspaceId(workspaceId);
+      goto('/');
+      return;
+    }
     // Wait for IndexedDB to load
-    persistenceProvider.whenSynced.then(() => {
-      // Setup user presence notifications
-      unsubscribePresence = setupUserPresenceNotifications()
-      
-      // Setup message notifications
-      unsubscribeMessages = setupMessageNotifications()
-      // Done loading
-      isLoading = false;
-    });
-    
+    if (persistenceProvider) {
+      persistenceProvider.whenSynced.then(() => {
+        unsubscribePresence = setupUserPresenceNotifications();
+        unsubscribeMessages = setupMessageNotifications();
+        isLoading = false;
+      });
+    }
     // Set up keyboard shortcut for command menu
     window.addEventListener('keydown', (e) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault();
         showCommandMenu = !showCommandMenu;
       }
-      
-      // Escape key to close command menu
       if (e.key === 'Escape' && showCommandMenu) {
         showCommandMenu = false;
       }
     });
-
     return () => {
-      if (unsubscribePresence) unsubscribePresence()
-      if (unsubscribeMessages) unsubscribeMessages()
-    }
+      if (unsubscribePresence) unsubscribePresence();
+      if (unsubscribeMessages) unsubscribeMessages();
+    };
   });
 </script>
 
@@ -72,15 +89,6 @@
       </p>
     </div>
   </div>
-{:else if !$currentUserIdStore}
-  <!-- Profile setup screen -->
-  <ProfileSetup />
-  
-  <!-- Background layout -->
-  <div class="flex h-full w-full overflow-hidden">
-    <div class="w-64 shrink-0 bg-gray-50 dark:bg-dark-200"></div>
-    <div class="flex-1 bg-white dark:bg-dark-100"></div>
-  </div>
 {:else if !$isStoreInitialized}
   <!-- Bootstrap store prompt -->
   <div class="flex h-full w-full flex-col items-center justify-center">
@@ -97,10 +105,18 @@
       </p>
       <button 
         class="rounded-md bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700 focus:outline-hidden focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 dark:bg-primary-500 dark:hover:bg-primary-600 dark:focus:ring-offset-dark-100"
-        on:click={() => initializeStore()}>
+        on:click={handleBootstrapStore}>
         Bootstrap Store
       </button>
     </div>
+  </div>
+{:else if !$currentUserIdStore}
+  <!-- Profile setup screen (only after store is initialized) -->
+  <ProfileSetup />
+  <!-- Background layout -->
+  <div class="flex h-full w-full overflow-hidden">
+    <div class="w-64 shrink-0 bg-gray-50 dark:bg-dark-200"></div>
+    <div class="flex-1 bg-white dark:bg-dark-100"></div>
   </div>
 {:else}
   <!-- Command Menu (hidden by default) -->

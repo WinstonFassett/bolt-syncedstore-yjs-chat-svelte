@@ -85,6 +85,7 @@
 		"date-fns": "^3.3.1",
 		"lucide-svelte": "^0.363.0",
 		"md5": "^2.3.0",
+		"qrcode": "^1.5.4",
 		"svelte-headlessui": "^0.0.33",
 		"tailwind-merge": "^3.3.1",
 		"tiptap-extension-resize-image": "^1.2.2",

@@ -5,6 +5,7 @@ import { Doc } from 'yjs'
 import { readable, writable, derived, get } from 'svelte/store'
 import { svelteSyncedStore } from "@syncedstore/svelte"
 import * as awarenessProtocol from 'y-protocols/awareness.js'
+import type { Writable, Readable } from 'svelte/store';
 
 
 // Define the store types
@@ -47,68 +48,33 @@ type Store = {
   channels: { [key: string]: Channel }
 }
 
-// Create store with empty collections
-export const _store = syncedStore<Store>({
-  users: {},
-  channels: {}
-})
+// Always-initialized Svelte stores
+const _store = syncedStore<Store>({ users: {}, channels: {} });
+export const store = svelteSyncedStore(_store);
+export let doc: Doc = getYjsValue(_store) as Doc;
+export let awareness = new awarenessProtocol.Awareness(doc);
+export let persistenceProvider: any = null;
+export let rtcProvider: any = null;
 
-// Export the Svelte-wrapped store
-export const store = svelteSyncedStore(_store)
-
-// Get YJS doc
-export const doc = getYjsValue(_store) as Doc
-
-export const awareness = new awarenessProtocol.Awareness(doc)
-
-// Set up persistence with IndexedDB
-export const persistenceProvider = new IndexeddbPersistence('yjs-chat-app', doc)
-
-// Get signaling server URL from environment variable with fallback to localhost
-const signalingServers = import.meta.env.VITE_SIGNALING_SERVERS 
-  ? import.meta.env.VITE_SIGNALING_SERVERS.split(',').map((s: string) => s.trim())
-  : ['ws://localhost:4444']
-
-
-// Set up WebRTC provider
-export const rtcProvider = new TrysteroProvider('yjs-chat-app', doc, {
-  appId: 'yjs-chat-app',  
-  awareness
-})
-
-// User state
-export const currentUserIdStore = writable<string | null>(
-  localStorage.getItem('currentUserId')
-)
-
+export const currentUserIdStore = writable<string | null>(localStorage.getItem('currentUserId'));
 currentUserIdStore.subscribe(id => {
   if (id) {
     localStorage.setItem('currentUserId', id)
   } else {
     localStorage.removeItem('currentUserId')
   }
-})
-
-// Channel state
-export const currentChannelIdStore = writable<string | null>(
-  localStorage.getItem('currentChannelId')
-)
-
+});
+export const currentChannelIdStore = writable<string | null>(localStorage.getItem('currentChannelId'));
 currentChannelIdStore.subscribe(id => {
   if (id) {
     localStorage.setItem('currentChannelId', id)
   } else {
     localStorage.removeItem('currentChannelId')
   }
-})
-
-// Thread state
-export const currentThreadIdStore = writable<string | null>(null)
-export const isThreadPanelOpen = writable<boolean>(false)
-
-// Theme state
-export const isDarkMode = writable<boolean>(true)
-
+});
+export const currentThreadIdStore = writable<string | null>(null);
+export const isThreadPanelOpen = writable<boolean>(false);
+export const isDarkMode = writable<boolean>(true);
 isDarkMode.subscribe(value => {
   if (typeof document !== 'undefined') {
     const html = document.documentElement
@@ -119,38 +85,38 @@ isDarkMode.subscribe(value => {
     }
     localStorage.setItem('darkMode', value.toString())
   }
-})
-
-// Initialize theme from localStorage
+});
 if (typeof localStorage !== 'undefined') {
   const savedTheme = localStorage.getItem('darkMode')
   if (savedTheme !== null) {
     isDarkMode.set(savedTheme === 'true')
   }
 }
+export const isStoreInitialized = derived(store, ($store: any) => Object.keys($store.channels).length > 0);
+export const currentChannel = derived([
+  currentChannelIdStore, store
+], ([$currentChannelId, $store]: [string|null, any]) => {
+  if (!$currentChannelId) return null
+  return $store.channels[$currentChannelId] || null
+});
+export const currentUser = derived([
+  currentUserIdStore, store
+], ([$currentUserId, $store]: [string|null, any]) => {
+  if (!$currentUserId) return null
+  return $store.users[$currentUserId] || null
+});
 
-// Store initialization check
-export const isStoreInitialized = derived(store, $store => 
-  Object.keys($store.channels).length > 0
-)
-
-// Current channel computed value
-export const currentChannel = derived(
-  [currentChannelIdStore, store],
-  ([$currentChannelId, $store]) => {
-    if (!$currentChannelId) return null
-    return $store.channels[$currentChannelId] || null
-  }
-)
-
-// Current user computed value
-export const currentUser = derived(
-  [currentUserIdStore, store],
-  ([$currentUserId, $store]) => {
-    if (!$currentUserId) return null
-    return $store.users[$currentUserId] || null
-  }
-)
+// Workspace switching
+export function setWorkspaceId(id: string) {
+  // Swap out doc/providers for the new workspace
+  doc = getYjsValue(_store) as Doc;
+  awareness = new awarenessProtocol.Awareness(doc);
+  persistenceProvider = new IndexeddbPersistence(id, doc);
+  rtcProvider = new TrysteroProvider(id, doc, {
+    appId: id,
+    awareness
+  });
+}
 
 // Store operations
 export function initializeStore() {
